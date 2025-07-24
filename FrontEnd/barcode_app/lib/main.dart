@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'widgets/menuLateral.dart';
-import './screens/scanVin.dart';
+import 'widgets/menu_lateral.dart';
+import 'screens/scan_vin.dart';
 import './screens/login.dart';
 
 void main() => runApp(const MyApp());

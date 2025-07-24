@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/menuLateral.dart'; // Asegúrate de que esta importación sea correcta
+import '../widgets/menu_lateral.dart'; // Asegúrate de que esta importación sea correcta
 
 class ScanBarcode extends StatelessWidget {
   const ScanBarcode({super.key});

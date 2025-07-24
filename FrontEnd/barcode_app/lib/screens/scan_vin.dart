@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widgets/menuLateral.dart';
-import 'scanOcr.dart';
-import 'scanBarcode.dart';
+import '../widgets/menu_lateral.dart';
+import 'scan_ocr.dart';
+import 'scan_barcode.dart';
 import '../main.dart'; // Asegúrate de importar tu archivo principal
 
 class ScanVin extends StatefulWidget {
