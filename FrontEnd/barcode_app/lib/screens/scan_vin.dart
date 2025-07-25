@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/menu_lateral.dart';
 import 'scan_ocr.dart';
-import 'scan_barcode.dart';
+import 'scan_qr.dart';
 import '../main.dart'; // Asegúrate de importar tu archivo principal
 
 class ScanVin extends StatefulWidget {
@@ -12,25 +12,18 @@ class ScanVin extends StatefulWidget {
 }
 
 class _ScanVinState extends State<ScanVin> {
-  String? _selectedOption = 'ocr'; // 'ocr' o 'codigo_barras'
+  String? _selectedOption = 'QR'; // 'ocr' o 'codigo_barras'
 
   void _navigateToScan() {
-    if (_selectedOption == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, selecciona una opción')),
-      );
-      return;
-    }
-
-    if (_selectedOption == 'ocr') {
+    if (_selectedOption == 'OCR') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const ScanOcr()),
       );
-    } else if (_selectedOption == 'codigo_barras') {
+    } else if (_selectedOption == 'QR') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const ScanBarcode()),
+        MaterialPageRoute(builder: (context) => const ScanQR()),
       );
     }
   }
@@ -65,8 +58,8 @@ class _ScanVinState extends State<ScanVin> {
                 textAlign: TextAlign.center,
               ),
               RadioListTile<String>(
-                title: const Text('OCR'),
-                value: 'ocr',
+                title: const Text('QR'),
+                value: 'QR',
                 groupValue: _selectedOption,
                 onChanged: (value) {
                   setState(() {
@@ -75,8 +68,8 @@ class _ScanVinState extends State<ScanVin> {
                 },
               ),
               RadioListTile<String>(
-                title: const Text('Código de Barras'),
-                value: 'codigo_barras',
+                title: const Text('OCR'),
+                value: 'OCR',
                 groupValue: _selectedOption,
                 onChanged: (value) {
                   setState(() {
@@ -96,7 +89,7 @@ class _ScanVinState extends State<ScanVin> {
                   ),
                   textStyle: const TextStyle(fontSize: 20),
                 ),
-                child: const Text('Escanear'),
+                child: const Text('Siguiente'),
               ),
             ],
           ),

@@ -57,7 +57,7 @@ class StartPage extends StatelessWidget {
               ),
               child: const Text(
                 'Comenzar',
-                style: TextStyle(fontSize: 25),
+                style: TextStyle(fontSize: 20),
               ),
             ),
           ],
