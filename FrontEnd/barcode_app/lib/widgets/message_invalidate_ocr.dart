@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class MessageInvalidate extends StatelessWidget {
-  const MessageInvalidate({super.key});
+class MessageInvalidateOCR extends StatelessWidget {
+  const MessageInvalidateOCR({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart'; // Para usar la cámara
 import 'dart:io'; // Importa la clase 'File' para manejar imágenes
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart'; // Importa el paquete para OCR
-import '../widgets/message_validate.dart'; // Importa el diálogo cuando se extrae texto correctamente
-import '../widgets/message_invalidate.dart'; // Importa el diálogo cuando no se detecta texto
+import '../widgets/message_validate_ocr.dart'; // Importa el diálogo cuando se extrae texto correctamente
+import '../widgets/message_invalidate_ocr.dart'; // Importa el diálogo cuando no se detecta texto
 
 class ScanOcr extends StatefulWidget {
   const ScanOcr({super.key});
@@ -110,14 +110,14 @@ class _ScanOcrState extends State<ScanOcr> {
       showDialog(
         context: context,
         builder: (BuildContext dialogContext) {
-          return const MessageInvalidate(); // Muestra el mensaje cuando no se escanea texto
+          return const MessageInvalidateOCR(); // Muestra el mensaje cuando no se escanea texto
         },
       );
     } else {
       showDialog(
         context: context,
         builder: (BuildContext dialogContext) {
-          return MessageValidate(extractedText: cleanedText); // Muestra el texto extraído
+          return MessageValidateOCR(extractedText: cleanedText); // Muestra el texto extraído
         },
       );
     }

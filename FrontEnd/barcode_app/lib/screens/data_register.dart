@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../widgets/message_exitoso.dart'; // Importación del mensaje exitoso
+import '../widgets/message_registro_exitoso.dart'; // Importación del mensaje exitoso
 
 class DataRegister extends StatelessWidget {
-  final String extractedText;
+  final String extractedText; // Recibimos el texto escaneado
 
   const DataRegister({super.key, required this.extractedText});
 

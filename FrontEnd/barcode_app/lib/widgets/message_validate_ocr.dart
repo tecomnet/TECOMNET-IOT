@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import '../screens/data_register.dart'; // Asegúrate de importar la pantalla DataRegister
 
-class MessageValidate extends StatefulWidget {
+class MessageValidateOCR extends StatefulWidget {
   String extractedText; // Cambié a `String` para que sea mutable dentro del widget
 
-  MessageValidate({required this.extractedText, super.key});
+  MessageValidateOCR({required this.extractedText, super.key});
 
   @override
-  _MessageValidateState createState() => _MessageValidateState();
+  _MessageValidateOCRState createState() => _MessageValidateOCRState();
 }
 
-class _MessageValidateState extends State<MessageValidate> {
+class _MessageValidateOCRState extends State<MessageValidateOCR> {
   late TextEditingController _textEditingController;
   bool _isEditing = false;
 
