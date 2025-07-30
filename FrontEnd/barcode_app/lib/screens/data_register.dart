@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
-import '../widgets/message_registro_exitoso.dart'; // Importación del mensaje exitoso
+import '../widgets/message_registro_exitoso.dart';
 
 class DataRegister extends StatelessWidget {
-  final String extractedText; // Recibimos el texto escaneado
+  final String vinText; // Texto del primer OCR (VIN)
+  final String simText; // Texto del segundo OCR (SIM)
+  final String? extractedText; // Nuevo parámetro para compatibilidad
 
-  const DataRegister({super.key, required this.extractedText});
+  const DataRegister({
+    super.key, 
+    required this.vinText, 
+    required this.simText,
+    this.extractedText, // Parámetro adicional agregado
+  });
 
   @override
   Widget build(BuildContext context) {
     final scrollController1 = ScrollController();
     final scrollController2 = ScrollController();
-
-    // Simulamos que extraes otro texto para el código de barras (puedes reemplazarlo)
-    final String codigoBarras = '1234567890123'; // Aquí puedes pasarlo como parámetro si gustas
 
     return Scaffold(
       appBar: AppBar(
@@ -30,11 +34,11 @@ class DataRegister extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
 
-                // Primer cuadro de texto (OCR)
+                // Primer cuadro de texto (OCR VIN)
                 SizedBox(
                   height: 150,
                   child: TextField(
-                    controller: TextEditingController(text: extractedText),
+                    controller: TextEditingController(text: vinText),
                     readOnly: true,
                     maxLines: null,
                     expands: true,
@@ -49,11 +53,11 @@ class DataRegister extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                // Segundo cuadro de texto (Código de barras, solo lectura)
+                // Segundo cuadro de texto (OCR SIM)
                 SizedBox(
                   height: 150,
                   child: TextField(
-                    controller: TextEditingController(text: codigoBarras),
+                    controller: TextEditingController(text: simText),
                     readOnly: true,
                     maxLines: null,
                     expands: true,

@@ -54,7 +54,6 @@ class _ScanQRState extends State<ScanQR> {
     );
   }
 
-
   void _resetScanner() {
     setState(() {
       _isScanning = true;
@@ -65,23 +64,28 @@ class _ScanQRState extends State<ScanQR> {
     });
   }
 
-void _goToDataRegister(String scannedText) {
-  // Cerrar cualquier diálogo abierto antes de navegar
-  Navigator.of(context).pop(); // Esto cierra el diálogo actual
+  void _goToDataRegister(String scannedText) {
+    // Cerrar cualquier diálogo abierto antes de navegar
+    Navigator.of(context).pop(); // Esto cierra el diálogo actual
 
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => DataRegister(extractedText: scannedText),
-    ),
-  ).then((_) {
-    // Reanudar la cámara cuando regresamos
-    _controller?.resumeCamera();
-    setState(() {
-      _isScanning = true;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        // Cambio clave: usar los parámetros requeridos por DataRegister
+        builder: (context) => DataRegister(
+          vinText: scannedText, // Pasamos el texto escaneado como VIN
+          simText: "",           // Dejamos SIM vacío
+          extractedText: scannedText, // Mantenemos compatibilidad
+        ),
+      ),
+    ).then((_) {
+      // Reanudar la cámara cuando regresamos
+      _controller?.resumeCamera();
+      setState(() {
+        _isScanning = true;
+      });
     });
-  });
-}
+  }
 
   @override
   Widget build(BuildContext context) {

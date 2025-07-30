@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart'; // Para usar la cámara
-import 'dart:io'; // Importa la clase 'File' para manejar imágenes
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart'; // Importa el paquete para OCR
-import '../widgets/message_validate_ocr.dart'; // Importa el diálogo cuando se extrae texto correctamente
-import '../widgets/message_invalidate_ocr.dart'; // Importa el diálogo cuando no se detecta texto
+import 'package:camera/camera.dart';
+import 'dart:io';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:image/image.dart' as img;
+import '../widgets/message_validate_ocr.dart';
+import '../widgets/message_invalidate_ocr.dart';
+import 'scan_sim.dart';
+import 'data_register.dart';
 
 class ScanOcr extends StatefulWidget {
-  const ScanOcr({super.key});
+  final String? vinText; // Texto del VIN escaneado previamente
+
+  const ScanOcr({super.key, this.vinText});
 
   @override
   _ScanOcrState createState() => _ScanOcrState();
@@ -18,7 +23,8 @@ class _ScanOcrState extends State<ScanOcr> {
   bool _isCameraInitialized = false;
   bool _isProcessing = false;
   XFile? _imageFile;
-  String _extractedText = ""; // Variable para almacenar el texto extraído
+  String _extractedText = "";
+  String? origen;
 
   @override
   void initState() {
@@ -26,21 +32,25 @@ class _ScanOcrState extends State<ScanOcr> {
     _initializeCamera();
   }
 
-  // Inicializar la cámara
-  Future<void> _initializeCamera() async {
-    _cameras = await availableCameras();  // Obtén las cámaras disponibles
-    _cameraController = CameraController(
-      _cameras[0], // Usamos la primera cámara disponible (normalmente la cámara trasera)
-      ResolutionPreset.medium, // Resolución media para una imagen más pequeña
-    );
-    await _cameraController.initialize(); // Inicializa el controlador de la cámara
-
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final routeArgs = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     setState(() {
-      _isCameraInitialized = true; // Indica que la cámara está lista
+      origen = routeArgs?['origen'] as String?;
     });
   }
 
-  // Tomar una foto
+  Future<void> _initializeCamera() async {
+    _cameras = await availableCameras();
+    _cameraController = CameraController(_cameras[0], ResolutionPreset.medium);
+    await _cameraController.initialize();
+
+    setState(() {
+      _isCameraInitialized = true;
+    });
+  }
+
   Future<void> _takePicture() async {
     if (!_isCameraInitialized) return;
 
@@ -49,92 +59,130 @@ class _ScanOcrState extends State<ScanOcr> {
     });
 
     try {
-      // Tomar una foto
       XFile picture = await _cameraController.takePicture();
       setState(() {
-        _imageFile = picture; // Guardar la imagen capturada
+        _imageFile = picture;
         _isProcessing = false;
       });
 
-      // Procesar la imagen con OCR
-      _scanTextFromImage();
+      await _scanTextFromImage();
     } catch (e) {
       setState(() {
         _isProcessing = false;
       });
 
-      // Mostrar un mensaje de error si algo salió mal
       showDialog(
         context: context,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: Text('Ocurrió un error durante la captura de la imagen: $e'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(dialogContext).pop();  // Cerrar el diálogo
-                },
-                child: const Text('Cerrar'),
-              ),
-            ],
-          );
-        },
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text('Ocurrió un error durante la captura de la imagen: $e'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cerrar'),
+            ),
+          ],
+        ),
       );
     }
   }
 
-  // Función para detectar texto utilizando OCR
   Future<void> _scanTextFromImage() async {
     if (_imageFile == null) return;
 
-    final inputImage = InputImage.fromFile(File(_imageFile!.path));
-    // Aquí la modificación para usar solo script latino:
+    final bytes = await File(_imageFile!.path).readAsBytes();
+    final originalImage = img.decodeImage(bytes);
+    if (originalImage == null) return;
+
+    final imageWidth = originalImage.width;
+    final imageHeight = originalImage.height;
+
+    final cropWidth = (imageWidth * 0.9).toInt();
+    final cropHeight = (imageHeight * 0.125).toInt();
+    final cropX = ((imageWidth - cropWidth) / 2).toInt();
+    final cropY = ((imageHeight - cropHeight) / 2).toInt();
+
+    final croppedImage = img.copyCrop(
+      originalImage,
+      x: cropX,
+      y: cropY,
+      width: cropWidth,
+      height: cropHeight,
+    );
+
+    final croppedFile = await File('${_imageFile!.path}_cropped.png').writeAsBytes(
+      img.encodePng(croppedImage),
+    );
+
+    final inputImage = InputImage.fromFile(croppedFile);
     final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+
     try {
       final recognizedText = await textRecognizer.processImage(inputImage);
       setState(() {
-        _extractedText = recognizedText.text; // Almacena el texto extraído
+        _extractedText = recognizedText.text;
       });
     } catch (e) {
-      print("Error al procesar la imagen: $e");
+      print("Error al procesar imagen recortada: $e");
     } finally {
-      textRecognizer.close(); // Liberamos los recursos
+      textRecognizer.close();
     }
 
-    // Limpia y mejora el texto extraído
     String cleanedText = _cleanExtractedText(_extractedText);
 
-    // Muestra el cuadro de diálogo adecuado
     if (cleanedText.isEmpty) {
       showDialog(
         context: context,
-        builder: (BuildContext dialogContext) {
-          return const MessageInvalidateOCR(); // Muestra el mensaje cuando no se escanea texto
-        },
+        builder: (context) => const MessageInvalidateOCR(),
       );
     } else {
       showDialog(
         context: context,
-        builder: (BuildContext dialogContext) {
-          return MessageValidateOCR(extractedText: cleanedText); // Muestra el texto extraído
-        },
+        builder: (context) => MessageValidateOCR(
+          extractedText: cleanedText,
+          onAgregarPressed: () {
+            // Cerrar el diálogo primero
+            Navigator.of(context).pop();
+            
+            // Lógica de navegación basada en el origen
+            if (origen == 'scanvin') {
+              // Para primer OCR: navegar a ScanSim pasando el texto VIN
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ScanSim(vinText: cleanedText),
+                ),
+              );
+            } else if (origen == 'sim') {
+              // Para segundo OCR: navegar a DataRegister con ambos textos
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DataRegister(
+                    vinText: widget.vinText ?? '', // Texto del primer OCR
+                    simText: cleanedText,         // Texto del segundo OCR
+                  ),
+                ),
+              );
+            } else {
+              // Comportamiento por defecto (volver atrás)
+              Navigator.pop(context);
+            }
+          },
+        ),
       );
     }
   }
 
-  // Limpieza básica del texto extraído
   String _cleanExtractedText(String text) {
-    text = text.replaceAll(RegExp(r'\s{2,}'), ' '); // Reemplaza múltiples espacios por uno solo
-    text = text.replaceAll(RegExp(r'\n'), ' '); // Elimina saltos de línea innecesarios
-    text = text.trim(); // Elimina espacios al principio y al final del texto
-
-    return text;
+    text = text.replaceAll(RegExp(r'\s{2,}'), ' ');
+    text = text.replaceAll(RegExp(r'\n'), ' ');
+    return text.trim();
   }
 
   @override
   void dispose() {
-    _cameraController.dispose();  // Liberar el controlador de la cámara
+    _cameraController.dispose();
     super.dispose();
   }
 
@@ -145,45 +193,70 @@ class _ScanOcrState extends State<ScanOcr> {
         title: const Text('Escaneo con OCR'),
       ),
       body: _isCameraInitialized
-          ? SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        height: MediaQuery.of(context).size.height * 0.6,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: CameraPreview(_cameraController), // Muestra la vista previa de la cámara
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: ElevatedButton(
-                        onPressed: _isProcessing ? null : _takePicture,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: _isProcessing
-                            ? const CircularProgressIndicator()
-                            : const Text('Escanear', style: TextStyle(fontSize: 20)),
-                      ),
-                    ),
-                  ],
+          ? Stack(
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: CameraPreview(_cameraController),
                 ),
-              ),
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: ScanAreaOverlayPainter(),
+                  ),
+                ),
+                Positioned(
+                  bottom: 140,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: ElevatedButton(
+                      onPressed: _isProcessing ? null : _takePicture,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: _isProcessing
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('Escanear', style: TextStyle(fontSize: 20)),
+                    ),
+                  ),
+                ),
+              ],
             )
           : const Center(child: CircularProgressIndicator()),
     );
   }
+}
+
+class ScanAreaOverlayPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = Colors.black.withOpacity(0.5);
+
+    final borderPaint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    final scanRect = Rect.fromCenter(
+      center: Offset(size.width / 2, size.height / 2),
+      width: size.width * 0.8,
+      height: size.height * 0.125,
+    );
+
+    final backgroundPath = Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+    final holePath = Path()..addRect(scanRect);
+    final overlayPath = Path.combine(PathOperation.difference, backgroundPath, holePath);
+
+    canvas.drawPath(overlayPath, paint);
+    canvas.drawRect(scanRect, borderPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:barcode_app/screens/scan_barcode.dart';
 import 'package:barcode_app/screens/scan_ocr.dart';
 import '../widgets/menu_lateral.dart';
-import '../main.dart'; // Para regresar a la pantalla inicial
+import '../main.dart';
 
 class ScanSim extends StatefulWidget {
-  const ScanSim({super.key});
+  final String? vinText; // Texto del VIN escaneado previamente
+
+  const ScanSim({super.key, this.vinText});
 
   @override
   State<ScanSim> createState() => _ScanSimState();
 }
 
 class _ScanSimState extends State<ScanSim> {
-  String? _selectedOption = 'Barcode'; // 'Barcode' o 'OCR'
+  String? _selectedOption = 'Barcode';
 
   void _navigateToScan() {
     if (_selectedOption == 'Barcode') {
@@ -23,7 +25,10 @@ class _ScanSimState extends State<ScanSim> {
     } else if (_selectedOption == 'OCR') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const ScanOcr()),
+        MaterialPageRoute(
+          builder: (context) => ScanOcr(vinText: widget.vinText), // Pasamos el texto VIN
+          settings: const RouteSettings(arguments: {'origen': 'sim'}),
+        ),
       );
     }
   }

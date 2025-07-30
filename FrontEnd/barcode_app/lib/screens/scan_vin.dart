@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/menu_lateral.dart';
 import 'scan_ocr.dart';
 import 'scan_qr.dart';
-import '../main.dart'; // Asegúrate de importar tu archivo principal
+import '../main.dart';
 
 class ScanVin extends StatefulWidget {
   const ScanVin({super.key});
@@ -12,13 +12,16 @@ class ScanVin extends StatefulWidget {
 }
 
 class _ScanVinState extends State<ScanVin> {
-  String? _selectedOption = 'QR'; // 'ocr' o 'codigo_barras'
+  String? _selectedOption = 'QR';
 
   void _navigateToScan() {
     if (_selectedOption == 'OCR') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const ScanOcr()),
+        MaterialPageRoute(
+          builder: (context) => const ScanOcr(),
+          settings: const RouteSettings(arguments: {'origen': 'scanvin'}),
+        ),
       );
     } else if (_selectedOption == 'QR') {
       Navigator.push(
@@ -39,12 +42,12 @@ class _ScanVinState extends State<ScanVin> {
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const StartPage()),
-              (Route<dynamic> route) => false, // Elimina el historial
+              (Route<dynamic> route) => false,
             );
           },
         ),
       ),
-      endDrawer: const MenuLateral(), // Menú lateral en el lado derecho
+      endDrawer: const MenuLateral(),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

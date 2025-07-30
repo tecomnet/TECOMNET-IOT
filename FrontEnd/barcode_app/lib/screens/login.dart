@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import '../main.dart';
+import 'package:barcode_app/services/api_services.dart'; // Asegúrate de que este archivo esté importado correctamente.
 
 class Login extends StatelessWidget {
   const Login({super.key});
+
+  // Validación del correo (expresión regular para validar formato de correo)
+  bool esCorreoValido(String correo) {
+    final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+    return emailRegex.hasMatch(correo);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,10 +60,11 @@ class Login extends StatelessWidget {
 
                 // Botón Iniciar sesión
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     final usuario = usuarioController.text.trim();
                     final contrasena = contrasenaController.text.trim();
 
+                    // Validación de los campos
                     if (usuario.isEmpty || contrasena.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -65,15 +72,34 @@ class Login extends StatelessWidget {
                           backgroundColor: Colors.orange,
                         ),
                       );
-                    } else if (usuario == 'admin' && contrasena == '1234') {
-                      Navigator.pushNamed(context, '/');
-                    } else {
+                      return;
+                    }
+
+                    // Validar el formato del correo
+                    if (!esCorreoValido(usuario)) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Datos incorrectos'),
-                          backgroundColor: Colors.redAccent,
+                          content: Text('Ingresa un correo válido'),
+                          backgroundColor: Colors.red,
                         ),
                       );
+                      return;
+                    }
+
+                    // Llamar al servicio de autenticación
+                    bool tokenObtenido = await AuthService.obtenerToken(usuario, contrasena);
+
+                    if (!tokenObtenido) {
+                      // Si el login falla
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Usuario o contraseña incorrectos'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    } else {
+                      // Si el login es exitoso, redirigir a la pantalla principal
+                      Navigator.pushReplacementNamed(context, '/');
                     }
                   },
                   style: ElevatedButton.styleFrom(
