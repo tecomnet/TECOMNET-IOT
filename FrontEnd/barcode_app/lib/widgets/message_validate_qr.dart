@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:barcode_app/screens/scan_sim.dart'; // Importa ScanSim
+import 'package:barcode_app/screens/scan_sim.dart';
 
 class MessageValidateQR extends StatefulWidget {
   final String title;
   final String content;
   final VoidCallback onTryAgain;
-  final VoidCallback? onAdd; // Puede ser null para omitir el botón
+  final VoidCallback? onAdd;
 
   const MessageValidateQR({
     required this.title,
@@ -38,7 +38,8 @@ class _MessageValidateQRState extends State<MessageValidateQR> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.title),
+      title: Text(widget.title,
+      style: TextStyle(color: Colors.blue[800])),
       content: _isEditing
           ? TextField(
               controller: _controller,
@@ -55,7 +56,8 @@ class _MessageValidateQRState extends State<MessageValidateQR> {
               _isEditing = !_isEditing;
             });
           },
-          child: Text(_isEditing ? 'Guardar' : 'Editar'),
+          child: Text(_isEditing ? 'Guardar' : 'Editar',
+          style: TextStyle(color: Colors.blue[800]),),
         ),
         if (widget.onAdd != null)
           TextButton(
@@ -64,18 +66,21 @@ class _MessageValidateQRState extends State<MessageValidateQR> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const ScanSim(),
+                  builder: (_) => ScanSim(vinText: _controller.text), // Pasa texto editado
                 ),
               );
             },
-            child: const Text("Agregar"),
-          ),
+            child: Text("Agregar",
+          style: TextStyle(color: Colors.blue[800]),),
+        ),
         TextButton(
           onPressed: () {
             widget.onTryAgain();
             Navigator.pop(context);
           },
-          child: const Text("Intentar de nuevo"),
+          child: Text("Intentar de nuevo",
+          style: TextStyle(color: Colors.blue[800]),
+        ),
         ),
       ],
     );

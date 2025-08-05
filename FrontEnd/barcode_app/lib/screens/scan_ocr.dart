@@ -99,7 +99,7 @@ class _ScanOcrState extends State<ScanOcr> {
 
     final cropWidth = (imageWidth * 0.9).toInt();
     final cropHeight = (imageHeight * 0.125).toInt();
-    final cropX = ((imageWidth - cropWidth) / 2).toInt();
+    final cropX = ((imageWidth - cropWidth) / 2 ).toInt();
     final cropY = ((imageHeight - cropHeight) / 2).toInt();
 
     final croppedImage = img.copyCrop(
@@ -191,6 +191,9 @@ class _ScanOcrState extends State<ScanOcr> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Escaneo con OCR'),
+        backgroundColor: Colors.blue[800],
+        foregroundColor: Colors.white,
+        elevation: 2,
       ),
       body: _isCameraInitialized
           ? Stack(
@@ -206,14 +209,14 @@ class _ScanOcrState extends State<ScanOcr> {
                   ),
                 ),
                 Positioned(
-                  bottom: 140,
+                  bottom: 180,
                   left: 0,
                   right: 0,
                   child: Center(
                     child: ElevatedButton(
                       onPressed: _isProcessing ? null : _takePicture,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
+                        backgroundColor: Colors.blue[800],
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -244,7 +247,7 @@ class ScanAreaOverlayPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final scanRect = Rect.fromCenter(
-      center: Offset(size.width / 2, size.height / 2),
+      center: Offset(size.width / 2, size.height / 2 -60),
       width: size.width * 0.8,
       height: size.height * 0.125,
     );

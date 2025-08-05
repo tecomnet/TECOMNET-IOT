@@ -1,107 +1,222 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../widgets/message_validate_barcode.dart';
+import '../screens/data_register.dart';
 
 class ScanBarcode extends StatefulWidget {
-  const ScanBarcode({super.key});
+  final String? vinText;
+
+  const ScanBarcode({super.key, this.vinText});
 
   @override
   State<ScanBarcode> createState() => _ScanBarcodeState();
 }
 
 class _ScanBarcodeState extends State<ScanBarcode> with SingleTickerProviderStateMixin {
-  // Variable para controlar si ya se escaneó un código para evitar múltiples escaneos
   bool _isScanned = false;
-
-  // Controlador para la cámara y escaneo del código de barras
   late final MobileScannerController _controller;
-
-  // Controlador para animaciones (línea que se mueve en el área de escaneo)
-  late AnimationController _animationController;
+  late AnimationController _laserController;
+  bool _flashOn = false;
+  Rect? _scanRect;
 
   @override
   void initState() {
     super.initState();
-    // Inicializamos el controlador del escáner
-    _controller = MobileScannerController();
-
-    // Inicializamos y arrancamos la animación de la línea que se mueve en el área de escaneo
-    _animationController = AnimationController(
+    _controller = MobileScannerController(
+      detectionSpeed: DetectionSpeed.normal,
+      facing: CameraFacing.back,
+      torchEnabled: false,
+    );
+    
+    _laserController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
-    )..repeat(reverse: true); // Se repite adelante y atrás
+    )..repeat();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final screenSize = MediaQuery.of(context).size;
+      setState(() {
+        _scanRect = Rect.fromCenter(
+          center: Offset(screenSize.width / 2, screenSize.height / 2 - 60),
+          width: screenSize.width * 0.9,
+          height: screenSize.height * 0.2,
+        );
+      });
+    });
   }
 
   @override
   void dispose() {
-    // Liberamos los controladores para evitar fugas de memoria
     _controller.dispose();
-    _animationController.dispose();
+    _laserController.dispose();
     super.dispose();
+  }
+
+  Future<void> _toggleFlash() async {
+    await _controller.toggleTorch();
+    setState(() {
+      _flashOn = !_flashOn;
+    });
+  }
+
+  bool _isWithinScanRect(Offset point) {
+    if (_scanRect == null) return false;
+    return _scanRect!.contains(point);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Obtenemos el tamaño de la pantalla para definir el área de escaneo
     final screenSize = MediaQuery.of(context).size;
-
-    // Definimos el rectángulo donde el usuario debe colocar el código de barras
-    final scanRect = Rect.fromCenter(
+    final scanRect = _scanRect ?? Rect.fromCenter(
       center: Offset(screenSize.width / 2, screenSize.height / 2 - 60),
       width: screenSize.width * 0.9,
-      height: screenSize.height * 0.15,
+      height: screenSize.height * 0.2,
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Escaneo con barcode')),
+      appBar: AppBar(
+        title: widget.vinText != null 
+            ? const Text('Escaneo SIM') 
+            : const Text('Escaneo VIN'),
+        backgroundColor: Colors.blue[800],
+        foregroundColor: Colors.white,
+        elevation: 2,
+      ),
       body: Stack(
         children: [
-          // Widget principal que captura y detecta códigos de barras
           MobileScanner(
             controller: _controller,
             fit: BoxFit.cover,
             onDetect: (capture) {
-              // Si ya se escaneó un código, no hacemos nada para evitar repetir
-              if (_isScanned) return;
+              if (_isScanned || _scanRect == null) return;
 
               for (final barcode in capture.barcodes) {
                 final code = barcode.rawValue;
                 if (code != null) {
-                  setState(() {
-                    _isScanned = true; // Marcamos que ya escaneamos un código
-                  });
-
-                  // Mostramos diálogo con el resultado del código escaneado
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false, // No permitir cerrar tocando fuera
-                    builder: (context) => MessageValidateBarcode(
-                      barcodeText: code,
-                      onTryAgain: () {
-                        setState(() {
-                          _isScanned = false; // Permitimos escanear otra vez
-                        });
-                      },
-                      onAdd: () {
-                        // Aquí puedes agregar alguna acción extra antes de navegar
-                      },
-                    ),
+                  final barcodeCenter = Offset(
+                    (barcode.corners[0].dx + barcode.corners[2].dx) / 2,
+                    (barcode.corners[0].dy + barcode.corners[2].dy) / 2,
                   );
 
-                  break; // Salimos del ciclo porque ya procesamos un código
+                  if (_isWithinScanRect(barcodeCenter)) {
+                    setState(() {
+                      _isScanned = true;
+                    });
+                    
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => MessageValidateBarcode(
+                        barcodeText: code,
+                        onTryAgain: () {
+                          setState(() {
+                            _isScanned = false;
+                          });
+                        },
+                        onAdd: () => _goToDataRegister(code),
+                      ),
+                    );
+                    break;
+                  }
                 }
               }
             },
           ),
-
-          // Capa superior con animación de línea que se mueve en el área de escaneo
+          
           Positioned.fill(
-            child: AnimatedBuilder(
-              animation: _animationController,
-              builder: (_, __) => CustomPaint(
-                painter: ScannerOverlayPainter(
-                  scanRect: scanRect,
-                  linePosition: _animationController.value,
+            child: CustomPaint(
+              painter: ScannerOverlayPainter(
+                scanRect: scanRect,
+              ),
+            ),
+          ),
+          
+          Positioned.fromRect(
+            rect: scanRect,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.8),
+                  width: 2,
+                ),
+              ),
+            ),
+          ),
+          
+          AnimatedBuilder(
+            animation: _laserController,
+            builder: (context, child) {
+              return Positioned(
+                top: scanRect.top + (scanRect.height * _laserController.value),
+                left: scanRect.left,
+                child: Container(
+                  width: scanRect.width,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        Colors.red.shade700,
+                        Colors.transparent,
+                      ],
+                      stops: const [0.0, 0.5, 1.0],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.redAccent.withOpacity(0.8),
+                        blurRadius: 8,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          
+          Positioned(
+            top: scanRect.bottom + 20,
+            left: 0,
+            right: 0,
+            child: Text(
+              '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w300,
+                shadows: [
+                  Shadow(
+                    blurRadius: 4,
+                    color: Colors.black,
+                    offset: Offset(1, 1),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          // Botón de flash más arriba (cerca del borde superior)
+          Positioned(
+            top: 70, // Posición fija cerca del borde superior
+            right: 20,
+            child: GestureDetector(
+              onTap: _toggleFlash,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Icon(
+                  _flashOn ? Icons.flash_on : Icons.flash_off,
+                  color: Colors.white,
+                  size: 30,
                 ),
               ),
             ),
@@ -110,55 +225,47 @@ class _ScanBarcodeState extends State<ScanBarcode> with SingleTickerProviderStat
       ),
     );
   }
+
+  void _goToDataRegister(String simText) {
+    Navigator.pop(context);
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DataRegister(
+          vinText: widget.vinText ?? "",
+          simText: simText,
+          extractedText: simText,
+        ),
+      ),
+    ).then((_) {
+      setState(() {
+        _isScanned = false;
+      });
+    });
+  }
 }
 
-// Pintor personalizado para dibujar el área de escaneo y la línea animada
 class ScannerOverlayPainter extends CustomPainter {
   final Rect scanRect;
-  final double linePosition;
 
   ScannerOverlayPainter({
     required this.scanRect,
-    required this.linePosition,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Pintura para el fondo oscuro semi-transparente
     final overlayPaint = Paint()..color = Colors.black.withOpacity(0.5);
-
-    // Paths para crear un recuadro con "hueco" donde va el área de escaneo
     final backgroundPath = Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
-    final holePath = Path()..addRect(scanRect);
+    
+    final holePath = Path()
+      ..addRRect(RRect.fromRectAndRadius(scanRect, const Radius.circular(16)));
+    
     final overlay = Path.combine(PathOperation.difference, backgroundPath, holePath);
-
-    // Pintamos la superposición oscura fuera del área de escaneo
     canvas.drawPath(overlay, overlayPaint);
-
-    // Pintura para el borde blanco del área de escaneo
-    final borderPaint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-    canvas.drawRect(scanRect, borderPaint);
-
-    // Calculamos la posición vertical de la línea animada dentro del área de escaneo
-    final lineY = scanRect.top + (scanRect.height * linePosition);
-
-    // Pintura para la línea roja animada
-    final linePaint = Paint()
-      ..color = Colors.red
-      ..strokeWidth = 2;
-
-    // Dibujamos la línea horizontal en la posición calculada
-    canvas.drawLine(
-      Offset(scanRect.left, lineY),
-      Offset(scanRect.right, lineY),
-      linePaint,
-    );
   }
 
   @override
   bool shouldRepaint(covariant ScannerOverlayPainter oldDelegate) =>
-      oldDelegate.linePosition != linePosition || oldDelegate.scanRect != scanRect;
+      oldDelegate.scanRect != scanRect;
 }

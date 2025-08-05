@@ -6,14 +6,20 @@ class MessageInvalidateOCR extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Texto'),
+      title: Text(
+        'Texto',
+        style: TextStyle(color: Colors.blue[800]),
+      ),
       content: const Text('Texto no escaneado'),
       actions: [
         TextButton(
           onPressed: () {
             Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
           },
-          child: const Text('Intentar de nuevo'),
+          child: Text(
+            'Intentar de nuevo',
+            style: TextStyle(color: Colors.blue[800]),
+          ),
         ),
       ],
     );

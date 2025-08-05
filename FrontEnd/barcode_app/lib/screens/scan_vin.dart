@@ -36,6 +36,10 @@ class _ScanVinState extends State<ScanVin> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Escaneo VIN'),
+      
+        backgroundColor: Colors.blue[800],
+        foregroundColor: Colors.white,
+        elevation: 2,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -57,13 +61,14 @@ class _ScanVinState extends State<ScanVin> {
             children: [
               const Text(
                 'Selecciona tipo de escaneo:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               RadioListTile<String>(
                 title: const Text('QR'),
                 value: 'QR',
                 groupValue: _selectedOption,
+                activeColor: Colors.blue[800],
                 onChanged: (value) {
                   setState(() {
                     _selectedOption = value;
@@ -74,6 +79,7 @@ class _ScanVinState extends State<ScanVin> {
                 title: const Text('OCR'),
                 value: 'OCR',
                 groupValue: _selectedOption,
+                activeColor: Colors.blue[800],
                 onChanged: (value) {
                   setState(() {
                     _selectedOption = value;
@@ -84,7 +90,7 @@ class _ScanVinState extends State<ScanVin> {
               ElevatedButton(
                 onPressed: _navigateToScan,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor: Colors.blue[800],
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   shape: RoundedRectangleBorder(

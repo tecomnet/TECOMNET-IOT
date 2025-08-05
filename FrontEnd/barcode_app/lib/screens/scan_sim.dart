@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:barcode_app/screens/scan_barcode.dart';
 import 'package:barcode_app/screens/scan_ocr.dart';
+import 'package:barcode_app/screens/scan_vin.dart'; // Importa ScanVin
 import '../widgets/menu_lateral.dart';
-import '../main.dart';
 
 class ScanSim extends StatefulWidget {
   final String? vinText; // Texto del VIN escaneado previamente
@@ -20,13 +20,15 @@ class _ScanSimState extends State<ScanSim> {
     if (_selectedOption == 'Barcode') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const ScanBarcode()),
+        MaterialPageRoute(
+          builder: (context) => ScanBarcode(vinText: widget.vinText),
+        ),
       );
     } else if (_selectedOption == 'OCR') {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ScanOcr(vinText: widget.vinText), // Pasamos el texto VIN
+          builder: (context) => ScanOcr(vinText: widget.vinText),
           settings: const RouteSettings(arguments: {'origen': 'sim'}),
         ),
       );
@@ -38,13 +40,18 @@ class _ScanSimState extends State<ScanSim> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Escaneo SIM'),
+        backgroundColor: Colors.blue[800],
+        foregroundColor: Colors.white,
+        elevation: 2,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushAndRemoveUntil(
+            // Regresar a ScanVinScreen
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const StartPage()),
-              (Route<dynamic> route) => false,
+              MaterialPageRoute(
+                builder: (context) => const ScanVin(),
+              ),
             );
           },
         ),
@@ -59,7 +66,7 @@ class _ScanSimState extends State<ScanSim> {
             children: [
               const Text(
                 'Selecciona tipo de escaneo:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               RadioListTile<String>(
@@ -86,7 +93,7 @@ class _ScanSimState extends State<ScanSim> {
               ElevatedButton(
                 onPressed: _navigateToScan,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor: Colors.blue[800],
                   foregroundColor: Colors.white,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 32, vertical: 16),

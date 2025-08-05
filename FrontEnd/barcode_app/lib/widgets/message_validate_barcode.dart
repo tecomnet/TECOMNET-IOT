@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/data_register.dart'; // Asegúrate que la ruta es correcta
+import '../screens/data_register.dart';
 
 class MessageValidateBarcode extends StatefulWidget {
   final String barcodeText;
@@ -36,58 +36,61 @@ class _MessageValidateBarcodeState extends State<MessageValidateBarcode> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Texto'),
+      title: Text(
+        'Texto',
+        style: TextStyle(color: Colors.blue[800]),
+      ),
       content: _isEditing
           ? TextField(
               controller: _controller,
               maxLines: null,
               decoration: const InputDecoration(border: OutlineInputBorder()),
-              onChanged: (value) {
-                // Puedes actualizar el texto en tiempo real si quieres
-              },
+              onChanged: (value) {},
             )
-          : Text(_controller.text),
+          : Text(
+              _controller.text
+            ),
       actions: [
         TextButton(
           onPressed: () {
-            if (_isEditing) {
-              // Guardar edición
-              setState(() {
-                _isEditing = false;
-              });
-            } else {
-              // Cambiar a modo edición
-              setState(() {
-                _isEditing = true;
-              });
-            }
+            setState(() {
+              _isEditing = !_isEditing;
+            });
           },
-          child: Text(_isEditing ? 'Guardar' : 'Editar'),
+          child: Text(
+            _isEditing ? 'Guardar' : 'Editar',
+            style: TextStyle(color: Colors.blue[800]),
+          ),
         ),
         TextButton(
-          onPressed: () {
-            Navigator.pop(context); // Cierra diálogo primero
-            
-            // Navegación actualizada con parámetros correctos
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => DataRegister(
-                  vinText: _controller.text, // Usar como VIN
-                  simText: "",                // Dejar SIM vacío
-                  extractedText: _controller.text, // Compatibilidad
-                ),
-              ),
-            );
-          },
-          child: const Text('Agregar'),
+          onPressed: widget.onAdd ??
+              () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DataRegister(
+                      vinText: "", // Dejar VIN vacío
+                      simText: _controller.text, // Usar como SIM
+                      extractedText: _controller.text,
+                    ),
+                  ),
+                );
+              },
+          child: Text(
+            'Agregar',
+            style: TextStyle(color: Colors.blue[800]),
+          ),
         ),
         TextButton(
           onPressed: () {
             widget.onTryAgain();
             Navigator.pop(context);
           },
-          child: const Text('Intentar de nuevo'),
+          child: Text(
+            'Intentar de nuevo',
+            style: TextStyle(color: Colors.blue[800]),
+          ),
         ),
       ],
     );

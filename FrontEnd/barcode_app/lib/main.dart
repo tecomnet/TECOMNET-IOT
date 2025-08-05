@@ -1,3 +1,4 @@
+import './screens/data_register.dart';
 import 'package:flutter/material.dart';
 import 'widgets/menu_lateral.dart';
 import 'screens/scan_vin.dart';
@@ -13,10 +14,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Material App',
       debugShowCheckedModeBanner: false,
-      home: const StartPage(),
+      home: const StartPage(), // Ahora inicia directamente con el Login
       routes: {
-        '/scanVin': (context) => const ScanVin(), 
         '/login': (context) => const Login(),
+        '/start': (context) => const StartPage(), // Nueva ruta para la página inicial
+        '/scanVin': (context) => const ScanVin(), 
+        // Ruta modificada para recibir argumentos
+        '/data_register': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          return DataRegister(
+            vinText: args?['vinText'] ?? '',  // Valor por defecto si no se proporciona
+            simText: args?['simText'] ?? '',  // Valor por defecto si no se proporciona
+          );
+        },
       },
     );
   }
@@ -30,29 +40,38 @@ class StartPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(''),
+        backgroundColor: Colors.blue[800],
+        foregroundColor: Colors.white,
+        elevation: 2,
         automaticallyImplyLeading: false,
       ),
-      // Cambié de 'drawer' a 'endDrawer' para que el menú lateral esté en el lado derecho
       endDrawer: const MenuLateral(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Bienvenido',
-              style: TextStyle(fontSize: 40),
+            Center(
+              child: Text(
+                'Bienvenido al registro de vehículos',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold, // Texto en negrita
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
             const SizedBox(height: 20),
+
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/scanVin');
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent, // Color de fondo
-                foregroundColor: Colors.white, // Color del texto
+                backgroundColor: Colors.blue[800],
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30), // Bordes redondeados
+                  borderRadius: BorderRadius.circular(30),
                 ),
               ),
               child: const Text(

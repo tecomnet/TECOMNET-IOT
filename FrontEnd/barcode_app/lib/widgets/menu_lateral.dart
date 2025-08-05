@@ -9,24 +9,65 @@ class MenuLateral extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          const DrawerHeader(
+          DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.blueAccent,
+              color: Colors.blue[800],
             ),
-            child: Text(
-              'Menú',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-              ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  'Menú',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Opciones de navegación',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.exit_to_app),
+            leading: Icon(Icons.home, color: Colors.blue[800]),
+            title: const Text('Inicio'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/start',
+                (route) => false,
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.app_registration, color: Colors.blue[800]),
+            title: const Text('Registrar'),
+            onTap: () {
+              Navigator.pop(context);
+              // Navegar a ScanVin para iniciar el proceso de registro
+              Navigator.pushNamed(context, '/data_register');
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: Icon(Icons.exit_to_app, color: Colors.blue[800]),
             title: const Text('Cerrar sesión'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/login');
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/login',
+                (route) => false,
+              );
             },
           ),
         ],
