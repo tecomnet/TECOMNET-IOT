@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; 
-import '../widgets/message_registro_exitoso.dart';
+import 'package:flutter/services.dart';
 import '../widgets/menu_lateral.dart';
+import '../services/api_services.dart';  // Asegúrate de importar tu servicio
 
 class DataRegister extends StatefulWidget {
   final String vinText;
@@ -9,8 +9,8 @@ class DataRegister extends StatefulWidget {
   final String? extractedText;
 
   const DataRegister({
-    super.key, 
-    required this.vinText, 
+    super.key,
+    required this.vinText,
     required this.simText,
     this.extractedText,
   });
@@ -22,17 +22,18 @@ class DataRegister extends StatefulWidget {
 class _DataRegisterState extends State<DataRegister> {
   late final TextEditingController _vinController;
   late final TextEditingController _simController;
-  
+
   final Color azulActivo = Colors.blue[800]!;
   final Color grisInactivo = Colors.grey;
+
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _vinController = TextEditingController(text: widget.vinText);
     _simController = TextEditingController(text: widget.simText);
-    
-    // Agregar listeners para actualizar la UI cuando cambia el texto
+
     _vinController.addListener(() => setState(() {}));
     _simController.addListener(() => setState(() {}));
   }
@@ -40,31 +41,66 @@ class _DataRegisterState extends State<DataRegister> {
   @override
   void dispose() {
     SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual, 
-      overlays: SystemUiOverlay.values
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
     );
-    
-    // Remover listeners
-    _vinController.removeListener(() {});
-    _simController.removeListener(() {});
-    
+
     _vinController.dispose();
     _simController.dispose();
     super.dispose();
   }
 
-  void _registrar() {
-    if (widget.vinText.isEmpty || widget.simText.isEmpty) {
+  Future<void> _registrar() async {
+    if (_vinController.text.isEmpty || _simController.text.isEmpty) {
       _mostrarError("Por favor, ingresa los datos requeridos");
       return;
     }
-    
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const MessageExitoso(),
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final vin = _vinController.text.trim();
+    final iccid = _simController.text.trim();
+
+    if (AuthService.token == null) {
+      bool tokenObtenido = await AuthService.obtenerToken(
+          "BYD.TECOMNET.USER_API", "VnhmNTk4ZW44NHAy");
+      if (!tokenObtenido) {
+        setState(() {
+          _isLoading = false;
+        });
+        _mostrarError("No se pudo obtener el token. Intenta más tarde.");
+        return;
+      }
+    }
+
+    final respuesta = await AuthService.registrarVehiculo(vin, iccid);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (respuesta == null) {
+      _mostrarError("Error en la conexión. Intenta más tarde.");
+      return;
+    }
+
+    // Mostrar respuesta que viene directamente del API
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(respuesta),
+        backgroundColor: (respuesta.toLowerCase().contains("error") ||
+                respuesta.toLowerCase().contains("no existe") ||
+                respuesta.toLowerCase().contains("ya registrado") ||
+                respuesta.toLowerCase().contains("asociado"))
+            ? Colors.red
+            : Colors.green,
+        duration: const Duration(seconds: 4),
       ),
     );
+
+    // NO NAVEGAMOS NI MOSTRAMOS OTRO MENSAJE EXITOSO, solo el SnackBar aquí.
   }
 
   void _mostrarError(String mensaje) {
@@ -72,12 +108,11 @@ class _DataRegisterState extends State<DataRegister> {
       SnackBar(
         content: Text(mensaje),
         backgroundColor: Colors.red,
-        duration: const Duration(seconds: 3),
+        duration: const Duration(seconds: 4),
       ),
     );
   }
 
-  // Función para determinar el color según si hay texto
   Color _getColor(TextEditingController controller) {
     return controller.text.isEmpty ? grisInactivo : azulActivo;
   }
@@ -106,7 +141,8 @@ class _DataRegisterState extends State<DataRegister> {
           systemNavigationBarDividerColor: Colors.transparent,
         ),
         child: GestureDetector(
-          onTap: () => SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky),
+          onTap: () =>
+              SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky),
           child: Container(
             margin: const EdgeInsets.only(bottom: 20),
             child: Center(
@@ -119,8 +155,6 @@ class _DataRegisterState extends State<DataRegister> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 10),
-                      
-                      // Título "Registro"
                       Text(
                         'Registro',
                         style: TextStyle(
@@ -131,112 +165,82 @@ class _DataRegisterState extends State<DataRegister> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 30),
-                      
-                      // Campo VIN - Sin negrita en ningún estado
                       TextField(
                         controller: _vinController,
                         readOnly: true,
                         style: TextStyle(
                           fontSize: 16,
                           color: _getColor(_vinController),
-                          // Sin fontWeight (normal por defecto)
                         ),
                         decoration: InputDecoration(
                           labelText: 'Resultado VIN',
                           labelStyle: TextStyle(
                             color: _getColor(_vinController),
-                            // Sin fontWeight (normal por defecto)
                           ),
                           border: const OutlineInputBorder(),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 16,
-                            horizontal: 20
-                          ),
-                          filled: false,
-                          prefixIcon: Icon(
-                            Icons.qr_code_scanner, 
-                            color: _getColor(_vinController),
-                          ),
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                          prefixIcon: Icon(Icons.qr_code_scanner,
+                              color: _getColor(_vinController)),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: _getColor(_vinController),
-                              
-                            ),
+                            borderSide: BorderSide(color: _getColor(_vinController)),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: _getColor(_vinController),
-                              
-                            ),
+                            borderSide: BorderSide(color: _getColor(_vinController)),
                           ),
                         ),
                       ),
                       const SizedBox(height: 15),
-
-                      // Campo SIM - Sin negrita en ningún estado
                       TextField(
                         controller: _simController,
                         readOnly: true,
                         style: TextStyle(
                           fontSize: 16,
                           color: _getColor(_simController),
-                          // Sin fontWeight (normal por defecto)
                         ),
                         decoration: InputDecoration(
                           labelText: 'Resultado SIM',
                           labelStyle: TextStyle(
                             color: _getColor(_simController),
-                            // Sin fontWeight (normal por defecto)
                           ),
                           border: const OutlineInputBorder(),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 16,
-                            horizontal: 20
-                          ),
-                          filled: false,
-                          prefixIcon: Icon(
-                            Icons.sim_card, 
-                            color: _getColor(_simController),
-                          ),
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                          prefixIcon: Icon(Icons.sim_card, color: _getColor(_simController)),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: _getColor(_simController),
-                              
-                            ),
+                            borderSide: BorderSide(color: _getColor(_simController)),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: _getColor(_simController),
-                              
-                            ),
+                            borderSide: BorderSide(color: _getColor(_simController)),
                           ),
                         ),
                       ),
                       const SizedBox(height: 25),
-
-                      // Botón Registrar
                       Center(
                         child: SizedBox(
                           width: 200,
+                          height: 48,
                           child: ElevatedButton(
-                            onPressed: _registrar,
+                            onPressed: _isLoading ? null : _registrar,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: azulActivo,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
                               elevation: 5,
                               shadowColor: azulActivo.withOpacity(0.5),
                             ),
-                            child: const Text(
-                              'Registrar',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold
-                              ),
-                            ),
+                            child: _isLoading
+                                ? const CircularProgressIndicator(color: Colors.white)
+                                : const Text(
+                                    'Registrar',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                           ),
                         ),
                       ),

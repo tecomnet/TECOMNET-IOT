@@ -1,3 +1,5 @@
+import 'package:Scannet_Tecomnet/screens/scan_sim.dart';
+
 import './screens/data_register.dart';
 import 'package:flutter/material.dart';
 import 'widgets/menu_lateral.dart';
@@ -14,11 +16,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Material App',
       debugShowCheckedModeBanner: false,
-      home: const StartPage(), // Ahora inicia directamente con el Login
+      home: const Login(), // Ahora inicia directamente con el Login
       routes: {
         '/login': (context) => const Login(),
         '/start': (context) => const StartPage(), // Nueva ruta para la página inicial
         '/scanVin': (context) => const ScanVin(), 
+        '/scanSim': (context) => const ScanSim(), 
         // Ruta modificada para recibir argumentos
         '/data_register': (context) {
           final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:barcode_app/services/api_services.dart';
+import 'package:Scannet_Tecomnet/services/api_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -15,11 +15,11 @@ class _LoginState extends State<Login> {
   bool _cargando = false;
   List<String> _usuariosGuardados = [];
   bool _mostrarContrasena = false;
-  
+
   final Color azulActivo = Colors.blue[800]!;
 
   bool esCorreoValido(String correo) {
-    return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+    return RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$")
         .hasMatch(correo);
   }
 
@@ -49,14 +49,14 @@ class _LoginState extends State<Login> {
   Future<void> _guardarUsuarioEnHistorial(String usuario) async {
     final prefs = await SharedPreferences.getInstance();
     List<String> listaUsuarios = [..._usuariosGuardados];
-    
+
     listaUsuarios.remove(usuario);
     listaUsuarios.insert(0, usuario);
-    
+
     if (listaUsuarios.length > 5) {
       listaUsuarios = listaUsuarios.sublist(0, 5);
     }
-    
+
     await prefs.setStringList('usuarios_historicos', listaUsuarios);
   }
 
@@ -66,6 +66,9 @@ class _LoginState extends State<Login> {
 
     final usuario = usuarioController.text.trim();
     final contrasena = contrasenaController.text.trim();
+
+    print('Usuario ingresado: "$usuario"');
+    print('Contraseña ingresada: "$contrasena"');
 
     if (usuario.isEmpty || contrasena.isEmpty) {
       _mostrarError('Por favor, ingresa tus datos');
@@ -95,7 +98,7 @@ class _LoginState extends State<Login> {
 
   void _mostrarError(String mensaje) {
     if (!mounted) return;
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(mensaje),
@@ -129,7 +132,6 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 32),
 
-                // Campo usuario con autocompletado mejorado
                 Autocomplete<String>(
                   optionsBuilder: (textEditingValue) {
                     if (textEditingValue.text.isEmpty) {
@@ -137,8 +139,7 @@ class _LoginState extends State<Login> {
                     }
                     return _usuariosGuardados.where((option) {
                       return option.toLowerCase().contains(
-                            textEditingValue.text.toLowerCase(),
-                          );
+                          textEditingValue.text.toLowerCase());
                     });
                   },
                   onSelected: (selection) {
@@ -150,8 +151,9 @@ class _LoginState extends State<Login> {
                     fieldFocusNode,
                     onFieldSubmitted,
                   ) {
+                    fieldController.text = usuarioController.text;
                     return TextField(
-                      controller: fieldController,
+                      controller: usuarioController,
                       focusNode: fieldFocusNode,
                       style: TextStyle(
                         color: usuarioController.text.isNotEmpty
@@ -185,13 +187,12 @@ class _LoginState extends State<Login> {
                     onSelected,
                     options,
                   ) {
-                    // Altura dinámica basada en el número de opciones
                     final itemHeight = 48.0;
                     final maxHeight = 200.0;
                     final height = options.length * itemHeight > maxHeight
                         ? maxHeight
                         : options.length * itemHeight;
-                    
+
                     return Align(
                       alignment: Alignment.topLeft,
                       child: Material(
@@ -222,7 +223,6 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 16),
 
-                // Campo contraseña
                 TextField(
                   controller: contrasenaController,
                   obscureText: !_mostrarContrasena,
@@ -257,22 +257,21 @@ class _LoginState extends State<Login> {
                             ? azulActivo
                             : Colors.grey,
                       ),
-                      onPressed: () => setState(
-                          () => _mostrarContrasena = !_mostrarContrasena),
+                      onPressed: () => setState(() =>
+                          _mostrarContrasena = !_mostrarContrasena),
                     ),
                     floatingLabelStyle: TextStyle(color: azulActivo),
                   ),
                 ),
                 const SizedBox(height: 24),
 
-                // Botón Iniciar sesión
                 ElevatedButton(
                   onPressed: _cargando ? null : _iniciarSesion,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: azulActivo,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 16),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),

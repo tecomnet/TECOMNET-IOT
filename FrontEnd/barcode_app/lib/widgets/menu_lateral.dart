@@ -48,15 +48,6 @@ class MenuLateral extends StatelessWidget {
               );
             },
           ),
-          ListTile(
-            leading: Icon(Icons.app_registration, color: Colors.blue[800]),
-            title: const Text('Registrar'),
-            onTap: () {
-              Navigator.pop(context);
-              // Navegar a ScanVin para iniciar el proceso de registro
-              Navigator.pushNamed(context, '/data_register');
-            },
-          ),
           const Divider(),
           ListTile(
             leading: Icon(Icons.exit_to_app, color: Colors.blue[800]),
