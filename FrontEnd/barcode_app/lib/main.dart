@@ -1,4 +1,4 @@
-import 'package:Scannet_Tecomnet/screens/scan_sim.dart';
+import 'package:scannet_tecomnet/screens/scan_sim.dart';
 
 import './screens/data_register.dart';
 import 'package:flutter/material.dart';

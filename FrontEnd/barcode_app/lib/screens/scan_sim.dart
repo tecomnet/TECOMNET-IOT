@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:Scannet_Tecomnet/screens/scan_barcode.dart';
-import 'package:Scannet_Tecomnet/screens/scan_ocr.dart';
-import 'package:Scannet_Tecomnet/screens/scan_vin.dart'; // Importa ScanVin
+import 'package:scannet_tecomnet/screens/scan_barcode.dart';
+import 'package:scannet_tecomnet/screens/scan_ocr.dart';
+import 'package:scannet_tecomnet/screens/scan_vin.dart'; // Importa ScanVin
 import '../widgets/menu_lateral.dart';
 
 class ScanSim extends StatefulWidget {

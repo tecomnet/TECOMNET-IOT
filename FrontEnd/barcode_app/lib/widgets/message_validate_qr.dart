@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:Scannet_Tecomnet/screens/scan_sim.dart';
+import 'package:scannet_tecomnet/screens/scan_sim.dart';
 
 class MessageValidateQR extends StatefulWidget {
   final String title;

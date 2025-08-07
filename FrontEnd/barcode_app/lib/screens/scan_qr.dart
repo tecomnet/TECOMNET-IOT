@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:Scannet_Tecomnet/widgets/message_validate_qr.dart';
-import 'package:Scannet_Tecomnet/screens/scan_sim.dart';
+import 'package:scannet_tecomnet/widgets/message_validate_qr.dart';
+import 'package:scannet_tecomnet/screens/scan_sim.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ScanQR extends StatefulWidget {
