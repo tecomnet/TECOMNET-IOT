@@ -366,4 +366,41 @@ Public Class Controller
         Return DirectCast(result, ReturnType)
 
     End Function
+
+    Public Function TransactionsTickets(Of ReturnType)(opcion As Integer, ByVal objTicket As Ticket) As ReturnType
+        Dim parametros As New Collection
+
+        parametros.Add(ConnectionDB.ArmaParametro("@opcion", SqlDbType.Int, opcion))
+        parametros.Add(ConnectionDB.ArmaParametro("@TicketID", SqlDbType.Int, objTicket.TicketID))
+        parametros.Add(ConnectionDB.ArmaParametro("@UserID", SqlDbType.Int, objTicket.UserID))
+        parametros.Add(ConnectionDB.ArmaParametro("@GUID", SqlDbType.NVarChar, objTicket.GUID))
+        parametros.Add(ConnectionDB.ArmaParametro("@RegistrationDate", SqlDbType.DateTime, objTicket.RegistrationDate))
+        parametros.Add(ConnectionDB.ArmaParametro("@StartDate", SqlDbType.DateTime, IIf(IsNothing(objTicket.StartDate), DBNull.Value, objTicket.StartDate)))
+        parametros.Add(ConnectionDB.ArmaParametro("@EndDate", SqlDbType.DateTime, IIf(IsNothing(objTicket.EndDate), DBNull.Value, objTicket.EndDate)))
+        parametros.Add(ConnectionDB.ArmaParametro("@Type", SqlDbType.Int, objTicket.Type))
+        parametros.Add(ConnectionDB.ArmaParametro("@Stage", SqlDbType.Int, objTicket.Stage))
+        parametros.Add(ConnectionDB.ArmaParametro("@Status", SqlDbType.Int, objTicket.Status))
+        parametros.Add(ConnectionDB.ArmaParametro("@Subject", SqlDbType.NVarChar, objTicket.Subject))
+        parametros.Add(ConnectionDB.ArmaParametro("@Reference", SqlDbType.NVarChar, objTicket.Reference))
+        parametros.Add(ConnectionDB.ArmaParametro("@Description", SqlDbType.NVarChar, objTicket.Description))
+        parametros.Add(ConnectionDB.ArmaParametro("@Comments", SqlDbType.NVarChar, objTicket.Comments))
+        parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        Dim cnx As New ConnectionDB
+        cnx.ActivarConexion()
+        Dim result As Object
+        If GetType(ReturnType) Is GetType(Integer) Then
+            result = cnx.ejecutasp_int("[sp_Ticket]", parametros)
+        ElseIf GetType(ReturnType) Is GetType(DataSet) Then
+            result = cnx.ejecutasp_consulta("[sp_Ticket]", parametros)
+        ElseIf GetType(ReturnType) Is GetType(Boolean) Then
+            result = cnx.ejecutasp("[sp_Ticket]", parametros)
+        Else
+            Throw New NotSupportedException("No se puede convertir de '" & GetType(ReturnType).ToString & "'")
+        End If
+        cnx.DesactivarConexion()
+        cnx = Nothing
+        Return DirectCast(result, ReturnType)
+
+    End Function
 End Class

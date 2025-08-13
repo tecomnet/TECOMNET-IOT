@@ -251,9 +251,10 @@
     <Compile Include="Controllers\BYD\SIMController.vb" />
     <Compile Include="Controllers\DescriptionsController.vb" />
     <Compile Include="Controllers\ECOMMERCE\EcommerceController.vb" />
-    <Compile Include="Controllers\SIMController.vb" />
+    <Compile Include="Controllers\Models\ModelsController.vb" />
     <Compile Include="Controllers\TokenGenerator.vb" />
     <Compile Include="Controllers\TokenValidationHandler.vb" />
+    <Compile Include="Controllers\Users\UserController.vb" />
     <Compile Include="Functions\Functions.vb" />
     <Compile Include="Global.asax.vb">
       <DependentUpon>Global.asax</DependentUpon>

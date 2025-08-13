@@ -18,42 +18,59 @@ Public Class Reports
             Case "1"
                 Select Case rrblCustomer.SelectedValue
                     Case "1"
-                        sql = "SELECT CustomerName AS Nombre,FORMAT(DateBirth, 'dd/MM/yyyy') AS FechaDeCumpleaños,FORMAT(CreationDate, 'dd/MM/yyyy') AS FechaDeAlta,Country AS PAIS,State AS Estado FROM Customer"
-                        sql += " WHERE LastDate IS NULL"
+                        sql = "SELECT DISTINCT CustomerName AS Nombre,FORMAT(DateBirth, 'dd/MM/yyyy') AS FechaDeCumpleaños,FORMAT(Customer.CreationDate, 'dd/MM/yyyy') AS FechaDeAlta,Country AS PAIS,State AS Estado FROM Customer " &
+                            " INNER JOIN Car AS C ON Customer.CustomerID = C.CustomerID " &
+                            " INNER JOIN SIM AS S ON C.CarID = S.CarID " &
+                            " INNER JOIN [Product] AS P ON S.ProductID = P.ProductID " &
+                            " INNER JOIN Company AS Com ON P.CompanyID=Com.CompanyID "
+                        sql += " WHERE Customer.LastDate IS NULL AND Com.CompanyID=3"
                     Case "2"
-                        sql = "SELECT CustomerName AS Nombre,FORMAT(DateBirth, 'dd/MM/yyyy') AS FechaDeCumpleaños,FORMAT(CreationDate, 'dd/MM/yyyy') AS FechaDeAlta,Country AS PAIS,State AS Estado, FORMAT(LastDate, 'dd/MM/yyyy') AS FechaDeBaja FROM Customer"
-                        sql += " WHERE LastDate IS not NULL"
+                        sql = "SELECT DISTINCT CustomerName AS Nombre,FORMAT(DateBirth, 'dd/MM/yyyy') AS FechaDeCumpleaños,FORMAT(Customer.CreationDate, 'dd/MM/yyyy') AS FechaDeAlta,Country AS PAIS,State AS Estado, FORMAT(Customer.LastDate, 'dd/MM/yyyy') AS FechaDeBaja  FROM Customer " &
+                            " INNER JOIN Car AS C ON Customer.CustomerID = C.CustomerID " &
+                            " INNER JOIN SIM AS S ON C.CarID = S.CarID " &
+                            " INNER JOIN [Product] AS P ON S.ProductID = P.ProductID " &
+                            " INNER JOIN Company AS Com ON P.CompanyID=Com.CompanyID "
+                        sql += " WHERE Customer.LastDate IS NOT NULL AND Com.CompanyID=3"
                 End Select
             Case "2"
                 Select Case rrblVehiculos.SelectedValue
                     Case "1"
-                        sql = "SELECT m.Model AS Modelo,VIN, Year,FORMAT(c.CreationDate, 'dd/MM/yyyy') AS FechaAlta FROM Car as c inner join BYDModels AS m on c.ModelID = m.modelid "
-                        sql += " WHERE c.LastDate IS NULL"
+                        sql = "SELECT m.Model AS Modelo,VIN, Year,FORMAT(c.CreationDate, 'dd/MM/yyyy') AS FechaAlta FROM Car as c inner join BYDModels AS m on c.ModelID = m.modelid " &
+                            " INNER JOIN SIM AS S ON C.CarID = S.CarID " &
+                            " INNER JOIN [Product] AS P ON S.ProductID = P.ProductID " &
+                            " INNER JOIN Company AS Com ON P.CompanyID=Com.CompanyID "
+                        sql += " WHERE c.LastDate IS NULL AND Com.CompanyID=3"
                     Case "2"
-                        sql = "SELECT m.Model AS Modelo,VIN, Year,FORMAT(c.CreationDate, 'dd/MM/yyyy') AS FechaDeAlta,FORMAT(c.LastDate, 'dd/MM/yyyy') AS FechaDeBaja FROM Car as c inner join BYDModels AS m on c.ModelID = m.modelid"
-                        sql += " WHERE c.LastDate IS NOT NULL"
+                        sql = "SELECT m.Model AS Modelo,VIN, Year,FORMAT(c.CreationDate, 'dd/MM/yyyy') AS FechaDeAlta,FORMAT(c.LastDate, 'dd/MM/yyyy') AS FechaDeBaja FROM Car as c inner join BYDModels AS m on c.ModelID = m.modelid" &
+                            " INNER JOIN SIM AS S ON C.CarID = S.CarID " &
+                            " INNER JOIN [Product] AS P ON S.ProductID = P.ProductID " &
+                            " INNER JOIN Company AS Com ON P.CompanyID=Com.CompanyID "
+                        sql += " WHERE c.LastDate IS NOT NULL AND Com.CompanyID=3"
                 End Select
             Case "3"
                 Select Case rrblSIMS.SelectedValue
                     Case "1"
-                        sql = "SELECT MSISDN,VIN,Producto,FORMAT(ExpirationDate, 'dd/MM/yyyy') AS Expira,AssignedMB AS MegasAasignados,UsedMB AS ConsumoEnMB, " &
+                        sql = "SELECT ICCID,MSISDN,VIN,Producto,FORMAT(ExpirationDate, 'dd/MM/yyyy') AS Expira,AssignedMB AS MegasAasignados,UsedMB AS ConsumoEnMB, " &
                               " Case WHEN AvailableMB = 1 THEN 'ILIMITADO' ELSE CAST(AvailableMB AS NVARCHAR(10)) END AS MegasDisponibles, " &
-                              " Case WHEN AdditionalMB = 1 THEN 'ILIMITADO' ELSE CAST(AdditionalMB AS NVARCHAR(10)) END AS MegasAdicionales,Active AS Activo from SIM INNER JOIN Car AS c ON SIM.CARID = c.CarID "
-                        sql += " WHERE Active=1"
+                              " Case WHEN AdditionalMB = 1 THEN 'ILIMITADO' ELSE CAST(AdditionalMB AS NVARCHAR(10)) END AS MegasAdicionales,Active AS Activo from SIM LEFT JOIN Car AS c ON SIM.CARID = c.CarID " &
+                              " INNER JOIN [Product] AS p ON SIM.ProductID=p.ProductID INNER JOIN Company AS Com ON p.CompanyID=Com.CompanyID "
+                        sql += " WHERE Active=1 and Com.CompanyID=3"
                     Case "2"
-                        sql = "SELECT MSISDN,VIN,Producto,FORMAT(ExpirationDate, 'dd/MM/yyyy') AS Expira,AssignedMB AS MegasAasignados,UsedMB AS ConsumoEnMB, " &
+                        sql = "SELECT ICCID,MSISDN,VIN,Producto,FORMAT(ExpirationDate, 'dd/MM/yyyy') AS Expira,AssignedMB AS MegasAasignados,UsedMB AS ConsumoEnMB, " &
                                " CASE WHEN AvailableMB = 1 THEN 'ILIMITADO' ELSE CAST(AvailableMB AS NVARCHAR(10)) END AS MegasDisponibles, " &
                                " Case WHEN AdditionalMB = 1 THEN 'ILIMITADO' ELSE CAST(AdditionalMB AS NVARCHAR(10)) END AS MegasAdicionales,Active, " &
-                               " Format(sim.LastDate, 'dd/MM/yyyy') AS FechaDeBaja FROM SIM INNER JOIN Car AS c ON SIM.CARID = c.CarID "
-                        sql += " WHERE Active=0"
+                               " Format(sim.LastDate, 'dd/MM/yyyy') AS FechaDeBaja FROM SIM LEFT JOIN Car AS c ON SIM.CARID = c.CarID " &
+                               " INNER JOIN [Product] AS p ON SIM.ProductID=p.ProductID INNER JOIN Company AS Com ON p.CompanyID=Com.CompanyID "
+                        sql += " WHERE Active=0 and Com.CompanyID=3"
                 End Select
             Case "4"
                 sql = "select bm.Model AS Modelo, p.ProductName AS Paquete, PurchaseDate AS DiaDeCompra, CASE WHEN p.MB = 1 THEN 'ILIMITADO' ELSE CAST(p.MB AS NVARCHAR(10)) END AS MEGAS, " &
                       " CASE WHEN MethodPayment = 1 Then 'TDC' ELSE 'TRANSFERENCIA' END AS FormaDePago FROM CustomerPayments AS cp " &
                       " INNER JOIN [Product] As p On cp.ProductID = p.ProductID INNER JOIN Car As c On cp.CarID = c.CarID" &
-                      " INNER JOIN BYDModels AS bm ON c.ModelID = bm.ModelId "
-                sql += String.Format("WHERE CAST(PurchaseDate AS DATE) BETWEEN '{0:yyyy/MM/dd}' AND '{1:yyyy/MM/dd}'", rdpStart.SelectedDate, rdpEnd.SelectedDate)
-                End Select
+                      " INNER JOIN BYDModels AS bm ON c.ModelID = bm.ModelId " &
+                      " INNER JOIN Company AS Com ON P.CompanyID= Com.CompanyID "
+                sql += String.Format("WHERE Com.CompanyID=3 AND CAST(PurchaseDate AS DATE) BETWEEN '{0:yyyy/MM/dd}' AND '{1:yyyy/MM/dd}'", rdpStart.SelectedDate, rdpEnd.SelectedDate)
+        End Select
                 rgResult.DataSource = controller.TransactionsQuerys(sql)
     End Sub
 

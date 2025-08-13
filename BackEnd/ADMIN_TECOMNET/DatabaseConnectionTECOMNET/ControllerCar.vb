@@ -121,4 +121,20 @@ Public Class ControllerCar
         End Try
         Return exito
     End Function
+    Public Function GetCarByVIN(ByVal VIN As String) As Car
+        Dim controller As New Controller
+        Dim objCar As New Car
+        objCar.VIN = VIN
+        Try
+            Dim dt As New DataSet
+            dt = controller.TransactionsCar(Of DataSet)(9, objCar)
+
+            For Each dr As DataRow In dt.Tables(0).Rows
+                objCar = ConvertObject.Cars(dr)
+            Next
+        Catch ex As Exception
+            Return objCar
+        End Try
+        Return objCar
+    End Function
 End Class

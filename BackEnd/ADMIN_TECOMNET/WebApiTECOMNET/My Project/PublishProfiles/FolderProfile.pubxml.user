@@ -4,9 +4,9 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project>
   <PropertyGroup>
-    <History>True|2025-03-28T01:16:31.0408344Z||;True|2025-03-27T18:53:39.7813108-06:00||;True|2025-03-27T18:42:18.2923644-06:00||;True|2025-03-27T18:13:32.7283392-06:00||;True|2025-03-21T11:54:03.7990168-06:00||;True|2025-03-21T11:41:58.3229944-06:00||;True|2025-03-21T11:32:42.4501884-06:00||;True|2025-03-21T11:12:07.8973471-06:00||;True|2025-03-21T11:11:55.9372165-06:00||;True|2025-03-05T14:05:04.3396434-06:00||;True|2025-03-02T19:55:14.8987639-06:00||;True|2025-03-02T16:56:01.5247452-06:00||;</History>
+    <History>True|2025-08-08T22:49:39.4242906Z||;True|2025-08-08T16:11:22.0674386-06:00||;True|2025-08-08T11:44:05.5210559-06:00||;True|2025-08-04T07:49:53.0638536-06:00||;True|2025-08-04T07:40:58.6097198-06:00||;True|2025-07-31T17:55:49.2805833-06:00||;True|2025-07-31T17:53:15.3271371-06:00||;True|2025-07-31T17:28:26.6004229-06:00||;True|2025-07-30T16:35:02.8117719-06:00||;True|2025-07-28T10:33:50.0675461-06:00||;True|2025-03-27T19:16:31.0408344-06:00||;True|2025-03-27T18:53:39.7813108-06:00||;True|2025-03-27T18:42:18.2923644-06:00||;True|2025-03-27T18:13:32.7283392-06:00||;True|2025-03-21T11:54:03.7990168-06:00||;True|2025-03-21T11:41:58.3229944-06:00||;True|2025-03-21T11:32:42.4501884-06:00||;True|2025-03-21T11:12:07.8973471-06:00||;True|2025-03-21T11:11:55.9372165-06:00||;True|2025-03-05T14:05:04.3396434-06:00||;True|2025-03-02T19:55:14.8987639-06:00||;True|2025-03-02T16:56:01.5247452-06:00||;</History>
     <LastFailureDetails />
-    <_PublishTargetUrl>C:\Users\WINSEF\source\repos\ADMIN_TECOMNET\WebApiTECOMNET\bin\app.publish\</_PublishTargetUrl>
+    <_PublishTargetUrl>C:\Users\WINSEF\source\repos\TECOMNET-IOT\BackEnd\ADMIN_TECOMNET\WebApiTECOMNET\bin\app.publish\</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="Areas/HelpPage/HelpPage.css">
@@ -79,13 +79,13 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>09/10/2013 17:29:20</publishTime>
     </File>
     <File Include="bin/DatabaseConnectionTECOMNET.dll">
-      <publishTime>03/21/2025 11:11:50</publishTime>
+      <publishTime>08/08/2025 11:43:59</publishTime>
     </File>
     <File Include="bin/DatabaseConnectionTECOMNET.dll.config">
-      <publishTime>02/25/2025 19:34:26</publishTime>
+      <publishTime>05/31/2025 14:48:33</publishTime>
     </File>
     <File Include="bin/DatabaseConnectionTECOMNET.pdb">
-      <publishTime>03/21/2025 11:11:50</publishTime>
+      <publishTime>08/08/2025 11:43:59</publishTime>
     </File>
     <File Include="bin/es/System.Net.Http.Formatting.resources.dll">
       <publishTime>05/27/2022 18:36:16</publishTime>
@@ -148,10 +148,10 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>04/11/2022 20:09:46</publishTime>
     </File>
     <File Include="bin/ModelsTECOMNET.dll">
-      <publishTime>03/21/2025 11:11:49</publishTime>
+      <publishTime>08/08/2025 11:43:59</publishTime>
     </File>
     <File Include="bin/ModelsTECOMNET.pdb">
-      <publishTime>03/21/2025 11:11:49</publishTime>
+      <publishTime>08/08/2025 11:43:59</publishTime>
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
       <publishTime>03/08/2023 07:09:56</publishTime>
@@ -367,13 +367,13 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>05/28/2022 00:42:50</publishTime>
     </File>
     <File Include="bin/WebApiTECOMNET.dll">
-      <publishTime>03/27/2025 19:16:28</publishTime>
+      <publishTime>08/08/2025 11:44:00</publishTime>
     </File>
     <File Include="bin/WebApiTECOMNET.pdb">
-      <publishTime>03/27/2025 19:16:28</publishTime>
+      <publishTime>08/08/2025 11:44:00</publishTime>
     </File>
     <File Include="bin/WebApiTECOMNET.xml">
-      <publishTime>03/27/2025 19:16:28</publishTime>
+      <publishTime>08/08/2025 11:44:00</publishTime>
     </File>
     <File Include="bin/WebGrease.dll">
       <publishTime>01/23/2014 13:57:34</publishTime>
@@ -565,7 +565,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>02/24/2025 13:45:39</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>03/27/2025 19:16:29</publishTime>
+      <publishTime>08/04/2025 07:40:56</publishTime>
     </File>
   </ItemGroup>
 </Project>

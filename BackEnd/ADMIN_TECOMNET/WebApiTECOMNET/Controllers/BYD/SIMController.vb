@@ -9,6 +9,7 @@ Imports WebApiTECOMNET.API.Tecomnet
 Imports System.IO
 Imports System.Threading.Tasks
 Imports System.Text.Json
+Imports System.Web.WebSockets
 
 Namespace Controllers.BYD
     <Authorize>
@@ -573,20 +574,65 @@ Namespace Controllers.BYD
                 Return request.CreateResponse(HttpStatusCode.InternalServerError, New With {.message = "Error al procesar el archivo", .error = ex.Message})
             End Try
         End Function
-        '5.10	Solicitud_Cambio_De_Estatus
+        '5.11	Solicitud_Cambio_De_Estatus
         <HttpPost>
-        <Route("api/BYD/CambioEstatus")>
+        <Route("api/BYD/SolicitudCambioEstatus")>
         Public Function CambioEstatus(ChangeStatus As ChangeStatus) As HttpResponseMessage
             Try
-                If ModelState.IsValid Then
-                    Dim objChangeRequestResponse As New ChangeRequestResponse
-                    objChangeRequestResponse.Status = "Registered"
-                    objChangeRequestResponse.GUID = "dsfds-sdfsdf-sdfsdf"
-                    Return Request.CreateResponse(HttpStatusCode.OK, objChangeRequestResponse)
-                Else
+                If ChangeStatus Is Nothing Then
                     Return Request.CreateResponse(HttpStatusCode.BadRequest, New With {
-                        Key .mensaje = "Objeto recibido no válido."
-                        })
+                            Key .mensaje = "Objeto recibido no válido."
+                            })
+                Else
+                    If ModelState.IsValid Then
+                        If ChangeStatus.Operation <> "Suspend" AndAlso ChangeStatus.Operation <> "Resume" Then
+                            Return Request.CreateResponse(HttpStatusCode.BadRequest, New With {
+                                Key .mensaje = "Error en la operación, las operaciones validas son Suspend y Resume"
+                                })
+                        Else
+                            Dim objChangeRequestResponse As New ChangeRequestResponse
+                            Dim objTicket As New Ticket
+                            Dim nuevoGuid As Guid = Guid.NewGuid()
+                            Dim objConttroller As New ControllerTicket
+
+                            objTicket.TicketID = 0
+                            objTicket.UserID = 1
+                            objTicket.GUID = nuevoGuid.ToString
+                            objTicket.RegistrationDate = Now
+                            objTicket.StartDate = Nothing
+                            objTicket.EndDate = Nothing
+                            Select Case ChangeStatus.Operation
+                                Case "Suspend"
+                                    objTicket.Type = TypeTicket.Suspend
+                                Case "Resume"
+                                    objTicket.Type = TypeTicket.Resume
+                            End Select
+
+                            objTicket.Stage = StageTicket.Received
+                            objTicket.Status = StatusTicket.Open
+                            objTicket.Subject = "Solicitud de cambio de estatus de SIM"
+                            objTicket.Reference = ChangeStatus.ICC
+                            objTicket.Description = ChangeStatus.ReasonForChange
+                            objTicket.Comments = String.Empty
+
+                            objTicket.TicketID = objConttroller.AddTicket(objTicket)
+
+                            If objTicket.TicketID > 0 Then
+                                objChangeRequestResponse.Status = "Registered"
+                                objChangeRequestResponse.GUID = nuevoGuid.ToString()
+                                Return Request.CreateResponse(HttpStatusCode.OK, objChangeRequestResponse)
+                            Else
+                                Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                                    Key .error = "Ocurrió un error al generar la solicitud.",
+                                    Key .detalle = "No se registro la solicitud, intenta nuevamente."
+                                })
+                            End If
+                        End If
+                    Else
+                        Return Request.CreateResponse(HttpStatusCode.BadRequest, New With {
+                            Key .mensaje = "Objeto recibido no válido."
+                            })
+                    End If
                 End If
             Catch ex As Exception
                 ' Manejo de errores: devuelve un mensaje JSON con el error
@@ -597,9 +643,9 @@ Namespace Controllers.BYD
                 Return errorResponse
             End Try
         End Function
-        '5.11	Batch_Cambio_De_Estatus
+        '5.12	Batch_Cambio_De_Estatus
         <HttpPost>
-        <Route("api/BYD/BatchCambioEstatus")>
+        <Route("api/BYD/BatchSolicitudCambioEstatus")>
         Public Async Function BatchCambioEstatus() As Task(Of HttpResponseMessage)
             Dim request = Me.Request
 
@@ -655,16 +701,83 @@ Namespace Controllers.BYD
                 End If
                 IO.File.Move(tempFilePath, savedFilePath)
 
+                Dim dt As New DataTable
+                dt = Functions.SolicitudCambioEstatus(savedFilePath, "|", NewGuidString)
+
+                If dt.Rows.Count > 0 Then
+
+                    Dim csvData As String = Functions.ConvertirDataTableACSV(dt)
+
+                    ' Agregar BOM (Byte Order Mark) al inicio para evitar problemas de codificación
+                    Dim bom As Byte() = Encoding.UTF8.GetPreamble()
+                    Dim csvBytes As Byte() = Encoding.UTF8.GetBytes(csvData)
+                    Dim finalBytes As Byte() = bom.Concat(csvBytes).ToArray()
+
+                    ' Crear respuesta HTTP con el archivo CSV
+                    Dim response As New HttpResponseMessage(HttpStatusCode.OK)
+                    response.Content = New ByteArrayContent(finalBytes)
+                    response.Content.Headers.ContentType = New System.Net.Http.Headers.MediaTypeHeaderValue("text/csv")
+                    response.Content.Headers.ContentDisposition = New System.Net.Http.Headers.ContentDispositionHeaderValue("attachment") With {
+                                    .FileName = String.Format("{0}.csv", NewGuidString)
+                                }
+                    response.Headers.Add("GUID", NewGuidString)
+
+                    Return response
+                End If
+
                 ' Responder con JSON
                 Return request.CreateResponse(HttpStatusCode.OK, New With {
-                .Status = "Registered",
+                .Status = "Processed",
                 .GUID = NewGuidString
             })
             Catch ex As Exception
-                Return request.CreateResponse(HttpStatusCode.InternalServerError, New With {.message = "Error al guardar el archivo", .error = ex.Message})
+                Return request.CreateResponse(HttpStatusCode.InternalServerError, New With {.message = "Error al procesar el archivo", .error = ex.Message})
             End Try
         End Function
-        '5.12	Solicitud_Cambio_Estatus_APN
+        '5.13	Consultar_Solicitud
+        <HttpGet>
+        <Route("api/BYD/ConsultarSolicitud/{GUID}")>
+        Public Function ConsultarSolicitud(GUID As String) As HttpResponseMessage
+            Try
+                Dim lstTickets As New List(Of Ticket)
+                Dim objController As New ControllerTicket
+                Dim lstRequestResponse As New List(Of GetRequestResponse)
+                Dim Status As String = String.Empty
+                Dim RegistrationDate As New DateTime
+
+                lstTickets = objController.GetTickestPorGUID(GUID)
+
+                If lstTickets.Count > 0 Then
+                    For Each objTicket As Ticket In lstTickets
+                        Select Case objTicket.Status
+                            Case StatusTicket.Authorized
+                                Status = "Authorized"
+                                RegistrationDate = objTicket.EndDate
+                            Case StatusTicket.Authorized
+                                Status = "Authorized"
+                                RegistrationDate = objTicket.EndDate
+                            Case StatusTicket.Open
+                                Status = "Open"
+                                RegistrationDate = objTicket.RegistrationDate
+                        End Select
+                        lstRequestResponse.Add(New GetRequestResponse(Status, objTicket.Reference, objTicket.Comments, RegistrationDate))
+                    Next
+                    Return Request.CreateResponse(HttpStatusCode.OK, lstRequestResponse)
+                Else
+                    Return Request.CreateResponse(HttpStatusCode.NoContent, New With {
+                        Key .mensaje = "No existe el GUID enviado."
+                        })
+                End If
+            Catch ex As Exception
+                ' Manejo de errores: devuelve un mensaje JSON con el error
+                Dim errorResponse As HttpResponseMessage = Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                Key .error = "Ocurrió un error al generar la solicitud.",
+                Key .detalle = ex.Message
+            })
+                Return errorResponse
+            End Try
+        End Function
+        '5.14	Solicitud_Cambio_Estatus_APN
         <HttpPost>
         <Route("api/BYD/CambioEstatusAPN")>
         Public Function CambioEstatusAPN(APNStatusChange As APNStatusChange) As HttpResponseMessage
@@ -688,7 +801,7 @@ Namespace Controllers.BYD
                 Return errorResponse
             End Try
         End Function
-        '5.13	Batch_Cambio_Estatus_APN
+        '5.15	Batch_Cambio_Estatus_APN
         <HttpPost>
         <Route("api/BYD/BatchCambioEstatusAPN")>
         Public Async Function BatchCambioEstatusAPN() As Task(Of HttpResponseMessage)
@@ -755,7 +868,7 @@ Namespace Controllers.BYD
                 Return request.CreateResponse(HttpStatusCode.InternalServerError, New With {.message = "Error al guardar el archivo", .error = ex.Message})
             End Try
         End Function
-        '5.14	Restringir_Servicio
+        '5.16	Restringir_Servicio
         <HttpPost>
         <Route("api/BYD/RestringirServicio")>
         Public Function RestringirServicio(RestrictService As RestrictService) As HttpResponseMessage
@@ -779,63 +892,65 @@ Namespace Controllers.BYD
                 Return errorResponse
             End Try
         End Function
-        '5.15	Consultar_Solicitud
-        <HttpGet>
-        <Route("api/BYD/ConsultarSolicitud/{GUID}")>
-        Public Function ConsultarSolicitud(GUID As String) As HttpResponseMessage
+        '5.18	Registrar Vehículo.- No documentado
+        <HttpPost>
+        <Route("api/BYD/RegistrarVehiculo/VIN/{VIN}/ICCID/{ICCID}")>
+        Public Function RegistrarVehículo(VIN As String, ICCID As String) As HttpResponseMessage
             Try
-                Dim objAltanResult As New AltanResult
-                Dim altan As New ConectionAltanRedes
-                Dim objErrorAltan As New ErrorAltan
+                Dim objcar As New Car
+                Dim objSIM As New SIM
+                Dim objControllerCar As New ControllerCar
+                Dim objControllerSIM As New ControllerSIM
+                objcar = objControllerCar.GetCarByVIN(VIN)
+                objSIM = objControllerSIM.GetSIMByICCID(ICCID)
 
-                If GUID = "89014103211118510720" Then
-                    Dim objGetRequestResponse As New GetRequestResponse
-                    objGetRequestResponse.Status = ""
-                    objGetRequestResponse.Description = ""
-                    objGetRequestResponse.StatusDate = ""
-                    Return Request.CreateResponse(HttpStatusCode.OK, objGetRequestResponse)
-                Else
-                    Return Request.CreateResponse(HttpStatusCode.NoContent, New With {
-                        Key .mensaje = "No existe el GUID enviado."
+                If objcar.CarID > 0 Then
+                    Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                        Key .error = "El VIN ya se encuentra registrado en el sistema.",
+                        Key .detalle = ""
+                    })
+                ElseIf objSIM.SIMID = 0 Then
+                    Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                            Key .error = "El ICCID no esta registrado en nuestro sistema.",
+                            Key .detalle = ""
                         })
+                ElseIf Not IsNothing(objSIM.CarID) Then
+                    Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                            Key .error = "El ICCID se encuntra asociado a otro vehículo.",
+                            Key .detalle = ""
+                        })
+                Else
+                    objcar.CarID = 0
+                    objcar.ModelID = 1
+                    objcar.YEAR = 2000
+                    objcar.VIN = VIN
+                    objcar.CarID = objControllerCar.AddCar(objcar)
+
+                    If objcar.CarID = 0 Then
+                        Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                            Key .error = "No se pudo registrar el vehículo.",
+                            Key .detalle = ""
+                        })
+                    Else
+                        objSIM.CarID = objcar.CarID
+                        If (objControllerSIM.AssociateSIMToCar(objSIM) > 0) Then
+                            Return Request.CreateResponse(HttpStatusCode.OK, New With {
+                            Key .Detalle = "El vehículo se registro correctamente"
+                            })
+                        Else
+                            Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                                Key .error = "Error al Asociar el vehículo al SIM.",
+                                Key .detalle = "Vehiculo registrado correctamente, SIM existente sin asociar a un vehículo,error al asociar, reportar al area de sistemas."
+                                })
+                        End If
+                    End If
                 End If
-
-                ''Reacomodar
-                'objAltanResult = altan.GetAPIService(MSISDN, AltanApisMethod.Profile)
-                'If objAltanResult.ErrorID = AltanErrors.Susssuccessful Then
-                '    Dim objProfile As New API.Tecomnet.Profile
-                '    Dim ObjControllerSIM As New ControllerSIM
-                '    Dim objSIM As New SIM
-
-                '    Dim profile As New ResponseSubscriber
-                '    profile = JsonSerializer.Deserialize(Of ResponseSubscriber)(objAltanResult.JSON)
-
-                '    objSIM = ObjControllerSIM.GetSIMByMSISDN(MSISDN)
-
-                '    objProfile.IMSI = profile.ResponseSubscriber.Information.IMSI
-                '    objProfile.ICCID = profile.ResponseSubscriber.Information.ICCID
-                '    objProfile.IMEI = profile.ResponseSubscriber.Information.IMEI
-                '    objProfile.SubStatus = profile.ResponseSubscriber.Status.SubStatus
-                '    objProfile.TotalAmt = IIf(objSIM.AdditionalMB = 1, 0, (objSIM.AssignedMB + objSIM.AdditionalMB))
-                '    objProfile.UnusedAmt = IIf(objSIM.AdditionalMB = 1, 0, (objSIM.AssignedMB + objSIM.AdditionalMB) - (profile.ResponseSubscriber.FreeUnits(0).FreeUnitDetails.TotalAmt - profile.ResponseSubscriber.FreeUnits(0).FreeUnitDetails.UnusedAmt))
-                '    objProfile.ExpireDate = objSIM.ExpirationDate
-
-                '    Return Request.CreateResponse(HttpStatusCode.OK, objProfile)
-                'Else
-                '    objErrorAltan = JsonSerializer.Deserialize(Of ErrorAltan)(objAltanResult.JSON)
-                '    Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
-                '        Key .mensaje = "No hay datos disponibles."
-                '        })
-                'End If
-                ''Reacomodar
-
             Catch ex As Exception
                 ' Manejo de errores: devuelve un mensaje JSON con el error
-                Dim errorResponse As HttpResponseMessage = Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
-                Key .error = "Ocurrió un error al generar la solicitud.",
-                Key .detalle = ex.Message
-            })
-                Return errorResponse
+                Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                    Key .error = "Ocurrió un error al generar la solicitud.",
+                    Key .detalle = ex.Message
+                })
             End Try
         End Function
     End Class

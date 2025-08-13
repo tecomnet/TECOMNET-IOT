@@ -39,7 +39,16 @@ Namespace API.Tecomnet
     End Class
     Public Class GetRequestResponse
         Public Property Status As String
+        Public Property Reference As String
         Public Property Description As String
-        Public Property StatusDate As String
+        Public Property StatusDate As DateTime
+        Public Sub New()
+        End Sub
+        Public Sub New(Status As String, Reference As String, Description As String, StatusDate As DateTime)
+            Me.Status = Status
+            Me.Reference = Reference
+            Me.Description = Description
+            Me.StatusDate = StatusDate
+        End Sub
     End Class
 End Namespace

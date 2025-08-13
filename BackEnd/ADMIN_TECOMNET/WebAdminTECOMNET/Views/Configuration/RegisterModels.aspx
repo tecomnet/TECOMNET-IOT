@@ -15,7 +15,7 @@
     <telerik:RadAjaxManager ID="RadAjaxManager1" runat="server" />
     <telerik:RadAjaxLoadingPanel ID="RadAjaxLoadingPanel" runat="server"></telerik:RadAjaxLoadingPanel>
     <div class="container-fluid text-center pt-2 containerTitle">
-        <label class="h3 text-white">Registro de Productos</label>
+        <label class="h3 text-white">Registro de Modelos</label>
     </div>
     <div class="container pt-2" style="max-width: 1045px">
         <telerik:RadToolBar ID="rtbMenu" runat="server" Width="100%">

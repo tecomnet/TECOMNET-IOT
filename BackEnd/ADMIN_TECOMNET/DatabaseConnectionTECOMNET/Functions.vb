@@ -280,6 +280,26 @@ Public Class ConvertObject
         End Try
         Return objCompany
     End Function
+    Public Shared Function Ticket(ByVal dr As DataRow) As Ticket
+        Dim objTicket As New Ticket
+        Try
+            If dr.Table.Columns.Contains("TicketID") Then objTicket.TicketID = dr("TicketID")
+            If dr.Table.Columns.Contains("UserID") Then objTicket.UserID = dr("UserID")
+            If dr.Table.Columns.Contains("GUID") Then objTicket.GUID = dr("GUID")
+            If dr.Table.Columns.Contains("RegistrationDate") Then objTicket.RegistrationDate = dr("RegistrationDate")
+            If dr.Table.Columns.Contains("StartDate") Then objTicket.StartDate = IIf(IsDBNull(dr("StartDate")), Nothing, dr("StartDate"))
+            If dr.Table.Columns.Contains("EndDate") Then objTicket.EndDate = IIf(IsDBNull(dr("EndDate")), Nothing, dr("EndDate"))
+            If dr.Table.Columns.Contains("Type") Then objTicket.Type = dr("Type")
+            If dr.Table.Columns.Contains("Stage") Then objTicket.Stage = dr("Stage")
+            If dr.Table.Columns.Contains("Status") Then objTicket.Status = dr("Status")
+            If dr.Table.Columns.Contains("Subject") Then objTicket.Subject = dr("Subject")
+            If dr.Table.Columns.Contains("Reference") Then objTicket.Reference = dr("Reference")
+            If dr.Table.Columns.Contains("Description") Then objTicket.Description = dr("Description")
+            If dr.Table.Columns.Contains("Comments") Then objTicket.Comments = dr("Comments")
+        Catch ex As Exception
+        End Try
+        Return objTicket
+    End Function
 End Class
 Public Class Securyty
     Public Shared Function Cifrar(ByVal cadena As String) As String

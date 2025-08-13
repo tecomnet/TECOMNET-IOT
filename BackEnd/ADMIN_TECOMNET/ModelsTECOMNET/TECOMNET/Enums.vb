@@ -39,4 +39,19 @@
         WelcomeCustomer = 2
         NotificationRecharge = 3
     End Enum
+
+    Public Enum TypeTicket
+        Suspend = 1
+        [Resume] = 2
+    End Enum
+    Public Enum StageTicket
+        Received = 1
+        Analysis = 2
+        InProcess = 3
+    End Enum
+    Public Enum StatusTicket
+        Open = 0
+        Authorized = 1
+        Unauthorized = 2
+    End Enum
 End Namespace
