@@ -1,0 +1,945 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>
+    </SchemaVersion>
+    <ProjectGuid>{D6609F2F-8087-4907-B1EB-40F6F6C7FDA7}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>WebAdminTECOMNET</RootNamespace>
+    <AssemblyName>WebAdminTECOMNET</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <MyType>Custom</MyType>
+    <UseIISExpress>false</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort>44339</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>WebAdminTECOMNET.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>WebAdminTECOMNET.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.9.0.1\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.IO.Pipelines, Version=9.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Pipelines.9.0.1\lib\net462\System.IO.Pipelines.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=9.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.9.0.1\lib\net462\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=9.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.9.0.1\lib\net462\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Telerik.Web.UI">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Progress\Telerik UI for ASP.NET AJAX 2024 Q3\Bin462\Telerik.Web.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Web.UI.Skins">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Progress\Telerik UI for ASP.NET AJAX 2024 Q3\Bin462\Telerik.Web.UI.Skins.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Collections.Specialized" />
+    <Import Include="System.Configuration" />
+    <Import Include="System.Text" />
+    <Import Include="System.Text.RegularExpressions" />
+    <Import Include="System.Web" />
+    <Import Include="System.Web.Caching" />
+    <Import Include="System.Web.SessionState" />
+    <Import Include="System.Web.Security" />
+    <Import Include="System.Web.Profile" />
+    <Import Include="System.Web.UI" />
+    <Import Include="System.Web.UI.WebControls" />
+    <Import Include="System.Web.UI.WebControls.WebParts" />
+    <Import Include="System.Web.UI.HtmlControls" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Admin\AdminCar.aspx" />
+    <Content Include="Admin\AdminCompany.aspx" />
+    <Content Include="Admin\AdminCustomer.aspx" />
+    <Content Include="Admin\AdminSIM.aspx" />
+    <Content Include="Admin\UserAdmin.aspx" />
+    <Content Include="Css\bootstrap-grid.css" />
+    <Content Include="Css\bootstrap-grid.min.css" />
+    <Content Include="Css\bootstrap-grid.rtl.css" />
+    <Content Include="Css\bootstrap-grid.rtl.min.css" />
+    <Content Include="Css\bootstrap-reboot.css" />
+    <Content Include="Css\bootstrap-reboot.min.css" />
+    <Content Include="Css\bootstrap-reboot.rtl.css" />
+    <Content Include="Css\bootstrap-reboot.rtl.min.css" />
+    <Content Include="Css\bootstrap-utilities.css" />
+    <Content Include="Css\bootstrap-utilities.min.css" />
+    <Content Include="Css\bootstrap-utilities.rtl.css" />
+    <Content Include="Css\bootstrap-utilities.rtl.min.css" />
+    <Content Include="Css\bootstrap.css" />
+    <Content Include="Css\bootstrap.min.css" />
+    <Content Include="Css\bootstrap.rtl.css" />
+    <Content Include="Css\bootstrap.rtl.min.css" />
+    <Content Include="Global.asax" />
+    <Content Include="Home.aspx" />
+    <Content Include="Resources\iconoMenu.png" />
+    <Content Include="Resources\Images\accept.png" />
+    <Content Include="Resources\Images\add.png" />
+    <Content Include="Resources\Images\alarm.png" />
+    <Content Include="Resources\Images\anchor.png" />
+    <Content Include="Resources\Images\application.png" />
+    <Content Include="Resources\Images\application2.png" />
+    <Content Include="Resources\Images\application_add.png" />
+    <Content Include="Resources\Images\application_cascade.png" />
+    <Content Include="Resources\Images\application_delete.png" />
+    <Content Include="Resources\Images\application_double.png" />
+    <Content Include="Resources\Images\application_edit.png" />
+    <Content Include="Resources\Images\application_error.png" />
+    <Content Include="Resources\Images\application_form.png" />
+    <Content Include="Resources\Images\application_get.png" />
+    <Content Include="Resources\Images\application_go.png" />
+    <Content Include="Resources\Images\application_home.png" />
+    <Content Include="Resources\Images\application_key.png" />
+    <Content Include="Resources\Images\application_lightning.png" />
+    <Content Include="Resources\Images\application_link.png" />
+    <Content Include="Resources\Images\application_osx.png" />
+    <Content Include="Resources\Images\application_osx_terminal.png" />
+    <Content Include="Resources\Images\application_put.png" />
+    <Content Include="Resources\Images\application_side_boxes.png" />
+    <Content Include="Resources\Images\application_side_contract.png" />
+    <Content Include="Resources\Images\application_side_expand.png" />
+    <Content Include="Resources\Images\application_side_list.png" />
+    <Content Include="Resources\Images\application_side_tree.png" />
+    <Content Include="Resources\Images\application_split.png" />
+    <Content Include="Resources\Images\application_tile_horizontal.png" />
+    <Content Include="Resources\Images\application_tile_vertical.png" />
+    <Content Include="Resources\Images\application_view_columns.png" />
+    <Content Include="Resources\Images\application_view_detail.png" />
+    <Content Include="Resources\Images\application_view_gallery.png" />
+    <Content Include="Resources\Images\application_view_icons.png" />
+    <Content Include="Resources\Images\application_view_list.png" />
+    <Content Include="Resources\Images\application_view_tile.png" />
+    <Content Include="Resources\Images\application_view_xp.png" />
+    <Content Include="Resources\Images\application_view_xp_terminal.png" />
+    <Content Include="Resources\Images\arrow_branch.png" />
+    <Content Include="Resources\Images\arrow_divide.png" />
+    <Content Include="Resources\Images\arrow_in.png" />
+    <Content Include="Resources\Images\arrow_inout.png" />
+    <Content Include="Resources\Images\arrow_join.png" />
+    <Content Include="Resources\Images\arrow_left.png" />
+    <Content Include="Resources\Images\arrow_merge.png" />
+    <Content Include="Resources\Images\arrow_out.png" />
+    <Content Include="Resources\Images\arrow_redo.png" />
+    <Content Include="Resources\Images\arrow_refresh.png" />
+    <Content Include="Resources\Images\arrow_right.png" />
+    <Content Include="Resources\Images\arrow_undo.png" />
+    <Content Include="Resources\Images\arrow_up.png" />
+    <Content Include="Resources\Images\asterisk_orange.png" />
+    <Content Include="Resources\Images\attach.png" />
+    <Content Include="Resources\Images\attach_2.png" />
+    <Content Include="Resources\Images\award_star_gold.png" />
+    <Content Include="Resources\Images\bandaid.png" />
+    <Content Include="Resources\Images\basket.png" />
+    <Content Include="Resources\Images\bell.png" />
+    <Content Include="Resources\Images\bin_closed.png" />
+    <Content Include="Resources\Images\blog.png" />
+    <Content Include="Resources\Images\blueprint.png" />
+    <Content Include="Resources\Images\blueprint_horizontal.png" />
+    <Content Include="Resources\Images\bluetooth.png" />
+    <Content Include="Resources\Images\bomb.png" />
+    <Content Include="Resources\Images\book.png" />
+    <Content Include="Resources\Images\bookmark.png" />
+    <Content Include="Resources\Images\bookmark_book.png" />
+    <Content Include="Resources\Images\bookmark_book_open.png" />
+    <Content Include="Resources\Images\bookmark_document.png" />
+    <Content Include="Resources\Images\bookmark_folder.png" />
+    <Content Include="Resources\Images\books.png" />
+    <Content Include="Resources\Images\book_addresses.png" />
+    <Content Include="Resources\Images\book_next.png" />
+    <Content Include="Resources\Images\book_open.png" />
+    <Content Include="Resources\Images\book_previous.png" />
+    <Content Include="Resources\Images\box.png" />
+    <Content Include="Resources\Images\brick.png" />
+    <Content Include="Resources\Images\bricks.png" />
+    <Content Include="Resources\Images\briefcase.png" />
+    <Content Include="Resources\Images\bug.png" />
+    <Content Include="Resources\Images\buildings.png" />
+    <Content Include="Resources\Images\bullet_add_1.png" />
+    <Content Include="Resources\Images\bullet_add_2.png" />
+    <Content Include="Resources\Images\bullet_key.png" />
+    <Content Include="Resources\Images\cake.png" />
+    <Content Include="Resources\Images\calculator.png" />
+    <Content Include="Resources\Images\calendar_1.png" />
+    <Content Include="Resources\Images\calendar_2.png" />
+    <Content Include="Resources\Images\camera.png" />
+    <Content Include="Resources\Images\cancel.png" />
+    <Content Include="Resources\Images\car.png" />
+    <Content Include="Resources\Images\cart.png" />
+    <Content Include="Resources\Images\cd.png" />
+    <Content Include="Resources\Images\chart_bar.png" />
+    <Content Include="Resources\Images\chart_curve.png" />
+    <Content Include="Resources\Images\chart_line.png" />
+    <Content Include="Resources\Images\chart_organisation.png" />
+    <Content Include="Resources\Images\chart_pie.png" />
+    <Content Include="Resources\Images\clipboard_paste_image.png" />
+    <Content Include="Resources\Images\clipboard_sign.png" />
+    <Content Include="Resources\Images\clipboard_text.png" />
+    <Content Include="Resources\Images\clock.png" />
+    <Content Include="Resources\Images\cog.png" />
+    <Content Include="Resources\Images\coins.png" />
+    <Content Include="Resources\Images\color_swatch_1.png" />
+    <Content Include="Resources\Images\color_swatch_2.png" />
+    <Content Include="Resources\Images\comment.png" />
+    <Content Include="Resources\Images\compass.png" />
+    <Content Include="Resources\Images\compress.png" />
+    <Content Include="Resources\Images\computer.png" />
+    <Content Include="Resources\Images\connect.png" />
+    <Content Include="Resources\Images\contrast.png" />
+    <Content Include="Resources\Images\control_eject.png" />
+    <Content Include="Resources\Images\control_end.png" />
+    <Content Include="Resources\Images\control_equalizer.png" />
+    <Content Include="Resources\Images\control_fastforward.png" />
+    <Content Include="Resources\Images\control_pause.png" />
+    <Content Include="Resources\Images\control_play.png" />
+    <Content Include="Resources\Images\control_repeat.png" />
+    <Content Include="Resources\Images\control_rewind.png" />
+    <Content Include="Resources\Images\control_start.png" />
+    <Content Include="Resources\Images\control_stop.png" />
+    <Content Include="Resources\Images\control_wheel.png" />
+    <Content Include="Resources\Images\counter.png" />
+    <Content Include="Resources\Images\counter_count.png" />
+    <Content Include="Resources\Images\counter_count_up.png" />
+    <Content Include="Resources\Images\counter_reset.png" />
+    <Content Include="Resources\Images\counter_stop.png" />
+    <Content Include="Resources\Images\cross.png" />
+    <Content Include="Resources\Images\cross_octagon.png" />
+    <Content Include="Resources\Images\cross_octagon_fram.png" />
+    <Content Include="Resources\Images\cross_shield.png" />
+    <Content Include="Resources\Images\cross_shield_2.png" />
+    <Content Include="Resources\Images\crown.png" />
+    <Content Include="Resources\Images\crown_bronze.png" />
+    <Content Include="Resources\Images\crown_silver.png" />
+    <Content Include="Resources\Images\css.png" />
+    <Content Include="Resources\Images\cursor.png" />
+    <Content Include="Resources\Images\cut.png" />
+    <Content Include="Resources\Images\dashboard.png" />
+    <Content Include="Resources\Images\data.png" />
+    <Content Include="Resources\Images\database.png" />
+    <Content Include="Resources\Images\databases.png" />
+    <Content Include="Resources\Images\delete.png" />
+    <Content Include="Resources\Images\delivery.png" />
+    <Content Include="Resources\Images\desktop.png" />
+    <Content Include="Resources\Images\desktop_empty.png" />
+    <Content Include="Resources\Images\direction.png" />
+    <Content Include="Resources\Images\disconnect.png" />
+    <Content Include="Resources\Images\disk.png" />
+    <Content Include="Resources\Images\doc_access.png" />
+    <Content Include="Resources\Images\doc_break.png" />
+    <Content Include="Resources\Images\doc_convert.png" />
+    <Content Include="Resources\Images\doc_excel_csv.png" />
+    <Content Include="Resources\Images\doc_excel_table.png" />
+    <Content Include="Resources\Images\doc_film.png" />
+    <Content Include="Resources\Images\doc_illustrator.png" />
+    <Content Include="Resources\Images\doc_music.png" />
+    <Content Include="Resources\Images\doc_music_playlist.png" />
+    <Content Include="Resources\Images\doc_offlice.png" />
+    <Content Include="Resources\Images\doc_page.png" />
+    <Content Include="Resources\Images\doc_page_previous.png" />
+    <Content Include="Resources\Images\doc_pdf.png" />
+    <Content Include="Resources\Images\doc_photoshop.png" />
+    <Content Include="Resources\Images\doc_resize.png" />
+    <Content Include="Resources\Images\doc_resize_actual.png" />
+    <Content Include="Resources\Images\doc_shred.png" />
+    <Content Include="Resources\Images\doc_stand.png" />
+    <Content Include="Resources\Images\doc_table.png" />
+    <Content Include="Resources\Images\doc_tag.png" />
+    <Content Include="Resources\Images\doc_text_image.png" />
+    <Content Include="Resources\Images\door.png" />
+    <Content Include="Resources\Images\door_in.png" />
+    <Content Include="Resources\Images\drawer.png" />
+    <Content Include="Resources\Images\drink.png" />
+    <Content Include="Resources\Images\drink_empty.png" />
+    <Content Include="Resources\Images\drive.png" />
+    <Content Include="Resources\Images\drive_burn.png" />
+    <Content Include="Resources\Images\drive_cd.png" />
+    <Content Include="Resources\Images\drive_cd_empty.png" />
+    <Content Include="Resources\Images\drive_delete.png" />
+    <Content Include="Resources\Images\drive_disk.png" />
+    <Content Include="Resources\Images\drive_error.png" />
+    <Content Include="Resources\Images\drive_go.png" />
+    <Content Include="Resources\Images\drive_link.png" />
+    <Content Include="Resources\Images\drive_network.png" />
+    <Content Include="Resources\Images\drive_rename.png" />
+    <Content Include="Resources\Images\dvd.png" />
+    <Content Include="Resources\Images\email.png" />
+    <Content Include="Resources\Images\email_open.png" />
+    <Content Include="Resources\Images\email_open_image.png" />
+    <Content Include="Resources\Images\emoticon_evilgrin.png" />
+    <Content Include="Resources\Images\emoticon_grin.png" />
+    <Content Include="Resources\Images\emoticon_happy.png" />
+    <Content Include="Resources\Images\emoticon_smile.png" />
+    <Content Include="Resources\Images\emoticon_surprised.png" />
+    <Content Include="Resources\Images\emoticon_tongue.png" />
+    <Content Include="Resources\Images\emoticon_unhappy.png" />
+    <Content Include="Resources\Images\emoticon_waii.png" />
+    <Content Include="Resources\Images\emoticon_wink.png" />
+    <Content Include="Resources\Images\envelope.png" />
+    <Content Include="Resources\Images\envelope_2.png" />
+    <Content Include="Resources\Images\error.png" />
+    <Content Include="Resources\Images\exclamation.png" />
+    <Content Include="Resources\Images\exclamation_octagon_fram.png" />
+    <Content Include="Resources\Images\eye.png" />
+    <Content Include="Resources\Images\feed.png" />
+    <Content Include="Resources\Images\feed_ballon.png" />
+    <Content Include="Resources\Images\feed_document.png" />
+    <Content Include="Resources\Images\female.png" />
+    <Content Include="Resources\Images\film.png" />
+    <Content Include="Resources\Images\films.png" />
+    <Content Include="Resources\Images\find.png" />
+    <Content Include="Resources\Images\flag_blue.png" />
+    <Content Include="Resources\Images\folder.png" />
+    <Content Include="Resources\Images\font.png" />
+    <Content Include="Resources\Images\funnel.png" />
+    <Content Include="Resources\Images\grid.png" />
+    <Content Include="Resources\Images\grid_dot.png" />
+    <Content Include="Resources\Images\group.png" />
+    <Content Include="Resources\Images\hammer.png" />
+    <Content Include="Resources\Images\hammer_screwdriver.png" />
+    <Content Include="Resources\Images\hand.png" />
+    <Content Include="Resources\Images\hand_point.png" />
+    <Content Include="Resources\Images\heart.png" />
+    <Content Include="Resources\Images\heart_break.png" />
+    <Content Include="Resources\Images\heart_empty.png" />
+    <Content Include="Resources\Images\heart_half.png" />
+    <Content Include="Resources\Images\heart_small.png" />
+    <Content Include="Resources\Images\help.png" />
+    <Content Include="Resources\Images\highlighter.png" />
+    <Content Include="Resources\Images\house.png" />
+    <Content Include="Resources\Images\html.png" />
+    <Content Include="Resources\Images\images.png" />
+    <Content Include="Resources\Images\image_1.png" />
+    <Content Include="Resources\Images\image_2.png" />
+    <Content Include="Resources\Images\inbox.png" />
+    <Content Include="Resources\Images\ipod.png" />
+    <Content Include="Resources\Images\ipod_cast.png" />
+    <Content Include="Resources\Images\joystick.png" />
+    <Content Include="Resources\Images\key.png" />
+    <Content Include="Resources\Images\keyboard.png" />
+    <Content Include="Resources\Images\layers.png" />
+    <Content Include="Resources\Images\layer_treansparent.png" />
+    <Content Include="Resources\Images\layout.png" />
+    <Content Include="Resources\Images\layout_header_footer_3.png" />
+    <Content Include="Resources\Images\layout_header_footer_3_mix.png" />
+    <Content Include="Resources\Images\layout_join.png" />
+    <Content Include="Resources\Images\layout_join_vertical.png" />
+    <Content Include="Resources\Images\layout_select.png" />
+    <Content Include="Resources\Images\layout_select_content.png" />
+    <Content Include="Resources\Images\layout_select_footer.png" />
+    <Content Include="Resources\Images\layout_select_sidebar.png" />
+    <Content Include="Resources\Images\layout_split.png" />
+    <Content Include="Resources\Images\layout_split_vertical.png" />
+    <Content Include="Resources\Images\lifebuoy.png" />
+    <Content Include="Resources\Images\lightbulb.png" />
+    <Content Include="Resources\Images\lightbulb_off.png" />
+    <Content Include="Resources\Images\lightning.png" />
+    <Content Include="Resources\Images\link.png" />
+    <Content Include="Resources\Images\link_break.png" />
+    <Content Include="Resources\Images\lock.png" />
+    <Content Include="Resources\Images\lock_unlock.png" />
+    <Content Include="Resources\Images\magnet.png" />
+    <Content Include="Resources\Images\magnifier.png" />
+    <Content Include="Resources\Images\magnifier_zoom_in.png" />
+    <Content Include="Resources\Images\male.png" />
+    <Content Include="Resources\Images\map.png" />
+    <Content Include="Resources\Images\marker.png" />
+    <Content Include="Resources\Images\medal_bronze_1.png" />
+    <Content Include="Resources\Images\medal_gold_1.png" />
+    <Content Include="Resources\Images\media_player_small_blue.png" />
+    <Content Include="Resources\Images\microphone.png" />
+    <Content Include="Resources\Images\mobile_phone.png" />
+    <Content Include="Resources\Images\money.png" />
+    <Content Include="Resources\Images\money_dollar.png" />
+    <Content Include="Resources\Images\money_euro.png" />
+    <Content Include="Resources\Images\money_pound.png" />
+    <Content Include="Resources\Images\money_yen.png" />
+    <Content Include="Resources\Images\monitor.png" />
+    <Content Include="Resources\Images\mouse.png" />
+    <Content Include="Resources\Images\music.png" />
+    <Content Include="Resources\Images\music_beam.png" />
+    <Content Include="Resources\Images\neutral.png" />
+    <Content Include="Resources\Images\new.png" />
+    <Content Include="Resources\Images\newspaper.png" />
+    <Content Include="Resources\Images\note.png" />
+    <Content Include="Resources\Images\nuclear.png" />
+    <Content Include="Resources\Images\package.png" />
+    <Content Include="Resources\Images\page.png" />
+    <Content Include="Resources\Images\page_2.png" />
+    <Content Include="Resources\Images\page_2_copy.png" />
+    <Content Include="Resources\Images\page_code.png" />
+    <Content Include="Resources\Images\page_copy.png" />
+    <Content Include="Resources\Images\page_excel.png" />
+    <Content Include="Resources\Images\page_lightning.png" />
+    <Content Include="Resources\Images\page_paste.png" />
+    <Content Include="Resources\Images\page_red.png" />
+    <Content Include="Resources\Images\page_refresh.png" />
+    <Content Include="Resources\Images\page_save.png" />
+    <Content Include="Resources\Images\page_white_cplusplus.png" />
+    <Content Include="Resources\Images\page_white_csharp.png" />
+    <Content Include="Resources\Images\page_white_cup.png" />
+    <Content Include="Resources\Images\page_white_database.png" />
+    <Content Include="Resources\Images\page_white_delete.png" />
+    <Content Include="Resources\Images\page_white_dvd.png" />
+    <Content Include="Resources\Images\page_white_edit.png" />
+    <Content Include="Resources\Images\page_white_error.png" />
+    <Content Include="Resources\Images\page_white_excel.png" />
+    <Content Include="Resources\Images\page_white_find.png" />
+    <Content Include="Resources\Images\page_white_flash.png" />
+    <Content Include="Resources\Images\page_white_freehand.png" />
+    <Content Include="Resources\Images\page_white_gear.png" />
+    <Content Include="Resources\Images\page_white_get.png" />
+    <Content Include="Resources\Images\page_white_paintbrush.png" />
+    <Content Include="Resources\Images\page_white_paste.png" />
+    <Content Include="Resources\Images\page_white_php.png" />
+    <Content Include="Resources\Images\page_white_picture.png" />
+    <Content Include="Resources\Images\page_white_powerpoint.png" />
+    <Content Include="Resources\Images\page_white_put.png" />
+    <Content Include="Resources\Images\page_white_ruby.png" />
+    <Content Include="Resources\Images\page_white_stack.png" />
+    <Content Include="Resources\Images\page_white_star.png" />
+    <Content Include="Resources\Images\page_white_swoosh.png" />
+    <Content Include="Resources\Images\page_white_text.png" />
+    <Content Include="Resources\Images\page_white_text_width.png" />
+    <Content Include="Resources\Images\page_white_tux.png" />
+    <Content Include="Resources\Images\page_white_vector.png" />
+    <Content Include="Resources\Images\page_white_visualstudio.png" />
+    <Content Include="Resources\Images\page_white_width.png" />
+    <Content Include="Resources\Images\page_white_word.png" />
+    <Content Include="Resources\Images\page_white_world.png" />
+    <Content Include="Resources\Images\page_white_wrench.png" />
+    <Content Include="Resources\Images\page_white_zip.png" />
+    <Content Include="Resources\Images\paintbrush.png" />
+    <Content Include="Resources\Images\paintcan.png" />
+    <Content Include="Resources\Images\palette.png" />
+    <Content Include="Resources\Images\paper_bag.png" />
+    <Content Include="Resources\Images\paste_plain.png" />
+    <Content Include="Resources\Images\paste_word.png" />
+    <Content Include="Resources\Images\pencil.png" />
+    <Content Include="Resources\Images\photo.png" />
+    <Content Include="Resources\Images\photos.png" />
+    <Content Include="Resources\Images\photo_album.png" />
+    <Content Include="Resources\Images\piano.png" />
+    <Content Include="Resources\Images\picture.png" />
+    <Content Include="Resources\Images\pilcrow.png" />
+    <Content Include="Resources\Images\pill.png" />
+    <Content Include="Resources\Images\pin.png" />
+    <Content Include="Resources\Images\pipette.png" />
+    <Content Include="Resources\Images\plaing_card.png" />
+    <Content Include="Resources\Images\plug.png" />
+    <Content Include="Resources\Images\plugin.png" />
+    <Content Include="Resources\Images\printer.png" />
+    <Content Include="Resources\Images\projection_screen.png" />
+    <Content Include="Resources\Images\projection_screen_present.png" />
+    <Content Include="Resources\Images\rainbow.png" />
+    <Content Include="Resources\Images\readme.txt" />
+    <Content Include="Resources\Images\report.png" />
+    <Content Include="Resources\Images\rocket.png" />
+    <Content Include="Resources\Images\rosette.png" />
+    <Content Include="Resources\Images\rss.png" />
+    <Content Include="Resources\Images\ruby.png" />
+    <Content Include="Resources\Images\ruler_1.png" />
+    <Content Include="Resources\Images\ruler_2.png" />
+    <Content Include="Resources\Images\ruler_crop.png" />
+    <Content Include="Resources\Images\ruler_triangle.png" />
+    <Content Include="Resources\Images\safe.png" />
+    <Content Include="Resources\Images\script.png" />
+    <Content Include="Resources\Images\selection.png" />
+    <Content Include="Resources\Images\selection_select.png" />
+    <Content Include="Resources\Images\server.png" />
+    <Content Include="Resources\Images\shading.png" />
+    <Content Include="Resources\Images\shape_aling_bottom.png" />
+    <Content Include="Resources\Images\shape_aling_center.png" />
+    <Content Include="Resources\Images\shape_aling_left.png" />
+    <Content Include="Resources\Images\shape_aling_middle.png" />
+    <Content Include="Resources\Images\shape_aling_right.png" />
+    <Content Include="Resources\Images\shape_aling_top.png" />
+    <Content Include="Resources\Images\shape_flip_horizontal.png" />
+    <Content Include="Resources\Images\shape_flip_vertical.png" />
+    <Content Include="Resources\Images\shape_group.png" />
+    <Content Include="Resources\Images\shape_handles.png" />
+    <Content Include="Resources\Images\shape_move_back.png" />
+    <Content Include="Resources\Images\shape_move_backwards.png" />
+    <Content Include="Resources\Images\shape_move_forwards.png" />
+    <Content Include="Resources\Images\shape_move_front.png" />
+    <Content Include="Resources\Images\shape_square.png" />
+    <Content Include="Resources\Images\shield.png" />
+    <Content Include="Resources\Images\sitemap.png" />
+    <Content Include="Resources\Images\slide.png" />
+    <Content Include="Resources\Images\slides.png" />
+    <Content Include="Resources\Images\slides_stack.png" />
+    <Content Include="Resources\Images\smiley_confuse.png" />
+    <Content Include="Resources\Images\smiley_cool.png" />
+    <Content Include="Resources\Images\smiley_cry.png" />
+    <Content Include="Resources\Images\smiley_fat.png" />
+    <Content Include="Resources\Images\smiley_mad.png" />
+    <Content Include="Resources\Images\smiley_red.png" />
+    <Content Include="Resources\Images\smiley_roll.png" />
+    <Content Include="Resources\Images\smiley_slim.png" />
+    <Content Include="Resources\Images\smiley_yell.png" />
+    <Content Include="Resources\Images\socket.png" />
+    <Content Include="Resources\Images\sockets.png" />
+    <Content Include="Resources\Images\sort.png" />
+    <Content Include="Resources\Images\sort_alphabet.png" />
+    <Content Include="Resources\Images\sort_date.png" />
+    <Content Include="Resources\Images\sort_disable.png" />
+    <Content Include="Resources\Images\sort_number.png" />
+    <Content Include="Resources\Images\sort_price.png" />
+    <Content Include="Resources\Images\sort_quantity.png" />
+    <Content Include="Resources\Images\sort_rating.png" />
+    <Content Include="Resources\Images\sound.png" />
+    <Content Include="Resources\Images\sound_note.png" />
+    <Content Include="Resources\Images\spellcheck.png" />
+    <Content Include="Resources\Images\sport_8ball.png" />
+    <Content Include="Resources\Images\sport_basketball.png" />
+    <Content Include="Resources\Images\sport_football.png" />
+    <Content Include="Resources\Images\sport_golf.png" />
+    <Content Include="Resources\Images\sport_raquet.png" />
+    <Content Include="Resources\Images\sport_shuttlecock.png" />
+    <Content Include="Resources\Images\sport_soccer.png" />
+    <Content Include="Resources\Images\sport_tennis.png" />
+    <Content Include="Resources\Images\stamp.png" />
+    <Content Include="Resources\Images\star_1.png" />
+    <Content Include="Resources\Images\star_2.png" />
+    <Content Include="Resources\Images\status_online.png" />
+    <Content Include="Resources\Images\stop.png" />
+    <Content Include="Resources\Images\style.png" />
+    <Content Include="Resources\Images\sum.png" />
+    <Content Include="Resources\Images\sum_2.png" />
+    <Content Include="Resources\Images\switch.png" />
+    <Content Include="Resources\Images\tab.png" />
+    <Content Include="Resources\Images\table.png" />
+    <Content Include="Resources\Images\tag.png" />
+    <Content Include="Resources\Images\tag_blue.png" />
+    <Content Include="Resources\Images\target.png" />
+    <Content Include="Resources\Images\telephone.png" />
+    <Content Include="Resources\Images\television.png" />
+    <Content Include="Resources\Images\textfield.png" />
+    <Content Include="Resources\Images\textfield_rename.png" />
+    <Content Include="Resources\Images\text_align_center.png" />
+    <Content Include="Resources\Images\text_align_justify.png" />
+    <Content Include="Resources\Images\text_align_left.png" />
+    <Content Include="Resources\Images\text_align_right.png" />
+    <Content Include="Resources\Images\text_allcaps.png" />
+    <Content Include="Resources\Images\text_bold.png" />
+    <Content Include="Resources\Images\text_columns.png" />
+    <Content Include="Resources\Images\text_dropcaps.png" />
+    <Content Include="Resources\Images\text_heading_1.png" />
+    <Content Include="Resources\Images\text_horizontalrule.png" />
+    <Content Include="Resources\Images\text_indent.png" />
+    <Content Include="Resources\Images\text_indent_remove.png" />
+    <Content Include="Resources\Images\text_italic.png" />
+    <Content Include="Resources\Images\text_kerning.png" />
+    <Content Include="Resources\Images\text_letterspacing.png" />
+    <Content Include="Resources\Images\text_letter_omega.png" />
+    <Content Include="Resources\Images\text_linespacing.png" />
+    <Content Include="Resources\Images\text_list_bullets.png" />
+    <Content Include="Resources\Images\text_list_numbers.png" />
+    <Content Include="Resources\Images\text_lowercase.png" />
+    <Content Include="Resources\Images\text_padding_bottom.png" />
+    <Content Include="Resources\Images\text_padding_left.png" />
+    <Content Include="Resources\Images\text_padding_right.png" />
+    <Content Include="Resources\Images\text_padding_top.png" />
+    <Content Include="Resources\Images\text_signature.png" />
+    <Content Include="Resources\Images\text_smallcaps.png" />
+    <Content Include="Resources\Images\text_strikethrough.png" />
+    <Content Include="Resources\Images\text_subscript.png" />
+    <Content Include="Resources\Images\ticket.png" />
+    <Content Include="Resources\Images\timeline_marker.png" />
+    <Content Include="Resources\Images\traffic.png" />
+    <Content Include="Resources\Images\transmit.png" />
+    <Content Include="Resources\Images\trophy.png" />
+    <Content Include="Resources\Images\trophy_bronze.png" />
+    <Content Include="Resources\Images\trophy_silver.png" />
+    <Content Include="Resources\Images\ui_combo_box.png" />
+    <Content Include="Resources\Images\ui_saccordion.png" />
+    <Content Include="Resources\Images\ui_slider_1.png" />
+    <Content Include="Resources\Images\ui_slider_2.png" />
+    <Content Include="Resources\Images\ui_tab_bottom.png" />
+    <Content Include="Resources\Images\ui_tab_content.png" />
+    <Content Include="Resources\Images\ui_tab_disable.png" />
+    <Content Include="Resources\Images\ui_tab_side.png" />
+    <Content Include="Resources\Images\ui_text_field_hidden.png" />
+    <Content Include="Resources\Images\ui_text_field_password.png" />
+    <Content Include="Resources\Images\umbrella.png" />
+    <Content Include="Resources\Images\user.png" />
+    <Content Include="Resources\Images\user_black_female.png" />
+    <Content Include="Resources\Images\user_business.png" />
+    <Content Include="Resources\Images\user_business_boss.png" />
+    <Content Include="Resources\Images\user_female.png" />
+    <Content Include="Resources\Images\user_silhouette.png" />
+    <Content Include="Resources\Images\user_thief.png" />
+    <Content Include="Resources\Images\user_thief_baldie.png" />
+    <Content Include="Resources\Images\vcard.png" />
+    <Content Include="Resources\Images\vector.png" />
+    <Content Include="Resources\Images\wait.png" />
+    <Content Include="Resources\Images\wall.png" />
+    <Content Include="Resources\Images\wall_break.png" />
+    <Content Include="Resources\Images\wall_brick.png" />
+    <Content Include="Resources\Images\wall_disable.png" />
+    <Content Include="Resources\Images\wand.png" />
+    <Content Include="Resources\Images\weather_clouds.png" />
+    <Content Include="Resources\Images\weather_cloudy.png" />
+    <Content Include="Resources\Images\weather_lightning.png" />
+    <Content Include="Resources\Images\weather_rain.png" />
+    <Content Include="Resources\Images\weather_snow.png" />
+    <Content Include="Resources\Images\weather_sun.png" />
+    <Content Include="Resources\Images\webcam.png" />
+    <Content Include="Resources\Images\WhatsApp.png" />
+    <Content Include="Resources\Images\world.png" />
+    <Content Include="Resources\Images\zone.png" />
+    <Content Include="Resources\Images\zones.png" />
+    <Content Include="Resources\Images\zone_money.png" />
+    <Content Include="Resources\Logo.ico" />
+    <Content Include="Resources\Logo.png" />
+    <Content Include="Scripts\js\bootstrap.bundle.js" />
+    <Content Include="Scripts\js\bootstrap.bundle.min.js" />
+    <Content Include="Scripts\js\bootstrap.esm.js" />
+    <Content Include="Scripts\js\bootstrap.esm.min.js" />
+    <Content Include="Scripts\js\bootstrap.js" />
+    <Content Include="Scripts\js\bootstrap.min.js" />
+    <Content Include="UserControls\CarUser.ascx" />
+    <Content Include="UserControls\CustomerControl.ascx" />
+    <Content Include="Views\Account\ChangePassword.aspx" />
+    <Content Include="Views\Account\Login.aspx" />
+    <Content Include="Views\Configuration\AssociateSIM.aspx" />
+    <Content Include="Views\Configuration\RegisterModels.aspx" />
+    <Content Include="Views\Configuration\RegisterPayment.aspx" />
+    <Content Include="Views\Configuration\RegisterProduct.aspx" />
+    <Content Include="Views\Configuration\RegisterSale.aspx" />
+    <Content Include="Views\Reports\Reports.aspx" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Admin\AdminCar.aspx.designer.vb">
+      <DependentUpon>AdminCar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\AdminCar.aspx.vb">
+      <DependentUpon>AdminCar.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Admin\AdminCompany.aspx.designer.vb">
+      <DependentUpon>AdminCompany.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\AdminCompany.aspx.vb">
+      <DependentUpon>AdminCompany.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Admin\AdminCustomer.aspx.designer.vb">
+      <DependentUpon>AdminCustomer.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\AdminCustomer.aspx.vb">
+      <DependentUpon>AdminCustomer.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Admin\AdminSIM.aspx.designer.vb">
+      <DependentUpon>AdminSIM.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\AdminSIM.aspx.vb">
+      <DependentUpon>AdminSIM.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\UserAdmin.aspx.designer.vb">
+      <DependentUpon>UserAdmin.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\UserAdmin.aspx.vb">
+      <DependentUpon>UserAdmin.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Default.Master.designer.vb">
+      <DependentUpon>Default.Master</DependentUpon>
+    </Compile>
+    <Compile Include="Default.Master.vb">
+      <DependentUpon>Default.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Global.asax.vb">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Home.aspx.designer.vb">
+      <DependentUpon>Home.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Home.aspx.vb">
+      <DependentUpon>Home.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\MyExtensions\MyWebExtension.vb">
+      <VBMyExtensionTemplateID>Microsoft.VisualBasic.Web.MyExtension</VBMyExtensionTemplateID>
+      <VBMyExtensionTemplateVersion>1.0.0.0</VBMyExtensionTemplateVersion>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="UserControls\CarUser.ascx.designer.vb">
+      <DependentUpon>CarUser.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\CarUser.ascx.vb">
+      <DependentUpon>CarUser.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UserControls\CustomerControl.ascx.designer.vb">
+      <DependentUpon>CustomerControl.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\CustomerControl.ascx.vb">
+      <DependentUpon>CustomerControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\Account\ChangePassword.aspx.designer.vb">
+      <DependentUpon>ChangePassword.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Account\ChangePassword.aspx.vb">
+      <DependentUpon>ChangePassword.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Views\Account\Login.aspx.designer.vb">
+      <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Account\Login.aspx.vb">
+      <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\AssociateSIM.aspx.designer.vb">
+      <DependentUpon>AssociateSIM.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Configuration\AssociateSIM.aspx.vb">
+      <DependentUpon>AssociateSIM.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\RegisterModels.aspx.designer.vb">
+      <DependentUpon>RegisterModels.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Configuration\RegisterModels.aspx.vb">
+      <DependentUpon>RegisterModels.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\RegisterPayment.aspx.designer.vb">
+      <DependentUpon>RegisterPayment.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Configuration\RegisterPayment.aspx.vb">
+      <DependentUpon>RegisterPayment.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\RegisterProduct.aspx.designer.vb">
+      <DependentUpon>RegisterProduct.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Configuration\RegisterProduct.aspx.vb">
+      <DependentUpon>RegisterProduct.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Views\Configuration\RegisterSale.aspx.designer.vb">
+      <DependentUpon>RegisterSale.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Configuration\RegisterSale.aspx.vb">
+      <DependentUpon>RegisterSale.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Views\Reports\Reports.aspx.designer.vb">
+      <DependentUpon>Reports.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Reports\Reports.aspx.vb">
+      <DependentUpon>Reports.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="My Project\licenses.licx" />
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Default.Master" />
+    <Content Include="Css\bootstrap-grid.css.map" />
+    <Content Include="Css\bootstrap-grid.min.css.map" />
+    <Content Include="Css\bootstrap-grid.rtl.css.map" />
+    <Content Include="Css\bootstrap-grid.rtl.min.css.map" />
+    <Content Include="Css\bootstrap-reboot.css.map" />
+    <Content Include="Css\bootstrap-reboot.min.css.map" />
+    <Content Include="Css\bootstrap-reboot.rtl.css.map" />
+    <Content Include="Css\bootstrap-reboot.rtl.min.css.map" />
+    <Content Include="Css\bootstrap-utilities.css.map" />
+    <Content Include="Css\bootstrap-utilities.min.css.map" />
+    <Content Include="Css\bootstrap-utilities.rtl.css.map" />
+    <Content Include="Css\bootstrap-utilities.rtl.min.css.map" />
+    <Content Include="Css\bootstrap.css.map" />
+    <Content Include="Css\bootstrap.min.css.map" />
+    <Content Include="Css\bootstrap.rtl.css.map" />
+    <Content Include="Css\bootstrap.rtl.min.css.map" />
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+    <Content Include="Scripts\js\bootstrap.bundle.js.map" />
+    <Content Include="Scripts\js\bootstrap.bundle.min.js.map" />
+    <Content Include="Scripts\js\bootstrap.esm.js.map" />
+    <Content Include="Scripts\js\bootstrap.esm.min.js.map" />
+    <Content Include="Scripts\js\bootstrap.js.map" />
+    <Content Include="Scripts\js\bootstrap.min.js.map" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DatabaseConnectionTECOMNET\DatabaseConnectionTECOMNET.vbproj">
+      <Project>{e5057300-68f9-42d8-a99f-c1f23eadc10c}</Project>
+      <Name>DatabaseConnectionTECOMNET</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ModelsTECOMNET\ModelsTECOMNET.vbproj">
+      <Project>{775e015a-149c-4073-b821-7dec008b0b05}</Project>
+      <Name>ModelsTECOMNET</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>51208</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost/TECOMNET/WebAdminTECOMNET</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compra de producto exitosa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f8fb;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #0056b3;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+            .content p {
+                font-size: 16px;
+                line-height: 1.6;
+            }
+
+        .footer {
+            background: #e3efff;
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .button {
+            display: inline-block;
+            background: #0056b3;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            ¡Tu compra fue exitosa!
+        </div>
+        <div class="content">
+            <p>Estimad@ <b>{Nombre}</b>,</p>
+            <p>
+                Tu paquete <strong>{plan}</strong> ha sido activado. Vigente hasta agotar los GB incluidos o al corte de tu factura.
+            </p>            
+            <p>Mantente informado de éste y otros servicios en <a href="https://www.tecomnet.mx/">www.tecomnet.mx</a></p>
+            <p>Gracias por confiar en nosotros.</p>
+            <a href="https://tecomnet.net/TECOMNET/WebClient/Views/Account/Login.aspx" class="button">Ver detalles</a>
+        </div>
+        <div class="footer">
+            © 2025 TECOMNET | Atención al Cliente: recargas@tecomnet.mx
+        </div>
+    </div>
+</body>
+</html>

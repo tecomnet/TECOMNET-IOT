@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>DatabaseConnectionTECOMNET</RootNamespace>
+    <TargetFramework>net4.8</TargetFramework>
+  </PropertyGroup>
+
+</Project>
