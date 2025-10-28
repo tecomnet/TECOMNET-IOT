@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Material App',
+      title: 'Scannet Tecomnet',
       debugShowCheckedModeBanner: false,
       home: const Login(), // Ahora inicia directamente con el Login
       routes: {

@@ -81,14 +81,25 @@ class _LoginState extends State<Login> {
     }
 
     try {
-      final tokenObtenido = await AuthService.obtenerToken(usuario, contrasena);
+      // Paso 1: validar usuario real (installer@tecomnet.net)
+      bool usuarioValido = await AuthService.validarUsuarioReal(usuario, contrasena);
+
+      if (!usuarioValido) {
+        _mostrarError('Usuario o contraseña incorrectos');
+        return;
+      }
+
+      // Paso 2: obtener token con credenciales fijas
+      bool tokenObtenido = await AuthService.obtenerToken();
 
       if (!tokenObtenido) {
-        _mostrarError('Usuario o contraseña incorrectos');
-      } else {
-        await _guardarUsuarioEnHistorial(usuario);
-        if (mounted) Navigator.pushReplacementNamed(context, '/start');
+        _mostrarError('No se pudo obtener token');
+        return;
       }
+
+      // Login exitoso
+      await _guardarUsuarioEnHistorial(usuario);
+      if (mounted) Navigator.pushReplacementNamed(context, '/start');
     } catch (e) {
       _mostrarError('Error de conexión: ${e.toString()}');
     } finally {
