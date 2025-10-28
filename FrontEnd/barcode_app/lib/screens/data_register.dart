@@ -1,7 +1,8 @@
+import 'dart:convert'; // IMPORTANTE para jsonDecode
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../widgets/menu_lateral.dart';
-import '../services/api_services.dart';  // Asegúrate de importar tu servicio
+import '../services/api_services.dart'; // Aquí debe estar la clase AuthService
 
 class DataRegister extends StatefulWidget {
   final String vinText;
@@ -27,6 +28,7 @@ class _DataRegisterState extends State<DataRegister> {
   final Color grisInactivo = Colors.grey;
 
   bool _isLoading = false;
+  bool _showBackButton = false;
 
   @override
   void initState() {
@@ -50,6 +52,25 @@ class _DataRegisterState extends State<DataRegister> {
     super.dispose();
   }
 
+  void _volverAlHome() {
+    Navigator.popUntil(context, (route) => route.isFirst);
+  }
+
+  // -------------------- MÉTODO DE ERROR --------------------
+  void _mostrarError(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensaje),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 4),
+      ),
+    );
+    setState(() {
+      _showBackButton = true;
+    });
+  }
+
+  // -------------------- MÉTODO REGISTRAR --------------------
   Future<void> _registrar() async {
     if (_vinController.text.isEmpty || _simController.text.isEmpty) {
       _mostrarError("Por favor, ingresa los datos requeridos");
@@ -63,9 +84,9 @@ class _DataRegisterState extends State<DataRegister> {
     final vin = _vinController.text.trim();
     final iccid = _simController.text.trim();
 
+    // Obtener token si no existe
     if (AuthService.token == null) {
-      bool tokenObtenido = await AuthService.obtenerToken(
-          "BYD.TECOMNET.USER_API", "VnhmNTk4ZW44NHAy");
+      bool tokenObtenido = await AuthService.obtenerToken();
       if (!tokenObtenido) {
         setState(() {
           _isLoading = false;
@@ -75,48 +96,50 @@ class _DataRegisterState extends State<DataRegister> {
       }
     }
 
-    final respuesta = await AuthService.registrarVehiculo(vin, iccid);
+    final respuestaJson = await AuthService.registrarVehiculo(vin, iccid);
 
     setState(() {
       _isLoading = false;
+      _showBackButton = true;
     });
 
-    if (respuesta == null) {
+    if (respuestaJson == null) {
       _mostrarError("Error en la conexión. Intenta más tarde.");
       return;
     }
 
-    // Mostrar respuesta que viene directamente del API
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(respuesta),
-        backgroundColor: (respuesta.toLowerCase().contains("error") ||
-                respuesta.toLowerCase().contains("no existe") ||
-                respuesta.toLowerCase().contains("ya registrado") ||
-                respuesta.toLowerCase().contains("asociado"))
-            ? Colors.red
-            : Colors.green,
-        duration: const Duration(seconds: 4),
-      ),
-    );
+    // Extraer solo el mensaje del JSON
+    String mensaje = "";
+    try {
+      final Map<String, dynamic> data = respuestaJson is String
+          ? jsonDecode(respuestaJson)
+          : respuestaJson;
+      mensaje = data["error"] ?? "El vehículo se registro correctamente";
+    } catch (e) {
+      mensaje = "Error al procesar la respuesta";
+    }
 
-    // NO NAVEGAMOS NI MOSTRAMOS OTRO MENSAJE EXITOSO, solo el SnackBar aquí.
-  }
+    // Determinar color según el mensaje
+    final esError = mensaje.toLowerCase().contains("error") ||
+        mensaje.toLowerCase().contains("no esta registrado") ||
+        mensaje.toLowerCase().contains("ya se encuentra registrado") ||
+        mensaje.toLowerCase().contains("asociado");
 
-  void _mostrarError(String mensaje) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(mensaje),
-        backgroundColor: Colors.red,
+        backgroundColor: esError ? Colors.red : Colors.green,
         duration: const Duration(seconds: 4),
       ),
     );
   }
 
+  // -------------------- COLOR DE TEXTFIELD --------------------
   Color _getColor(TextEditingController controller) {
     return controller.text.isEmpty ? grisInactivo : azulActivo;
   }
 
+  // -------------------- BUILD --------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -220,28 +243,49 @@ class _DataRegisterState extends State<DataRegister> {
                         child: SizedBox(
                           width: 200,
                           height: 48,
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _registrar,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: azulActivo,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              elevation: 5,
-                              shadowColor: azulActivo.withOpacity(0.5),
-                            ),
-                            child: _isLoading
-                                ? const CircularProgressIndicator(color: Colors.white)
-                                : const Text(
-                                    'Registrar',
+                          child: _showBackButton
+                              ? ElevatedButton(
+                                  onPressed: _volverAlHome,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: azulActivo,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    elevation: 5,
+                                    shadowColor: azulActivo.withOpacity(0.5),
+                                  ),
+                                  child: const Text(
+                                    'Volver',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                          ),
+                                )
+                              : ElevatedButton(
+                                  onPressed: _isLoading ? null : _registrar,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: azulActivo,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    elevation: 5,
+                                    shadowColor: azulActivo.withOpacity(0.5),
+                                  ),
+                                  child: _isLoading
+                                      ? const CircularProgressIndicator(color: Colors.white)
+                                      : const Text(
+                                          'Registrar',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 30),

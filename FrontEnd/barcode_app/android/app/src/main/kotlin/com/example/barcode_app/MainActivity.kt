@@ -1,4 +1,4 @@
-package com.example.barcode_app
+package com.tecomnet.scannet_tecomnet
 
 import io.flutter.embedding.android.FlutterActivity
 
