@@ -14,9 +14,12 @@ Module Module1
     Dim listener As New HttpListener
     Dim whiteListedIPs As List(Of String) = New List(Of String) From {
         "35.190.175.10",
+        "32.245.215.98",
         "35.196.235.221",
-        “34.228.25.112”,
-        “54.152.205.27”,
+        "34.228.25.112",
+        "54.152.205.27",
+        "52.5.233.163",
+        "54.152.205.27",
         "127.0.0.1",
         "200.68.170.110"
     }
@@ -24,10 +27,12 @@ Module Module1
         ' Configura el prefijo para el servicio (puerto 8080 en este caso)
         'QA
         'listener.Prefixes.Add("http://localhost:80/TECOMNET/webhook/notificadorConsumo/")
+        'listener.Prefixes.Add("http://localhost:80/TECOMNET/webhook/notificadorPrimerUso/")
         'listener.Prefixes.Add("http://localhost:80/TECOMNET/webhook/ValidatePay/")        
 
         'Produccion
         listener.Prefixes.Add("https://tecomnet.net/TECOMNET/webhook/notificadorConsumo/")
+        listener.Prefixes.Add("https://tecomnet.net/TECOMNET/webhook/notificadorPrimerUso/")
         listener.Prefixes.Add("https://tecomnet.net/TECOMNET/webhook/ValidatePay/")
 
         listener.Start()
@@ -67,6 +72,8 @@ Module Module1
                     Dim resultado As Boolean = Await ProcesarNotificacionAltan(context, request, response)
                 Case "/TECOMNET/webhook/ValidatePay/"
                     Await ProcesarNotificacionEpayment(request, response)
+                Case "/TECOMNET/webhook/notificadorPrimerUso/"
+                    Await notificadorPrimerUso(request, response)
                 Case Else
                     Console.WriteLine($"Ruta no reconocida: {requestPath}")
                     response.StatusCode = 404 ' Not Found
@@ -219,6 +226,38 @@ Module Module1
 
         Catch ex As Exception
             Console.Write(ex.Message)
+            Return False
+        End Try
+        Return True
+    End Function
+    Public Async Function notificadorPrimerUso(request As HttpListenerRequest, response As HttpListenerResponse) As Task(Of Boolean)
+        Try
+            Console.WriteLine(String.Format("----{0}----", Now.ToString))
+            Console.WriteLine(String.Format("----{0}----", "Primer Uso TecomnetIOT"))
+
+            ' Procesa la notificación recibida (puedes adaptarlo a tus necesidades)
+            Dim requestBody As String
+            Using reader As New IO.StreamReader(request.InputStream, request.ContentEncoding)
+                requestBody = reader.ReadToEnd()
+            End Using
+
+            Console.WriteLine("Datos recibidos:")
+            Console.WriteLine(requestBody)
+
+            'Dim order As PaymentOrder = JsonConvert.DeserializeObject(Of PaymentOrder)(requestBody)
+
+            'If order.estatus_pago = "approved" Then
+            '    ' El pago fue exitoso                            
+            '    Await ActulizaMovimientosTecomnet(order)
+            'End If
+
+            ' Responde con 200 OK
+            Dim responseString As String = "OK"
+            Dim buffer() As Byte = Encoding.UTF8.GetBytes(responseString)
+            response.ContentLength64 = buffer.Length
+            response.OutputStream.Write(buffer, 0, buffer.Length)
+        Catch ex As Exception
+            Console.WriteLine(ex.Message)
             Return False
         End Try
         Return True

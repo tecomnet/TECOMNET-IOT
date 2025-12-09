@@ -7,20 +7,24 @@ Imports ModelsTECOMNET.Enums.TECOMNET
 Imports ModelsTECOMNET.TECOMNET
 Imports ModelsTECOMNET.TECOMNET.AltanRedes
 Public Class ConectionAltanRedes
-    'Public Const url As String = "https://altanredes-prod.apigee.net/cm-sandbox/v1/subscribers"
-    'Public Const EndPoint As String = "https://altanredes-prod.apigee.net/v1/oauth/accesstoken?grant-type=client_credentials"
-    Public Const url As String = "https://altanredes-prod.apigee.net/cm/v1/subscribers"
-    Public Const EndPoint As String = "https://altanredes-prod.apigee.net/v1/oauth/accesstoken?grant-type=client_credentials"
 #Region "POST"
     Function PostAPIService(MSISDN As String, jsonData As String, Method As AltanApisMethod) As AltanResult
         Dim EndPoint As String = String.Empty
         Dim token As String = String.Empty
+        Dim url As String = String.Empty
+
+        If Val(ConfigurationManager.AppSettings("IsSanbox").ToString) = 1 Then
+            url = ConfigurationManager.AppSettings("UrlBaseTest").ToString
+        Else
+            url = ConfigurationManager.AppSettings("UrlBaseProd").ToString
+        End If
 
         Select Case Method
             Case AltanApisMethod.Resumen
-                EndPoint = String.Format("{0}/{1}/resume", url, MSISDN)
+                EndPoint = String.Format("{0}/v1/subscribers/{1}/resume", url, MSISDN)
+
             Case AltanApisMethod.Suspend
-                EndPoint = String.Format("{0}/{1}/suspend", url, MSISDN)
+                EndPoint = String.Format("{0}/v1/subscribers/{1}/suspend", url, MSISDN)
         End Select
 
         Dim result As New AltanResult
@@ -95,13 +99,19 @@ Public Class ConectionAltanRedes
         Try
             ' Crear el cliente HTTP
             Using client As New HttpClient()
-
+                Dim UrlEndPoint As String
                 Dim content As New StringContent("")
                 ' Configurar los encabezados (headers)
                 client.DefaultRequestHeaders.Add("Authorization", "Basic " & ConfigurationManager.AppSettings("ALConexion").ToString) '                
 
+                If Val(ConfigurationManager.AppSettings("IsSanbox").ToString) = 1 Then
+                    UrlEndPoint = ConfigurationManager.AppSettings("UrlTokenTest").ToString
+                Else
+                    UrlEndPoint = ConfigurationManager.AppSettings("UrlTokenProd").ToString
+                End If
+
                 ' Enviar la solicitud POST de forma síncrona
-                Dim response As HttpResponseMessage = client.PostAsync(EndPoint, content).Result
+                Dim response As HttpResponseMessage = client.PostAsync(UrlEndPoint, content).Result
 
                 ' Verificar si la respuesta fue exitosa
                 If response.IsSuccessStatusCode Then
@@ -135,9 +145,17 @@ Public Class ConectionAltanRedes
     Function GetAPIService(MSISDN As String, Method As AltanApisMethod) As AltanResult
         Dim EndPoint As String = String.Empty
         Dim token As String = String.Empty
+        Dim url As String = String.Empty
+
+        If Val(ConfigurationManager.AppSettings("IsSanbox").ToString) = 1 Then
+            url = ConfigurationManager.AppSettings("UrlBaseTest").ToString
+        Else
+            url = ConfigurationManager.AppSettings("UrlBaseProd").ToString
+        End If
+
         Select Case Method
             Case AltanApisMethod.Profile
-                EndPoint = String.Format("{0}/{1}/profile", url, MSISDN)
+                EndPoint = String.Format("{0}/v1/subscribers/{1}/profile", url, MSISDN)
         End Select
 
         Dim result As New AltanResult
