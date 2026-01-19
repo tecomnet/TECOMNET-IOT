@@ -17,7 +17,6 @@ Public Class RechargeSure
         Dim objToken As New LinkXResult
         Dim objController As New ControllerProduct
         Dim ObjControllerSIM As New ControllerSIM
-        Dim objSIM As New SIM
 
         objToken = objConection.Authorization()
         If objToken.ErrorID = LinkXErrors.Susssuccessful Then

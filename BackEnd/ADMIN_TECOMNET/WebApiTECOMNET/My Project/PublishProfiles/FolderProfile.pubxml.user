@@ -4,7 +4,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project>
   <PropertyGroup>
-    <History>True|2025-10-10T13:36:43.0963938Z||;True|2025-09-25T13:41:55.9840927-06:00||;True|2025-09-24T20:34:22.7410323-06:00||;True|2025-08-08T16:49:39.4242906-06:00||;True|2025-08-08T16:11:22.0674386-06:00||;True|2025-08-08T11:44:05.5210559-06:00||;True|2025-08-04T07:49:53.0638536-06:00||;True|2025-08-04T07:40:58.6097198-06:00||;True|2025-07-31T17:55:49.2805833-06:00||;True|2025-07-31T17:53:15.3271371-06:00||;True|2025-07-31T17:28:26.6004229-06:00||;True|2025-07-30T16:35:02.8117719-06:00||;True|2025-07-28T10:33:50.0675461-06:00||;True|2025-03-27T19:16:31.0408344-06:00||;True|2025-03-27T18:53:39.7813108-06:00||;True|2025-03-27T18:42:18.2923644-06:00||;True|2025-03-27T18:13:32.7283392-06:00||;True|2025-03-21T11:54:03.7990168-06:00||;True|2025-03-21T11:41:58.3229944-06:00||;True|2025-03-21T11:32:42.4501884-06:00||;True|2025-03-21T11:12:07.8973471-06:00||;True|2025-03-21T11:11:55.9372165-06:00||;True|2025-03-05T14:05:04.3396434-06:00||;True|2025-03-02T19:55:14.8987639-06:00||;True|2025-03-02T16:56:01.5247452-06:00||;</History>
+    <History>True|2026-01-19T00:20:03.9679829Z||;True|2026-01-18T17:53:45.4340568-06:00||;True|2026-01-17T23:24:09.7259229-06:00||;True|2026-01-17T22:54:16.4049209-06:00||;True|2026-01-17T22:14:02.1212320-06:00||;True|2026-01-17T21:33:56.1903844-06:00||;True|2026-01-17T20:32:38.7195091-06:00||;True|2026-01-15T23:40:13.6936573-06:00||;True|2026-01-15T20:37:04.6042557-06:00||;True|2026-01-14T11:47:21.0251024-06:00||;True|2026-01-13T10:40:00.3811925-06:00||;False|2026-01-13T10:38:54.1806429-06:00||;True|2026-01-08T15:33:36.4434494-06:00||;True|2026-01-08T13:42:59.7848930-06:00||;True|2025-10-10T07:36:43.0963938-06:00||;True|2025-09-25T13:41:55.9840927-06:00||;True|2025-09-24T20:34:22.7410323-06:00||;True|2025-08-08T16:49:39.4242906-06:00||;True|2025-08-08T16:11:22.0674386-06:00||;True|2025-08-08T11:44:05.5210559-06:00||;True|2025-08-04T07:49:53.0638536-06:00||;True|2025-08-04T07:40:58.6097198-06:00||;True|2025-07-31T17:55:49.2805833-06:00||;True|2025-07-31T17:53:15.3271371-06:00||;True|2025-07-31T17:28:26.6004229-06:00||;True|2025-07-30T16:35:02.8117719-06:00||;True|2025-07-28T10:33:50.0675461-06:00||;True|2025-03-27T19:16:31.0408344-06:00||;True|2025-03-27T18:53:39.7813108-06:00||;True|2025-03-27T18:42:18.2923644-06:00||;True|2025-03-27T18:13:32.7283392-06:00||;True|2025-03-21T11:54:03.7990168-06:00||;True|2025-03-21T11:41:58.3229944-06:00||;True|2025-03-21T11:32:42.4501884-06:00||;True|2025-03-21T11:12:07.8973471-06:00||;True|2025-03-21T11:11:55.9372165-06:00||;True|2025-03-05T14:05:04.3396434-06:00||;True|2025-03-02T19:55:14.8987639-06:00||;True|2025-03-02T16:56:01.5247452-06:00||;</History>
     <LastFailureDetails />
     <_PublishTargetUrl>C:\Users\WINSEF\source\repos\TECOMNET-IOT\BackEnd\ADMIN_TECOMNET\WebApiTECOMNET\bin\app.publish\</_PublishTargetUrl>
   </PropertyGroup>
@@ -79,13 +79,13 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>09/10/2013 17:29:20</publishTime>
     </File>
     <File Include="bin/DatabaseConnectionTECOMNET.dll">
-      <publishTime>08/08/2025 11:43:59</publishTime>
+      <publishTime>01/18/2026 17:53:40</publishTime>
     </File>
     <File Include="bin/DatabaseConnectionTECOMNET.dll.config">
-      <publishTime>05/31/2025 14:48:33</publishTime>
+      <publishTime>09/24/2025 19:44:19</publishTime>
     </File>
     <File Include="bin/DatabaseConnectionTECOMNET.pdb">
-      <publishTime>08/08/2025 11:43:59</publishTime>
+      <publishTime>01/18/2026 17:53:40</publishTime>
     </File>
     <File Include="bin/es/System.Net.Http.Formatting.resources.dll">
       <publishTime>05/27/2022 18:36:16</publishTime>
@@ -148,10 +148,10 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>04/11/2022 20:09:46</publishTime>
     </File>
     <File Include="bin/ModelsTECOMNET.dll">
-      <publishTime>08/08/2025 11:43:59</publishTime>
+      <publishTime>01/18/2026 17:53:39</publishTime>
     </File>
     <File Include="bin/ModelsTECOMNET.pdb">
-      <publishTime>08/08/2025 11:43:59</publishTime>
+      <publishTime>01/18/2026 17:53:39</publishTime>
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
       <publishTime>03/08/2023 07:09:56</publishTime>
@@ -367,13 +367,13 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>05/28/2022 00:42:50</publishTime>
     </File>
     <File Include="bin/WebApiTECOMNET.dll">
-      <publishTime>08/08/2025 11:44:00</publishTime>
+      <publishTime>01/18/2026 18:19:57</publishTime>
     </File>
     <File Include="bin/WebApiTECOMNET.pdb">
-      <publishTime>08/08/2025 11:44:00</publishTime>
+      <publishTime>01/18/2026 18:19:57</publishTime>
     </File>
     <File Include="bin/WebApiTECOMNET.xml">
-      <publishTime>08/08/2025 11:44:00</publishTime>
+      <publishTime>01/18/2026 18:19:57</publishTime>
     </File>
     <File Include="bin/WebGrease.dll">
       <publishTime>01/23/2014 13:57:34</publishTime>
@@ -565,7 +565,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>02/24/2025 13:45:39</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>08/04/2025 07:40:56</publishTime>
+      <publishTime>09/24/2025 20:34:19</publishTime>
     </File>
   </ItemGroup>
 </Project>

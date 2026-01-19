@@ -137,4 +137,39 @@ Public Class ControllerCar
         End Try
         Return objCar
     End Function
+    Public Function GetCarDetailSIMByVIN(ByVal VIN As String) As CarDetailSIM
+        Dim controller As New Controller
+        Dim objCar As New CarDetailSIM
+        objCar.VIN = VIN
+        Try
+            Dim dt As New DataSet
+            dt = controller.TransactionsCar(Of DataSet)(10, objCar)
+
+            For Each dr As DataRow In dt.Tables(0).Rows
+                objCar = ConvertObject.CarsDetail(dr)
+            Next
+        Catch ex As Exception
+            Return objCar
+        End Try
+        Return objCar
+    End Function
+    Public Function GetInstallationStatusByVIN(ByVal VIN As String) As InstallationStatus
+        Dim controller As New Controller
+        Dim objInstallationStatus As New InstallationStatus
+        Dim objCar As New Car
+
+        objCar.VIN = VIN
+
+        Try
+            Dim dt As New DataSet
+            dt = controller.TransactionsCar(Of DataSet)(11, objCar)
+
+            For Each dr As DataRow In dt.Tables(0).Rows
+                objInstallationStatus = ConvertObject.InstallationStatus(dr)
+            Next
+        Catch ex As Exception
+            Return objInstallationStatus
+        End Try
+        Return objInstallationStatus
+    End Function
 End Class

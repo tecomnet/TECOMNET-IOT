@@ -10,6 +10,7 @@
         Public Property CreationDate As DateTime
         Public Property LastDate As DateTime?
         Public Sub New()
+            Me.CarID = 0
             Me.VIN = String.Empty
             Me.brand = String.Empty
             Me.CreationDate = Now
@@ -22,5 +23,8 @@
         Public Property CustomerName As String
         Public Property RFC As String
     End Class
-
+    Public Class CarDetailSIM
+        Inherits CarDetail
+        Public Property SIM As New SIM
+    End Class
 End Namespace

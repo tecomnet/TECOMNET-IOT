@@ -5,6 +5,7 @@ Imports DatabaseConnectionTECOMNET
 Imports ModelsTECOMNET.Enums.TECOMNET
 Imports ModelsTECOMNET.TECOMNET
 Imports WebApiTECOMNET.API.Tecomnet
+Imports System.Drawing
 
 Public Class Functions
     ' Método para convertir DataTable a CSV en memoria
@@ -94,5 +95,67 @@ Public Class Functions
         Next
 
         Return dt
+    End Function
+    Public Shared Function GuardarImagenDesdeBase64(ByVal base64String As String,
+                                    ByVal carpetaDestino As String,
+                                    ByVal nombreArchivo As String) As Boolean
+        Try
+            ' Validar que el Base64 no esté vacío
+            If String.IsNullOrEmpty(base64String) Then
+                Throw New ArgumentException("El string Base64 está vacío")
+            End If
+
+            ' Crear carpeta si no existe
+            If Not Directory.Exists(carpetaDestino) Then
+                Directory.CreateDirectory(carpetaDestino)
+            End If
+
+            ' Limpiar el Base64 (remover encabezado si existe)
+            Dim cleanBase64 As String = base64String
+
+            ' Remover encabezado data:image si está presente
+            If base64String.Contains(",") Then
+                cleanBase64 = base64String.Substring(base64String.IndexOf(",") + 1)
+            End If
+
+            ' Convertir Base64 a bytes
+            Dim imageBytes As Byte() = Convert.FromBase64String(cleanBase64)
+
+            ' Convertir bytes a Image
+            Using ms As New MemoryStream(imageBytes, 0, imageBytes.Length)
+                ms.Write(imageBytes, 0, imageBytes.Length)
+
+                ' Crear imagen desde MemoryStream
+                Dim imagen As Image = Image.FromStream(ms, True)
+
+                ' Asegurar que el nombre tenga extensión .jpg
+                Dim nombreCompleto As String = nombreArchivo
+                If Not nombreArchivo.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) AndAlso
+                   Not nombreArchivo.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) Then
+                    nombreCompleto = nombreArchivo & ".jpg"
+                End If
+
+                ' Ruta completa del archivo
+                Dim rutaCompleta As String = Path.Combine(carpetaDestino, nombreCompleto)
+
+                ' Guardar como JPG
+                imagen.Save(rutaCompleta, System.Drawing.Imaging.ImageFormat.Jpeg)
+
+                Return True
+            End Using
+            Return True
+        Catch ex As ArgumentNullException
+            'Console.WriteLine("Error: El string Base64 es nulo")
+            Return False
+            Throw
+        Catch ex As FormatException
+            'Console.WriteLine("Error: Formato Base64 inválido")
+            Return False
+            Throw
+        Catch ex As Exception
+            'Console.WriteLine($"Error al guardar la imagen: {ex.Message}")
+            Return False
+            Throw
+        End Try
     End Function
 End Class

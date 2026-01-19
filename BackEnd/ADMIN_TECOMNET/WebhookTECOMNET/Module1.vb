@@ -190,7 +190,7 @@ Module Module1
             objCustomerPayments.PurchaseDate = Now
             objCustomerPayments.PaymentAmount = objProducto.Price
             objCustomerPayments.MethodPayment = MethodPayment.Card
-            objCustomerPayments.InvoiceRequired = objPaymentRequestTecomnet.InvoiceRequired
+            objCustomerPayments.InvoiceRequired = False
             ObjControllerCustomerPayments.RegisterSale(objCustomerPayments)
 
             'Actualizamos orden de compra

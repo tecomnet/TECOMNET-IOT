@@ -59,69 +59,6 @@ Partial Public Class SurePay
     Protected WithEvents lblTotal As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''Control txtNombreRazonSocial.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtNombreRazonSocial As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control ddlRegimenFiscal.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents ddlRegimenFiscal As Global.System.Web.UI.WebControls.DropDownList
-
-    '''<summary>
-    '''Control txtCP.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtCP As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtRFC.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtRFC As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control cbRequiereFactura.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents cbRequiereFactura As Global.System.Web.UI.WebControls.CheckBox
-
-    '''<summary>
-    '''Control txtEmail.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtEmail As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''Control txtTelefono.
-    '''</summary>
-    '''<remarks>
-    '''Campo generado automáticamente.
-    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-    '''</remarks>
-    Protected WithEvents txtTelefono As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
     '''Control rblpaymentMethod.
     '''</summary>
     '''<remarks>

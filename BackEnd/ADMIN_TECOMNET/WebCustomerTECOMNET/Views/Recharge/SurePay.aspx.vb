@@ -46,9 +46,6 @@ Public Class SurePay
             If ProductID = 0 Or SIMID = 0 Then
                 Response.Redirect("~/Views/Recharge/Recharge.aspx")
             End If
-            txtNombreRazonSocial.Text = Customer.CustomerName
-            txtEmail.Text = Customer.Email
-            txtTelefono.Text = Customer.PhoneNumber
             GetProduct()
             CreatePayLinkX()
         End If
@@ -74,19 +71,17 @@ Public Class SurePay
         Dim objSIM As New SIM
         Dim objControllerPaymentRequest As New ControllerPaymentRequest
         Dim objPaymentRequest As New PaymentRequestTecomnet
+        Dim nuevoGuid As Guid = Guid.NewGuid()
+        Dim OrderID As String = String.Format("{0}|{1}", "BYD", nuevoGuid.ToString())
 
         objProduct = objController.GetProduct(ProductID)
         objSIM = ObjControllerSIM.GetSIM(Me.SIMID)
-
-        objPaymentRequest.OrderID = 0
+        objPaymentRequest.RequestID = 0
+        objPaymentRequest.OrderID = OrderID
         objPaymentRequest.SIMID = Me.SIMID
         objPaymentRequest.ProductID = Me.ProductID
         objPaymentRequest.CarID = objSIM.CarID
         objPaymentRequest.CustomerID = Me.Customer.CustomerID
-        objPaymentRequest.InvoiceRequired = 0
-        objPaymentRequest.CP = ""
-        objPaymentRequest.RFC = ""
-        objPaymentRequest.Regimen = ""
         objPaymentRequest.estatus_pago = "created"
         objPaymentRequest.id_transaction = ""
         objPaymentRequest.auth_number = ""
@@ -158,12 +153,7 @@ Public Class SurePay
     End Sub
 
     Protected Sub btnContinuar_Click(sender As Object, e As EventArgs)
-        Me.objPaymentRequested.CP = txtCP.Text
-        Me.objPaymentRequested.InvoiceRequired = cbRequiereFactura.Checked
-        Me.objPaymentRequested.RFC = txtRFC.Text
-        Me.objPaymentRequested.Regimen = ddlRegimenFiscal.SelectedItem.Value
         Me.objPaymentRequested.estatus_pago = "wait"
-
         Dim objControllerPaymentRequest As New ControllerPaymentRequest
         If objControllerPaymentRequest.UpdatePaymentRequest(Me.objPaymentRequested) > 0 Then
             Response.Redirect(ViewState("Url").ToString)

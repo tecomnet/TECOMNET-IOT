@@ -214,6 +214,13 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@AdditionalMB", SqlDbType.Int, IIf(IsNothing(objSIM.AdditionalMB), DBNull.Value, objSIM.AdditionalMB)))
         parametros.Add(ConnectionDB.ArmaParametro("@Active", SqlDbType.Bit, objSIM.Active))
         parametros.Add(ConnectionDB.ArmaParametro("@CreationDate", SqlDbType.DateTime, IIf(IsNothing(objSIM.CreationDate), Now, objSIM.CreationDate)))
+        parametros.Add(ConnectionDB.ArmaParametro("@InstallationDate", SqlDbType.DateTime, IIf(IsNothing(objSIM.InstallationDate), DBNull.Value, objSIM.InstallationDate)))
+        parametros.Add(ConnectionDB.ArmaParametro("@ActivationDate", SqlDbType.DateTime, IIf(IsNothing(objSIM.ActivationDate), DBNull.Value, objSIM.ActivationDate)))
+        parametros.Add(ConnectionDB.ArmaParametro("@ReactivationDate", SqlDbType.DateTime, IIf(IsNothing(objSIM.ReactivationDate), DBNull.Value, objSIM.ReactivationDate)))
+        parametros.Add(ConnectionDB.ArmaParametro("@SuspensionDate", SqlDbType.DateTime, IIf(IsNothing(objSIM.SuspensionDate), DBNull.Value, objSIM.SuspensionDate)))
+        parametros.Add(ConnectionDB.ArmaParametro("@BillingStartDate", SqlDbType.DateTime, IIf(IsNothing(objSIM.BillingStartDate), DBNull.Value, objSIM.BillingStartDate)))
+        parametros.Add(ConnectionDB.ArmaParametro("@CustomerSaleDate", SqlDbType.DateTime, IIf(IsNothing(objSIM.CustomerSaleDate), DBNull.Value, objSIM.CustomerSaleDate)))
+        parametros.Add(ConnectionDB.ArmaParametro("@Status", SqlDbType.NVarChar, IIf(IsNothing(objSIM.Status), DBNull.Value, objSIM.Status)))
         parametros.Add(ConnectionDB.ArmaParametro("@LastDate", SqlDbType.DateTime, IIf(IsNothing(objSIM.LastDate), DBNull.Value, objSIM.LastDate)))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
 
@@ -267,15 +274,12 @@ Public Class Controller
     Public Function TransactionsPaymentRequest(Of ReturnType)(opcion As Integer, ByVal objPaymentRequest As PaymentRequestTecomnet) As ReturnType
         Dim parametros As New Collection
         parametros.Add(ConnectionDB.ArmaParametro("@opcion", SqlDbType.Int, opcion))
-        parametros.Add(ConnectionDB.ArmaParametro("@OrderID", SqlDbType.Int, objPaymentRequest.OrderID))
+        parametros.Add(ConnectionDB.ArmaParametro("@RequestID", SqlDbType.Int, objPaymentRequest.RequestID))
+        parametros.Add(ConnectionDB.ArmaParametro("@OrderID", SqlDbType.NVarChar, objPaymentRequest.OrderID))
         parametros.Add(ConnectionDB.ArmaParametro("@SIMID", SqlDbType.Int, objPaymentRequest.SIMID))
         parametros.Add(ConnectionDB.ArmaParametro("@ProductID", SqlDbType.Int, objPaymentRequest.ProductID))
         parametros.Add(ConnectionDB.ArmaParametro("@CarID", SqlDbType.Int, objPaymentRequest.CarID))
         parametros.Add(ConnectionDB.ArmaParametro("@CustomerID", SqlDbType.Int, objPaymentRequest.CustomerID))
-        parametros.Add(ConnectionDB.ArmaParametro("@InvoiceRequired", SqlDbType.Bit, objPaymentRequest.InvoiceRequired))
-        parametros.Add(ConnectionDB.ArmaParametro("@CP", SqlDbType.NVarChar, objPaymentRequest.CP))
-        parametros.Add(ConnectionDB.ArmaParametro("@RFC", SqlDbType.NVarChar, objPaymentRequest.RFC))
-        parametros.Add(ConnectionDB.ArmaParametro("@Regimen", SqlDbType.NVarChar, objPaymentRequest.Regimen))
         parametros.Add(ConnectionDB.ArmaParametro("@estatus_pago", SqlDbType.NVarChar, IIf(IsNothing(objPaymentRequest.estatus_pago), DBNull.Value, objPaymentRequest.estatus_pago)))
         parametros.Add(ConnectionDB.ArmaParametro("@id_transaction", SqlDbType.NVarChar, IIf(IsNothing(objPaymentRequest.id_transaction), DBNull.Value, objPaymentRequest.id_transaction)))
         parametros.Add(ConnectionDB.ArmaParametro("@auth_number", SqlDbType.NVarChar, IIf(IsNothing(objPaymentRequest.auth_number), DBNull.Value, objPaymentRequest.auth_number)))
@@ -366,7 +370,34 @@ Public Class Controller
         Return DirectCast(result, ReturnType)
 
     End Function
+    Public Function TransactionsInstallationEvidence(Of ReturnType)(opcion As Integer, ByVal objInstallationEvidence As InstallationEvidence) As ReturnType
+        Dim parametros As New Collection
 
+        parametros.Add(ConnectionDB.ArmaParametro("@opcion", SqlDbType.Int, opcion))
+        parametros.Add(ConnectionDB.ArmaParametro("@VIN", SqlDbType.NVarChar, objInstallationEvidence.VIN))
+        parametros.Add(ConnectionDB.ArmaParametro("@PreviousVersion", SqlDbType.NVarChar, objInstallationEvidence.PreviousVersion))
+        parametros.Add(ConnectionDB.ArmaParametro("@CurrentVersion", SqlDbType.NVarChar, objInstallationEvidence.CurrentVersion))
+        parametros.Add(ConnectionDB.ArmaParametro("@PreviousSIM", SqlDbType.NVarChar, objInstallationEvidence.PreviousSIM))
+        parametros.Add(ConnectionDB.ArmaParametro("@Connectivity", SqlDbType.NVarChar, objInstallationEvidence.Connectivity))
+        parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        Dim cnx As New ConnectionDB
+        cnx.ActivarConexion()
+        Dim result As Object
+        If GetType(ReturnType) Is GetType(Integer) Then
+            result = cnx.ejecutasp_int("[sp_InstallationEvidence]", parametros)
+        ElseIf GetType(ReturnType) Is GetType(DataSet) Then
+            result = cnx.ejecutasp_consulta("[sp_InstallationEvidence]", parametros)
+        ElseIf GetType(ReturnType) Is GetType(Boolean) Then
+            result = cnx.ejecutasp("[sp_InstallationEvidence]", parametros)
+        Else
+            Throw New NotSupportedException("No se puede convertir de '" & GetType(ReturnType).ToString & "'")
+        End If
+        cnx.DesactivarConexion()
+        cnx = Nothing
+        Return DirectCast(result, ReturnType)
+
+    End Function
     Public Function TransactionsTickets(Of ReturnType)(opcion As Integer, ByVal objTicket As Ticket) As ReturnType
         Dim parametros As New Collection
 
@@ -402,5 +433,33 @@ Public Class Controller
         cnx = Nothing
         Return DirectCast(result, ReturnType)
 
+    End Function
+    Public Function TransactionsLogMovimientosInstalacion(Of ReturnType)(opcion As Integer, ByVal objLogMovimientosInstalacion As LogMovimientosInstalacion) As ReturnType
+        Dim parametros As New Collection
+
+        parametros.Add(ConnectionDB.ArmaParametro("@opcion", SqlDbType.Int, opcion))
+        parametros.Add(ConnectionDB.ArmaParametro("@LogID", SqlDbType.Int, objLogMovimientosInstalacion.LogID))
+        parametros.Add(ConnectionDB.ArmaParametro("@UsuarioID", SqlDbType.Int, objLogMovimientosInstalacion.UsuarioID))
+        parametros.Add(ConnectionDB.ArmaParametro("@Operacion", SqlDbType.NVarChar, objLogMovimientosInstalacion.Operacion))
+        parametros.Add(ConnectionDB.ArmaParametro("@VIN", SqlDbType.NVarChar, objLogMovimientosInstalacion.VIN))
+        parametros.Add(ConnectionDB.ArmaParametro("@ICCID", SqlDbType.NVarChar, objLogMovimientosInstalacion.ICCID))
+        parametros.Add(ConnectionDB.ArmaParametro("@Fecha", SqlDbType.DateTime, objLogMovimientosInstalacion.Fecha))
+        parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        Dim cnx As New ConnectionDB
+        cnx.ActivarConexion()
+        Dim result As Object
+        If GetType(ReturnType) Is GetType(Integer) Then
+            result = cnx.ejecutasp_int("[sp_LogMovimientosInstalacion]", parametros)
+        ElseIf GetType(ReturnType) Is GetType(DataSet) Then
+            result = cnx.ejecutasp_consulta("[sp_LogMovimientosInstalacion]", parametros)
+        ElseIf GetType(ReturnType) Is GetType(Boolean) Then
+            result = cnx.ejecutasp("[sp_LogMovimientosInstalacion]", parametros)
+        Else
+            Throw New NotSupportedException("No se puede convertir de '" & GetType(ReturnType).ToString & "'")
+        End If
+        cnx.DesactivarConexion()
+        cnx = Nothing
+        Return DirectCast(result, ReturnType)
     End Function
 End Class

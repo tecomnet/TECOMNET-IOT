@@ -10,6 +10,8 @@ Imports System.IO
 Imports System.Threading.Tasks
 Imports System.Text.Json
 Imports System.Web.WebSockets
+Imports System.Drawing
+Imports ModelsTECOMNET
 
 Namespace Controllers.BYD
     <Authorize>
@@ -892,10 +894,10 @@ Namespace Controllers.BYD
                 Return errorResponse
             End Try
         End Function
-        '5.18	Registrar Vehículo.- No documentado
+        '6.1	Registrar Vehículo y asociación a SIM.- No documentado
         <HttpPost>
-        <Route("api/BYD/RegistrarVehiculo/VIN/{VIN}/ICCID/{ICCID}")>
-        Public Function RegistrarVehículo(VIN As String, ICCID As String) As HttpResponseMessage
+        <Route("api/BYD/RegistrarVehiculo/VIN/{VIN}/ICCID/{ICCID}/UserID/{UserID}")>
+        Public Function RegistrarVehículo(VIN As String, ICCID As String, UserID As Integer) As HttpResponseMessage
             Try
                 Dim objcar As New Car
                 Dim objSIM As New SIM
@@ -933,7 +935,29 @@ Namespace Controllers.BYD
                         })
                     Else
                         objSIM.CarID = objcar.CarID
+                        objSIM.InstallationDate = Now
+                        objSIM.ActivationDate = Now
+                        objSIM.BillingStartDate = Now
+                        objSIM.Active = True
+                        objSIM.Status = "Active"
+
                         If (objControllerSIM.AssociateSIMToCar(objSIM) > 0) Then
+                            Dim ControllerInstallationEvidence As New ControllerInstallationEvidence
+                            Dim objInstallationEvidence As New InstallationEvidence
+                            Dim objControllerLogMovimientosInstalacion As New ControllerLogMovimientosInstalacion
+                            Dim objLogMovimientosInstalacion As New LogMovimientosInstalacion
+
+                            objInstallationEvidence.VIN = objcar.VIN
+                            ControllerInstallationEvidence.AddInstallationEvidence(objInstallationEvidence)
+
+                            objLogMovimientosInstalacion.LogID = 0
+                            objLogMovimientosInstalacion.UsuarioID = UserID
+                            objLogMovimientosInstalacion.Fecha = Now
+                            objLogMovimientosInstalacion.ICCID = ICCID
+                            objLogMovimientosInstalacion.VIN = VIN
+                            objLogMovimientosInstalacion.Operacion = "Instalacion de SIM"
+                            objControllerLogMovimientosInstalacion.AddLog(objLogMovimientosInstalacion)
+
                             Return Request.CreateResponse(HttpStatusCode.OK, New With {
                             Key .Detalle = "El vehículo se registro correctamente"
                             })
@@ -951,6 +975,118 @@ Namespace Controllers.BYD
                     Key .error = "Ocurrió un error al generar la solicitud.",
                     Key .detalle = ex.Message
                 })
+            End Try
+        End Function
+        '6.2	ObtenerEstadoInstalacion VIN .- No documentado
+        <HttpGet>
+        <Route("api/BYD/ObtenerEstadoInstalacion/VIN/{VIN}")>
+        Public Function ObtenerEstadoInstalacion(VIN As String) As HttpResponseMessage
+            Try
+                Dim objControllerCar As New ControllerCar
+                Dim objInstallationStatus As New InstallationStatus
+
+                objInstallationStatus = objControllerCar.GetInstallationStatusByVIN(VIN)
+
+                If objInstallationStatus.VIN = "" Then
+                    Return Request.CreateResponse(HttpStatusCode.NoContent, New With {
+                        Key .mensaje = "No hay datos disponibles."
+                        })
+                Else
+                    If objInstallationStatus.CurrentVersion <> "" And objInstallationStatus.PreviousVersion <> "" And objInstallationStatus.PreviousSIM <> "" And objInstallationStatus.Connectivity <> "" Then
+                        objInstallationStatus.State = "Terminado"
+                    Else
+                        objInstallationStatus.State = "Pendiente"
+                    End If
+                    Return Request.CreateResponse(HttpStatusCode.OK, objInstallationStatus)
+                End If
+
+            Catch ex As Exception
+                ' Manejo de errores: devuelve un mensaje JSON con el error
+                Dim errorResponse As HttpResponseMessage = Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                Key .error = "Ocurrió un error al generar la solicitud.",
+                Key .detalle = ex.Message
+            })
+                Return errorResponse
+            End Try
+        End Function
+        '6.3	AsociarEvidenciaInstalacion VIN .- No documentado
+        <HttpPut>
+        <Route("api/BYD/AsociarEvidenciaInstalacion")>
+        Public Function AsociarEvidenciaInstalacion(objInstallationEvidence As InstallationEvidence) As HttpResponseMessage
+            Try
+
+                If Not ModelState.IsValid Then
+                    Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                        Key .mensaje = "Estructura enviada incorrectamente."
+                        })
+                End If
+
+                If objInstallationEvidence.VIN = "" Then
+                    Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                        Key .mensaje = "El número VIN es obligatorio."
+                        })
+                Else
+                    Dim objControllerCar As New ControllerCar
+                    Dim objInstallationStatus As New InstallationStatus
+
+                    objInstallationStatus = objControllerCar.GetInstallationStatusByVIN(objInstallationEvidence.VIN)
+
+                    If objInstallationStatus.VIN = "" Then
+                        Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                        Key .mensaje = "El VIN asociado no se encuentra registrado."
+                        })
+                    Else
+                        Dim objControllerInstallationEvidence As New ControllerInstallationEvidence
+                        Dim ruta As String = "C:\TecomentFiles\EvidenciasInstalacion\" & objInstallationStatus.VIN
+
+                        If objInstallationEvidence.CurrentVersion <> "" Then
+                            If Functions.GuardarImagenDesdeBase64(objInstallationEvidence.CurrentVersion, ruta, "CurrentVersion.jpg") Then
+                                objInstallationEvidence.CurrentVersion = "CurrentVersion.jpg"
+                            Else
+                                objInstallationEvidence.CurrentVersion = ""
+                            End If
+                        End If
+
+                        If objInstallationEvidence.PreviousVersion <> "" Then
+                            If Functions.GuardarImagenDesdeBase64(objInstallationEvidence.PreviousVersion, ruta, "PreviousVersion.jpg") Then
+                                objInstallationEvidence.PreviousVersion = "PreviousVersion.jpg"
+                            Else
+                                objInstallationEvidence.PreviousVersion = ""
+                            End If
+                        End If
+
+                        If objInstallationEvidence.PreviousSIM <> "" Then
+                            If Functions.GuardarImagenDesdeBase64(objInstallationEvidence.PreviousSIM, ruta, "PreviousSIM.jpg") Then
+                                objInstallationEvidence.PreviousSIM = "PreviousSIM.jpg"
+                            Else
+                                objInstallationEvidence.PreviousSIM = ""
+                            End If
+                        End If
+
+                        If objInstallationEvidence.Connectivity <> "" Then
+                            If Functions.GuardarImagenDesdeBase64(objInstallationEvidence.Connectivity, ruta, "Connectivity.jpg") Then
+                                objInstallationEvidence.Connectivity = "Connectivity.jpg"
+                            Else
+                                objInstallationEvidence.Connectivity = ""
+                            End If
+                        End If
+
+                        objControllerInstallationEvidence.UpdateInstallationEvidence(objInstallationEvidence)
+                        objInstallationStatus = objControllerCar.GetInstallationStatusByVIN(objInstallationEvidence.VIN)
+
+                        If objInstallationStatus.CurrentVersion <> "" And objInstallationStatus.PreviousVersion <> "" And objInstallationStatus.PreviousSIM <> "" And objInstallationStatus.Connectivity <> "" Then
+                            objInstallationStatus.State = "Terminado"
+                        End If
+                        Return Request.CreateResponse(HttpStatusCode.OK, objInstallationStatus)
+                    End If
+                End If
+            Catch ex As Exception
+                ' Manejo de errores: devuelve un mensaje JSON con el error
+                Dim errorResponse As HttpResponseMessage = Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                Key .error = "Ocurrió un error al generar la solicitud.",
+                Key .detalle = ex.Message
+            })
+                Return errorResponse
             End Try
         End Function
     End Class

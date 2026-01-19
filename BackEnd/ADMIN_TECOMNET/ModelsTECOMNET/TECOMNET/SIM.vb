@@ -19,6 +19,13 @@
         Public Property AdditionalMB As Integer?
         Public Property Active As Boolean
         Public Property CreationDate As DateTime
+        Public Property InstallationDate As DateTime?
+        Public Property ActivationDate As DateTime?
+        Public Property ReactivationDate As DateTime?
+        Public Property SuspensionDate As DateTime?
+        Public Property BillingStartDate As DateTime?
+        Public Property CustomerSaleDate As DateTime?
+        Public Property Status As String
         Public Property LastDate As DateTime?
 
         Public Sub New()

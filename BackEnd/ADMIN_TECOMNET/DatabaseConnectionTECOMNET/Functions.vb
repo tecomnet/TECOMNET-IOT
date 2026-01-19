@@ -9,6 +9,7 @@ Imports System.Security.Cryptography
 Imports System.Text
 Imports ModelsTECOMNET.Enums.TECOMNET
 Imports ModelsTECOMNET.TECOMNET
+Imports ModelsTECOMNET.TECOMNET.AltanRedes
 Imports ModelsTECOMNET.TECOMNET.LinkX
 
 Public Class ConvertObject
@@ -35,6 +36,13 @@ Public Class ConvertObject
             If dr.Table.Columns.Contains("AdditionalMB") Then objSIM.AdditionalMB = IIf(IsDBNull(dr("AdditionalMB")), Nothing, dr("AdditionalMB"))
             If dr.Table.Columns.Contains("Active") Then objSIM.Active = dr("Active")
             If dr.Table.Columns.Contains("CreationDate") Then objSIM.CreationDate = dr("CreationDate")
+            If dr.Table.Columns.Contains("InstallationDate") Then objSIM.InstallationDate = IIf(IsDBNull(dr("InstallationDate")), Nothing, dr("InstallationDate"))
+            If dr.Table.Columns.Contains("ActivationDate") Then objSIM.ActivationDate = IIf(IsDBNull(dr("ActivationDate")), Nothing, dr("ActivationDate"))
+            If dr.Table.Columns.Contains("ReactivationDate") Then objSIM.ReactivationDate = IIf(IsDBNull(dr("ReactivationDate")), Nothing, dr("ReactivationDate"))
+            If dr.Table.Columns.Contains("SuspensionDate") Then objSIM.SuspensionDate = IIf(IsDBNull(dr("SuspensionDate")), Nothing, dr("SuspensionDate"))
+            If dr.Table.Columns.Contains("BillingStartDate") Then objSIM.BillingStartDate = IIf(IsDBNull(dr("BillingStartDate")), Nothing, dr("BillingStartDate"))
+            If dr.Table.Columns.Contains("CustomerSaleDate") Then objSIM.CustomerSaleDate = IIf(IsDBNull(dr("CustomerSaleDate")), Nothing, dr("CustomerSaleDate"))
+            If dr.Table.Columns.Contains("Status") Then objSIM.Status = IIf(IsDBNull(dr("Status")), Nothing, dr("Status"))
             If dr.Table.Columns.Contains("LastDate") Then objSIM.LastDate = IIf(IsDBNull(dr("LastDate")), Nothing, dr("LastDate"))
         Catch ex As Exception
         End Try
@@ -64,6 +72,13 @@ Public Class ConvertObject
             If dr.Table.Columns.Contains("AdditionalMB") Then objSIM.AdditionalMB = IIf(IsDBNull(dr("AdditionalMB")), Nothing, dr("AdditionalMB"))
             If dr.Table.Columns.Contains("Active") Then objSIM.Active = dr("Active")
             If dr.Table.Columns.Contains("CreationDate") Then objSIM.CreationDate = dr("CreationDate")
+            If dr.Table.Columns.Contains("InstallationDate") Then objSIM.InstallationDate = IIf(IsDBNull(dr("InstallationDate")), Nothing, dr("InstallationDate"))
+            If dr.Table.Columns.Contains("ActivationDate") Then objSIM.ActivationDate = IIf(IsDBNull(dr("ActivationDate")), Nothing, dr("ActivationDate"))
+            If dr.Table.Columns.Contains("ReactivationDate") Then objSIM.ReactivationDate = IIf(IsDBNull(dr("ReactivationDate")), Nothing, dr("ReactivationDate"))
+            If dr.Table.Columns.Contains("SuspensionDate") Then objSIM.SuspensionDate = IIf(IsDBNull(dr("SuspensionDate")), Nothing, dr("SuspensionDate"))
+            If dr.Table.Columns.Contains("BillingStartDate") Then objSIM.BillingStartDate = IIf(IsDBNull(dr("BillingStartDate")), Nothing, dr("BillingStartDate"))
+            If dr.Table.Columns.Contains("CustomerSaleDate") Then objSIM.CustomerSaleDate = IIf(IsDBNull(dr("CustomerSaleDate")), Nothing, dr("CustomerSaleDate"))
+            If dr.Table.Columns.Contains("Status") Then objSIM.Status = IIf(IsDBNull(dr("Status")), Nothing, dr("Status"))
             If dr.Table.Columns.Contains("LastDate") Then objSIM.LastDate = IIf(IsDBNull(dr("LastDate")), Nothing, dr("LastDate"))
 
             If dr.Table.Columns.Contains("VIN") Then objSIM.VIN = IIf(IsDBNull(dr("VIN")), String.Empty, dr("VIN"))
@@ -255,10 +270,6 @@ Public Class ConvertObject
             If dr.Table.Columns.Contains("ProductID") Then objPaymentRequest.ProductID = dr("ProductID")
             If dr.Table.Columns.Contains("CarID") Then objPaymentRequest.CarID = dr("CarID")
             If dr.Table.Columns.Contains("CustomerID") Then objPaymentRequest.CustomerID = dr("CustomerID")
-            If dr.Table.Columns.Contains("InvoiceRequired") Then objPaymentRequest.InvoiceRequired = dr("InvoiceRequired")
-            If dr.Table.Columns.Contains("CP") Then objPaymentRequest.CP = dr("CP")
-            If dr.Table.Columns.Contains("RFC") Then objPaymentRequest.RFC = dr("RFC")
-            If dr.Table.Columns.Contains("Regimen") Then objPaymentRequest.Regimen = dr("Regimen")
             If dr.Table.Columns.Contains("estatus_pago") Then objPaymentRequest.estatus_pago = dr("estatus_pago")
             If dr.Table.Columns.Contains("id_transaction") Then objPaymentRequest.id_transaction = dr("id_transaction")
             If dr.Table.Columns.Contains("auth_number") Then objPaymentRequest.auth_number = dr("auth_number")
@@ -299,6 +310,33 @@ Public Class ConvertObject
         Catch ex As Exception
         End Try
         Return objTicket
+    End Function
+    Public Shared Function InstallationStatus(ByVal dr As DataRow) As InstallationStatus
+        Dim objInstallationStatus As New InstallationStatus
+        Try
+            If dr.Table.Columns.Contains("VIN") Then objInstallationStatus.VIN = IIf(IsDBNull(dr("VIN")), "", dr("VIN"))
+            If dr.Table.Columns.Contains("ICCID") Then objInstallationStatus.ICCID = IIf(IsDBNull(dr("ICCID")), "", dr("ICCID"))
+            If dr.Table.Columns.Contains("PreviousVersion") Then objInstallationStatus.PreviousVersion = IIf(IsDBNull(dr("PreviousVersion")), "", dr("PreviousVersion"))
+            If dr.Table.Columns.Contains("CurrentVersion") Then objInstallationStatus.CurrentVersion = IIf(IsDBNull(dr("CurrentVersion")), "", dr("CurrentVersion"))
+            If dr.Table.Columns.Contains("PreviousSIM") Then objInstallationStatus.PreviousSIM = IIf(IsDBNull(dr("PreviousSIM")), "", dr("PreviousSIM"))
+            If dr.Table.Columns.Contains("Connectivity") Then objInstallationStatus.Connectivity = IIf(IsDBNull(dr("Connectivity")), "", dr("Connectivity"))
+            If dr.Table.Columns.Contains("SIMStatus") Then objInstallationStatus.SIMStatus = IIf(IsDBNull(dr("SIMStatus")), "", dr("SIMStatus"))
+            If dr.Table.Columns.Contains("State") Then objInstallationStatus.State = IIf(IsDBNull(dr("State")), "", dr("State"))
+        Catch ex As Exception
+        End Try
+        Return objInstallationStatus
+    End Function
+    Public Shared Function InstallationEvidence(ByVal dr As DataRow) As InstallationEvidence
+        Dim objInstallationEvidence As New InstallationEvidence
+        Try
+            If dr.Table.Columns.Contains("VIN") Then objInstallationEvidence.VIN = IIf(IsDBNull(dr("VIN")), "", dr("VIN"))
+            If dr.Table.Columns.Contains("PreviousVersion") Then objInstallationEvidence.PreviousVersion = IIf(IsDBNull(dr("PreviousVersion")), "", dr("PreviousVersion"))
+            If dr.Table.Columns.Contains("CurrentVersion") Then objInstallationEvidence.CurrentVersion = IIf(IsDBNull(dr("CurrentVersion")), "", dr("CurrentVersion"))
+            If dr.Table.Columns.Contains("PreviousSIM") Then objInstallationEvidence.PreviousSIM = IIf(IsDBNull(dr("PreviousSIM")), "", dr("PreviousSIM"))
+            If dr.Table.Columns.Contains("Connectivity") Then objInstallationEvidence.Connectivity = IIf(IsDBNull(dr("Connectivity")), "", dr("Connectivity"))
+        Catch ex As Exception
+        End Try
+        Return objInstallationEvidence
     End Function
 End Class
 Public Class Securyty

@@ -79,50 +79,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="col-md-7 col-lg-8">
-                        <h4 class="mb-3 text-C">Datos de facturación</h4>
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label for="txtNombreRazonSocial" class="form-label text-P">Nombre o Razón Social</label>
-                                <asp:TextBox ID="txtNombreRazonSocial" runat="server" CssClass="form-control"></asp:TextBox>
-                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtNombreRazonSocial" ErrorMessage="El nombre o Razón Social es requerido" Display="None"></asp:RequiredFieldValidator>
-                            </div>
-                            <div class="col-sm-6">
-                                <label for="ddlRegimenFiscal" class="form-label text-P">Regimen Fiscal</label>
-                                <asp:DropDownList ID="ddlRegimenFiscal" runat="server" ToolTip="Regimen fiscal"
-                                    CssClass="form-control">
-                                    <asp:ListItem Text="605 - Sueldos y Salarios e Ingresos Asimilados a Salarios" Value="605" Selected="True" />
-                                    <asp:ListItem Text="612 - Personas Físicas con Actividades Empresariales y Profesionales" Value="612" />
-                                    <asp:ListItem Text="601 - General de Ley Personas Morales" Value="601" />
-                                </asp:DropDownList>
-                            </div>
-                            <div class="col-sm-6">
-                                <label for="txtCP" class="form-label text-P">CP</label>
-                                <asp:TextBox ID="txtCP" runat="server" CssClass="form-control" placeholder="CP" TextMode="Number"></asp:TextBox>
-                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtCP" ErrorMessage="El CP es requerido" Display="None"></asp:RequiredFieldValidator>
-                            </div>
-                            <div class="col-sm-6">
-                                <label for="txtRFC" class="form-label text-P">RFC</label>
-                                <asp:TextBox ID="txtRFC" runat="server" CssClass="form-control" placeholder="RFC"></asp:TextBox>
-                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtRFC" ErrorMessage="El RFC es requerido" Display="None"></asp:RequiredFieldValidator>
-                            </div>
-                            <div class="col-sm-6">
-                                <label for="cbRequiereFactura" class="form-label text-P">Requiere Factura</label>
-                                <asp:CheckBox ID="cbRequiereFactura" runat="server" />
-                            </div>
-                            <div class="col-12">
-                                <label for="txtEmail" class="form-label text-P">Email</label>
-                                <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" placeholder="email@ejemplo.com" TextMode="Email"></asp:TextBox>
-                                <asp:RegularExpressionValidator runat="server" ControlToValidate="txtEmail" ValidationExpression="^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" ErrorMessage="El correo no cumple con el formato permitido" Display="None" />
-                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail" ErrorMessage="El correo es requerido" Display="None"></asp:RequiredFieldValidator>
-                            </div>
-                            <div class="col-12">
-                                <label for="txtTelefono" class="form-label text-P">Teléfono</label>
-                                <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control" placeholder="55 5577 3110" TextMode="Phone"></asp:TextBox>
-                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtTelefono" ErrorMessage="El teléfono es requerido" Display="None"></asp:RequiredFieldValidator>
-                            </div>
-                        </div>
-                        <hr class="my-4">
+                    <div class="col-md-7 col-lg-8">                        
                         <h4 class="mb-3 text-C">Forma de Pago</h4>
                         <div class="my-3">
                             <div class="form-check">
