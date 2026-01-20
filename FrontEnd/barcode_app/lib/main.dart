@@ -1,10 +1,10 @@
-import 'package:scannet_tecomnet/screens/scan_sim.dart';
-
-import './screens/data_register.dart';
 import 'package:flutter/material.dart';
-import 'widgets/menu_lateral.dart';
+import 'package:scannet_tecomnet/screens/mostrar_datos_vehiculo.dart';
+import 'package:scannet_tecomnet/screens/scan_sim.dart';
+import './screens/data_register.dart';
 import 'screens/scan_vin.dart';
 import './screens/login.dart';
+import './screens/home.dart';
 
 void main() => runApp(const MyApp());
 
@@ -16,75 +16,21 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Scannet Tecomnet',
       debugShowCheckedModeBanner: false,
-      home: const Login(), // Ahora inicia directamente con el Login
+      home: const Login(),
       routes: {
         '/login': (context) => const Login(),
-        '/start': (context) => const StartPage(), // Nueva ruta para la página inicial
+        '/start': (context) => const Home(), 
         '/scanVin': (context) => const ScanVin(), 
         '/scanSim': (context) => const ScanSim(), 
-        // Ruta modificada para recibir argumentos
+        '/mostrardatosvehiculo': (context) => const MostrarDatosVehiculo(),
         '/data_register': (context) {
           final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
           return DataRegister(
-            vinText: args?['vinText'] ?? '',  // Valor por defecto si no se proporciona
-            simText: args?['simText'] ?? '',  // Valor por defecto si no se proporciona
+            vinText: args?['vinText'] ?? '',
+            simText: args?['simText'] ?? '',
           );
         },
       },
-    );
-  }
-}
-
-class StartPage extends StatelessWidget {
-  const StartPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(''),
-        backgroundColor: Colors.blue[800],
-        foregroundColor: Colors.white,
-        elevation: 2,
-        automaticallyImplyLeading: false,
-      ),
-      endDrawer: const MenuLateral(),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Center(
-              child: Text(
-                'Bienvenido al registro de vehículos',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold, // Texto en negrita
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/scanVin');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[800],
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-              child: const Text(
-                'Comenzar',
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

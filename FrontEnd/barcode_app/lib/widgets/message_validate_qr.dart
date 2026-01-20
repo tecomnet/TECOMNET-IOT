@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:scannet_tecomnet/screens/scan_sim.dart';
 
 class MessageValidateQR extends StatefulWidget {
   final String title;
   final String content;
   final VoidCallback onTryAgain;
-  final VoidCallback? onAdd;
+  final bool vieneDeValidar;
+  final VoidCallback? onAgregarPressed;
 
   const MessageValidateQR({
     required this.title,
     required this.content,
     required this.onTryAgain,
-    this.onAdd,
+    required this.vieneDeValidar,
+    this.onAgregarPressed,
     super.key,
   });
 
@@ -38,15 +39,12 @@ class _MessageValidateQRState extends State<MessageValidateQR> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.title,
-      style: TextStyle(color: Colors.blue[800])),
+      title: Text(widget.title, style: TextStyle(color: Colors.blue[800])),
       content: _isEditing
           ? TextField(
               controller: _controller,
               maxLines: null,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(border: OutlineInputBorder()),
             )
           : Text(_controller.text),
       actions: [
@@ -56,31 +54,28 @@ class _MessageValidateQRState extends State<MessageValidateQR> {
               _isEditing = !_isEditing;
             });
           },
-          child: Text(_isEditing ? 'Guardar' : 'Editar',
-          style: TextStyle(color: Colors.blue[800]),),
+          child: Text(
+            _isEditing ? 'Guardar' : 'Editar',
+            style: TextStyle(color: Colors.blue[800]),
+          ),
         ),
-        if (widget.onAdd != null)
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ScanSim(vinText: _controller.text), // Pasa texto editado
-                ),
-              );
-            },
-            child: Text("Agregar",
-          style: TextStyle(color: Colors.blue[800]),),
+          onPressed: widget.onAgregarPressed,
+          child: Text(
+            widget.vieneDeValidar ? 'Validar' : 'Agregar',
+            style: TextStyle(color: Colors.blue[800]),
+          ),
         ),
+
         TextButton(
           onPressed: () {
             widget.onTryAgain();
             Navigator.pop(context);
           },
-          child: Text("Intentar de nuevo",
-          style: TextStyle(color: Colors.blue[800]),
-        ),
+          child: Text(
+            "Intentar de nuevo",
+            style: TextStyle(color: Colors.blue[800]),
+          ),
         ),
       ],
     );

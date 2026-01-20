@@ -1,19 +1,22 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:scannet_tecomnet/widgets/message_validate_qr.dart';
+import 'package:scannet_tecomnet/screens/mostrar_datos_vehiculo.dart';
 import 'package:scannet_tecomnet/screens/scan_sim.dart';
+import 'package:scannet_tecomnet/widgets/message_validate_qr.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:scannet_tecomnet/services/api_services.dart';
 
 class ScanQR extends StatefulWidget {
-  const ScanQR({super.key});
+  final bool vieneDeValidar;
+
+  const ScanQR({super.key, this.vieneDeValidar = false});
 
   @override
   State<ScanQR> createState() => _ScanQRState();
 }
 
-class _ScanQRState extends State<ScanQR> 
+class _ScanQRState extends State<ScanQR>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   MobileScannerController? _controller;
@@ -27,7 +30,7 @@ class _ScanQRState extends State<ScanQR>
   double _zoomLevel = 0.7;
   late AnimationController _laserController;
   late Animation<double> _animation;
-  bool _shouldStopDetection = false; // Nuevo flag para controlar la detección
+  bool _shouldStopDetection = false;
 
   // CONSTANTES MODIFICADAS
   static const double scannerSize = 200.0;
@@ -40,12 +43,12 @@ class _ScanQRState extends State<ScanQR>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _initializeCamera();
-    
+
     _laserController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    
+
     _animation = Tween<double>(begin: 0, end: 1).animate(_laserController);
   }
 
@@ -64,6 +67,7 @@ class _ScanQRState extends State<ScanQR>
     _laserController.dispose();
     _controller?.dispose();
     super.dispose();
+    _controller?.toggleTorch();
   }
 
   void _initializeCamera() {
@@ -73,7 +77,7 @@ class _ScanQRState extends State<ScanQR>
       torchEnabled: false,
       returnImage: false,
     );
-    
+
     _startCamera();
   }
 
@@ -138,7 +142,7 @@ class _ScanQRState extends State<ScanQR>
 
   bool _isBarcodeInScanArea(Barcode barcode) {
     if (_scanRect == null) return false;
-    
+
     double sumX = 0;
     double sumY = 0;
     for (Offset corner in barcode.corners) {
@@ -154,9 +158,9 @@ class _ScanQRState extends State<ScanQR>
 
   void _adjustZoomAutomatically(double qrSize) {
     if (!_cameraInitialized || _dialogOpen || _shouldStopDetection) return;
-    
+
     double newZoom = _zoomLevel;
-    
+
     if (qrSize < 100) {
       newZoom = _zoomLevel < 0.9 ? _zoomLevel + 0.1 : 1.0;
     } else if (qrSize > 200) {
@@ -166,52 +170,63 @@ class _ScanQRState extends State<ScanQR>
     } else if (qrSize > 180) {
       newZoom = _zoomLevel > 0.4 ? _zoomLevel - 0.05 : 0.4;
     }
-    
+
     if (newZoom != _zoomLevel) {
-      _controller!.setZoomScale(newZoom).then((_) {
-        _zoomLevel = newZoom;
-      }).catchError((e) {
-        debugPrint('Error adjusting zoom: $e');
-      });
+      _controller!
+          .setZoomScale(newZoom)
+          .then((_) {
+            _zoomLevel = newZoom;
+          })
+          .catchError((e) {
+            debugPrint('Error adjusting zoom: $e');
+          });
     }
   }
 
   void _processScannedCode(String code) {
     if (!_isScanning || _dialogOpen || _shouldStopDetection) return;
-    
+
     if (code.length != 17) {
       _showInvalidQRDialog();
       return;
     }
-    
+
     setState(() {
       _isScanning = false;
       _dialogOpen = true;
       _shouldStopDetection = true; // Detener nuevas detecciones
     });
-    
+
     // Detener la cámara inmediatamente
     _stopCamera();
-    
+
     _showScanResultDialog(code);
   }
 
   void _showInvalidQRDialog() {
     setState(() => _dialogOpen = true);
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => AlertDialog(
-        title: Text("Código QR inválido", style: TextStyle(color: Colors.blue[800])),
-        content: const Text("El código QR debe contener exactamente 17 caracteres."),
+        title: Text(
+          "Código QR inválido",
+          style: TextStyle(color: Colors.blue[800]),
+        ),
+        content: const Text(
+          "El código QR debe contener exactamente 17 caracteres.",
+        ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
               _resetScanner();
             },
-            child: Text('Reintentar', style: TextStyle(color: Colors.blue[800])),
+            child: Text(
+              'Reintentar',
+              style: TextStyle(color: Colors.blue[800]),
+            ),
           ),
         ],
       ),
@@ -222,15 +237,17 @@ class _ScanQRState extends State<ScanQR>
 
   Future<void> _scanQRFromImage() async {
     if (_dialogOpen || _shouldStopDetection) return;
-    
+
     setState(() => _isProcessingImage = true);
-    
+
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      
+
       if (image != null) {
-        final BarcodeCapture? result = await _controller?.analyzeImage(image.path);
-        
+        final BarcodeCapture? result = await _controller?.analyzeImage(
+          image.path,
+        );
+
         if (result != null && result.barcodes.isNotEmpty) {
           final barcode = result.barcodes.first;
           if (barcode.rawValue != null) {
@@ -242,15 +259,17 @@ class _ScanQRState extends State<ScanQR>
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No se detectó código QR en la imagen')),
+            const SnackBar(
+              content: Text('No se detectó código QR en la imagen'),
+            ),
           );
         }
       }
     } catch (e) {
       debugPrint('Error scanning image: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
     } finally {
       setState(() => _isProcessingImage = false);
     }
@@ -258,7 +277,7 @@ class _ScanQRState extends State<ScanQR>
 
   Future<void> _toggleFlash() async {
     if (!_cameraInitialized || _dialogOpen || _shouldStopDetection) return;
-    
+
     try {
       await _controller?.toggleTorch();
       setState(() => _flashOn = !_flashOn);
@@ -269,7 +288,7 @@ class _ScanQRState extends State<ScanQR>
 
   void _showScanResultDialog(String result) {
     setState(() => _dialogOpen = true);
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -277,7 +296,28 @@ class _ScanQRState extends State<ScanQR>
         title: "Escaneo exitoso",
         content: result,
         onTryAgain: _resetScanner,
-        onAdd: () => _goToScanSim(result),
+        vieneDeValidar: widget.vieneDeValidar,
+        onAgregarPressed: () async {
+          Navigator.pop(context);
+          final vehiculoData = await AuthService.obtenerEstadoInstalacion(result);
+
+          if (widget.vieneDeValidar) {
+            // 🔹 FLUJO VALIDAR
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    MostrarDatosVehiculo(vehiculoData: vehiculoData),
+              ),
+            );
+          } else {
+            // 🔹 FLUJO INSTALAR
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => ScanSim(vinText: result)),
+            );
+          }
+        },
       ),
     ).then((_) {
       setState(() => _dialogOpen = false);
@@ -286,27 +326,13 @@ class _ScanQRState extends State<ScanQR>
 
   void _resetScanner() {
     if (!mounted) return;
-    
+
     setState(() {
       _isScanning = true;
       _shouldStopDetection = false; // Permitir nuevas detecciones
     });
-    
-    _restartCamera();
-  }
 
-  void _goToScanSim(String scannedText) {
-    Navigator.of(context).pop();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ScanSim(vinText: scannedText),
-      ),
-    ).then((_) {
-      if (mounted) {
-        _resetScanner();
-      }
-    });
+    _restartCamera();
   }
 
   @override
@@ -323,8 +349,8 @@ class _ScanQRState extends State<ScanQR>
         actions: [
           IconButton(
             icon: const Icon(Icons.photo_library),
-            onPressed: _isProcessingImage || _dialogOpen || _shouldStopDetection 
-                ? null 
+            onPressed: _isProcessingImage || _dialogOpen || _shouldStopDetection
+                ? null
                 : _scanQRFromImage,
           ),
         ],
@@ -332,29 +358,29 @@ class _ScanQRState extends State<ScanQR>
       body: Stack(
         children: [
           if (_cameraInitialized && !_shouldStopDetection)
-          MobileScanner(
-            controller: _controller,
-            onDetect: (capture) {
-              if (!_isScanning || _dialogOpen || _shouldStopDetection) return;
-              
-              for (final barcode in capture.barcodes) {
-                if (barcode.rawValue != null && barcode.corners != null) {
-                  final qrSize = _calculateQrSize(barcode.corners!);
-                  _adjustZoomAutomatically(qrSize);
-                  
-                  if (_isBarcodeInScanArea(barcode)) {
-                    if (barcode.rawValue!.length == 17) {
-                      _processScannedCode(barcode.rawValue!);
-                    } else {
-                      _showInvalidQRDialog();
+            MobileScanner(
+              controller: _controller,
+              onDetect: (capture) {
+                if (!_isScanning || _dialogOpen || _shouldStopDetection) return;
+
+                for (final barcode in capture.barcodes) {
+                  if (barcode.rawValue != null && barcode.corners != null) {
+                    final qrSize = _calculateQrSize(barcode.corners!);
+                    _adjustZoomAutomatically(qrSize);
+
+                    if (_isBarcodeInScanArea(barcode)) {
+                      if (barcode.rawValue!.length == 17) {
+                        _processScannedCode(barcode.rawValue!);
+                      } else {
+                        _showInvalidQRDialog();
+                      }
+                      break;
                     }
-                    break;
                   }
                 }
-              }
-            },
-          ),
-          
+              },
+            ),
+
           Positioned.fill(
             child: CustomPaint(
               painter: ScannerOverlayPainter(
@@ -363,7 +389,7 @@ class _ScanQRState extends State<ScanQR>
               ),
             ),
           ),
-          
+
           Positioned(
             top: scanRect.top,
             left: scanRect.left,
@@ -373,8 +399,8 @@ class _ScanQRState extends State<ScanQR>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.8), 
-                  width: 2
+                  color: Colors.white.withOpacity(0.8),
+                  width: 2,
                 ),
               ),
             ),
@@ -382,98 +408,94 @@ class _ScanQRState extends State<ScanQR>
 
           // Línea roja animada
           if (_cameraInitialized && !_shouldStopDetection)
-          AnimatedBuilder(
-            animation: _laserController,
-            builder: (context, child) {
-              return Positioned(
-                top: scanRect.top + (scanRect.height * _animation.value),
-                left: scanRect.left,
-                child: Container(
-                  width: scanRect.width,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        Colors.red.shade700,
-                        Colors.transparent,
-                      ],
-                      stops: const [0.0, 0.5, 1.0],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.redAccent.withOpacity(0.8),
-                        blurRadius: 8,
-                        spreadRadius: 2,
+            AnimatedBuilder(
+              animation: _laserController,
+              builder: (context, child) {
+                return Positioned(
+                  top: scanRect.top + (scanRect.height * _animation.value),
+                  left: scanRect.left,
+                  child: Container(
+                    width: scanRect.width,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          Colors.red.shade700,
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.5, 1.0],
                       ),
-                    ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.redAccent.withOpacity(0.8),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-          
+                );
+              },
+            ),
+
           if (_cameraInitialized && !_shouldStopDetection)
-          Positioned(
-            top: 70,
-            right: 20,
-            child: GestureDetector(
-              onTap: _dialogOpen ? null : _toggleFlash,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Icon(
-                  _flashOn ? Icons.flash_on : Icons.flash_off,
-                  color: Colors.white,
-                  size: 30,
+            Positioned(
+              top: 70,
+              right: 20,
+              child: GestureDetector(
+                onTap: _dialogOpen ? null : _toggleFlash,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Icon(
+                    _flashOn ? Icons.flash_on : Icons.flash_off,
+                    color: Colors.white,
+                    size: 30,
+                  ),
                 ),
               ),
             ),
-          ),
 
           if (!_cameraInitialized)
-          const Center(
-            child: CircularProgressIndicator(
-              color: Colors.white,
-            ),
-          ),
-          
+            const Center(child: CircularProgressIndicator(color: Colors.white)),
+
           if (_isProcessingImage)
-          Container(
-            color: Colors.black.withOpacity(0.7),
-            child: const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(color: Colors.white),
-                  SizedBox(height: 20),
-                  Text(
-                    'Procesando imagen...',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          
-          // Mensaje cuando la detección está detenida
-          if (_shouldStopDetection)
-          Container(
-            color: Colors.black.withOpacity(0.5),
-            child: Center(
-              child: Text(
-                'Escaneo completado',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+            Container(
+              color: Colors.black.withOpacity(0.7),
+              child: const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(color: Colors.white),
+                    SizedBox(height: 20),
+                    Text(
+                      'Procesando imagen...',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
+
+          // Mensaje cuando la detección está detenida
+          if (_shouldStopDetection)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Center(
+                child: Text(
+                  'Escaneo completado',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -484,24 +506,29 @@ class ScannerOverlayPainter extends CustomPainter {
   final Rect scanRect;
   final double borderRadius;
 
-  ScannerOverlayPainter({
-    required this.scanRect,
-    required this.borderRadius,
-  });
+  ScannerOverlayPainter({required this.scanRect, required this.borderRadius});
 
   @override
   void paint(Canvas canvas, Size size) {
     final overlayPaint = Paint()..color = Colors.black.withOpacity(0.6);
-    final backgroundPath = Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
-    
+    final backgroundPath = Path()
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+
     final holePath = Path()
-      ..addRRect(RRect.fromRectAndRadius(scanRect, Radius.circular(borderRadius)));
-    
-    final overlay = Path.combine(PathOperation.difference, backgroundPath, holePath);
+      ..addRRect(
+        RRect.fromRectAndRadius(scanRect, Radius.circular(borderRadius)),
+      );
+
+    final overlay = Path.combine(
+      PathOperation.difference,
+      backgroundPath,
+      holePath,
+    );
     canvas.drawPath(overlay, overlayPaint);
   }
 
   @override
   bool shouldRepaint(covariant ScannerOverlayPainter oldDelegate) =>
-      oldDelegate.scanRect != scanRect || oldDelegate.borderRadius != borderRadius;
+      oldDelegate.scanRect != scanRect ||
+      oldDelegate.borderRadius != borderRadius;
 }

@@ -2,63 +2,47 @@ import 'package:flutter/material.dart';
 
 class MessageValidateOCR extends StatefulWidget {
   final String extractedText;
-  final VoidCallback onAgregarPressed;
+  final bool vieneDeValidar;
 
   const MessageValidateOCR({
     super.key,
     required this.extractedText,
-    required this.onAgregarPressed,
+    required this.vieneDeValidar,
   });
 
   @override
-  _MessageValidateOCRState createState() => _MessageValidateOCRState();
+  State<MessageValidateOCR> createState() => _MessageValidateOCRState();
 }
 
 class _MessageValidateOCRState extends State<MessageValidateOCR> {
-  late TextEditingController _textEditingController;
+  late TextEditingController _controller;
   bool _isEditing = false;
 
   @override
   void initState() {
     super.initState();
-    _textEditingController = TextEditingController(text: widget.extractedText);
-  }
-
-  @override
-  void dispose() {
-    _textEditingController.dispose();
-    super.dispose();
+    _controller = TextEditingController(text: widget.extractedText);
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        'Texto',
-        style: TextStyle(color: Colors.blue[800]),
-      ),
+      title: Text('Texto detectado', style: TextStyle(color: Colors.blue[800])),
       content: _isEditing
           ? TextField(
-              controller: _textEditingController,
-              onChanged: (newText) {
-                setState(() {
-                  _textEditingController.text = newText;
-                });
-              },
+              controller: _controller,
               maxLines: null,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
               ),
             )
-          : Text(
-              widget.extractedText.isNotEmpty
-                  ? widget.extractedText
-                  : 'No se pudo extraer texto'
-            ),
+          : Text(_controller.text),
       actions: [
         TextButton(
           onPressed: () {
             setState(() {
+              _controller.text =
+                  _controller.text.trim().toUpperCase();
               _isEditing = !_isEditing;
             });
           },
@@ -68,16 +52,19 @@ class _MessageValidateOCRState extends State<MessageValidateOCR> {
           ),
         ),
         TextButton(
-          onPressed: widget.onAgregarPressed,
+          onPressed: () {
+            Navigator.pop(
+              context,
+              _controller.text.trim().toUpperCase(),
+            );
+          },
           child: Text(
-            'Agregar',
+            widget.vieneDeValidar ? 'Validar' : 'Agregar',
             style: TextStyle(color: Colors.blue[800]),
           ),
         ),
         TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          onPressed: () => Navigator.pop(context),
           child: Text(
             'Intentar de nuevo',
             style: TextStyle(color: Colors.blue[800]),

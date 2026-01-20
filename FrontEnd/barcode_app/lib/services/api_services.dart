@@ -3,28 +3,41 @@ import 'package:http/http.dart' as http;
 
 class AuthService {
   static String? _token;
+  static int? _userId;
 
-  // 1. Validar usuario real (installer)
-  static Future<bool> validarUsuarioReal(String usuario, String contrasena) async {
-    final url = Uri.parse('https://tecomnet.net/TECOMNET/APIDeveloper/api/User/Login/Installer');
+ static Future<int?> validarUsuarioReal(
+  String usuario,
+  String contrasena,
+) async {
+  final url = Uri.parse(
+    'https://tecomnet.net/TECOMNET/APIDeveloper/api/User/Login/Installer',
+  );
 
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          "UserName": usuario,
-          "Password": contrasena,
-        }),
-      );
+  try {
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "UserName": usuario,
+        "Password": contrasena,
+      }),
+    );
 
-      // Retorna true si la respuesta es 200, false en otro caso
-      return response.statusCode == 200;
-    } catch (e) {
-      print('Error validar usuario real: $e');
-      return false;
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+
+      _userId = data['_UserID']; // 👈 SE GUARDA
+  return _userId;
+    } else {
+      print('❌ Error login: ${response.statusCode}');
+      print(response.body);
+      return null;
     }
+  } catch (e) {
+    print('❌ Error conexión: $e');
+    return null;
   }
+}
 
   // 2. Obtener token con credenciales fijas (hardcoded)
   static Future<bool> obtenerToken() async {
@@ -56,34 +69,171 @@ class AuthService {
     }
   }
 
-  // 3. Registrar vehículo usando token previamente obtenido
-  static Future<String?> registrarVehiculo(String vin, String iccid) async {
+ static Future<Map<String, dynamic>> registrarVehiculo(
+  String vin,
+  String iccid,
+) async {
+  if (_token == null) {
+    return {
+      "error": true,
+      "mensaje": "Token no disponible",
+    };
+  }
+
+  if (_userId == null) {
+    return {
+      "error": true,
+      "mensaje": "Usuario no autenticado",
+    };
+  }
+
+  final url = Uri.parse(
+    'https://tecomnet.net/TECOMNET/APIDeveloper/api/BYD/RegistrarVehiculo/VIN/$vin/ICCID/$iccid/UserID/$_userId',
+  );
+
+  try {
+    final response = await http
+        .post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $_token',
+          },
+        )
+        .timeout(const Duration(seconds: 15));
+
+    // 🔥 Éxito
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+
+    // ❌ Error con cuerpo JSON
+    try {
+      final body = jsonDecode(response.body);
+      return {
+        "error": true,
+        "mensaje": body["error"] ?? "Error inesperado",
+      };
+    } catch (_) {
+      return {
+        "error": true,
+        "mensaje": "Error ${response.statusCode}",
+      };
+    }
+  } catch (e) {
+    return {
+      "error": true,
+      "mensaje": "Error de conexión",
+    };
+  }
+}
+
+
+  static String? get token => _token;
+  static int? get userId => _userId;
+
+  static Future<Map<String, dynamic>> obtenerEstadoInstalacion(String vin) async {
     if (_token == null) {
-      print('⚠️ Token no disponible. Por favor, llama a obtenerToken primero.');
-      return null;
+      return {
+        "error": true,
+        "mensaje": "Token no disponible",
+      };
     }
 
     final url = Uri.parse(
-      'https://tecomnet.net/TECOMNET/APIDeveloper/api/BYD/RegistrarVehiculo/VIN/$vin/ICCID/$iccid',
+      'https://tecomnet.net/TECOMNET/APIDeveloper/api/BYD/ObtenerEstadoInstalacion/VIN/$vin',
     );
 
     try {
-      final response = await http.post(
+      final response = await http.get(
         url,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_token',
         },
-      );
+      ).timeout(const Duration(seconds: 15));
 
-      // Retornamos el cuerpo siempre, sea status 200 o no para análisis posterior
-      return response.body;
+      if (response.statusCode == 200) {
+        // Retornamos directamente los campos de la API
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+
+      return {
+        "error": true,
+        "mensaje": "Error ${response.statusCode}: ${response.body}",
+      };
     } catch (e) {
-      print('Error en el registro del vehículo: $e');
-      return null;
+      return {
+        "error": true,
+        "mensaje": "Error de conexión: $e",
+      };
     }
   }
 
-  // Getter para acceder al token actual
-  static String? get token => _token;
+  static Future<Map<String, dynamic>> agregarEvidencias({
+  required String vin,
+  required String iccid,
+  required String versionAnterior,
+  required String versionActual,
+  required String simAnterior,
+  required String conectividad,
+  required String estatusSim,
+  required String estado,
+}) async {
+
+  if (_token == null) {
+    return {
+      "error": true,
+      "mensaje": "Token no disponible",
+    };
+  }
+
+  final url = Uri.parse(
+    'https://tecomnet.net/TECOMNET/APIDeveloper/api/BYD/AsociarEvidenciaInstalacion',
+  );
+
+  final body = {
+  "VIN": vin.trim().toUpperCase(),
+  "ICCID": iccid.trim(),
+  "PreviousVersion": versionAnterior.trim(),
+  "CurrentVersion": versionActual.trim(),
+  "PreviousSIM": simAnterior.trim(),
+  "Connectivity": conectividad.trim(),
+  "SIMStatus": estatusSim.trim(),
+  "State": estado.trim(),
+};
+
+
+
+  print("📤 BODY (JSON):");
+print(const JsonEncoder.withIndent('  ').convert(body));
+
+  try {
+    final response = await http
+        .put(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $_token',
+          },
+          body: jsonEncode(body),
+        )
+        .timeout(const Duration(seconds: 15));
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    }
+
+    return {
+      "error": true,
+      "mensaje": "Error ${response.statusCode}: ${response.body}",
+    };
+  } catch (e) {
+    return {
+      "error": true,
+      "mensaje": "Error de conexión: $e",
+    };
+  }
+}
+
 }

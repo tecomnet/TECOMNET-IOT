@@ -1,6 +1,7 @@
-import 'dart:convert'; // IMPORTANTE para jsonDecode
+// IMPORTANTE para jsonDecode
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:scannet_tecomnet/screens/scan_vin.dart';
 import '../widgets/menu_lateral.dart';
 import '../services/api_services.dart'; // Aquí debe estar la clase AuthService
 
@@ -24,9 +25,6 @@ class _DataRegisterState extends State<DataRegister> {
   late final TextEditingController _vinController;
   late final TextEditingController _simController;
 
-  final Color azulActivo = Colors.blue[800]!;
-  final Color grisInactivo = Colors.grey;
-
   bool _isLoading = false;
   bool _showBackButton = false;
 
@@ -35,9 +33,6 @@ class _DataRegisterState extends State<DataRegister> {
     super.initState();
     _vinController = TextEditingController(text: widget.vinText);
     _simController = TextEditingController(text: widget.simText);
-
-    _vinController.addListener(() => setState(() {}));
-    _simController.addListener(() => setState(() {}));
   }
 
   @override
@@ -52,8 +47,8 @@ class _DataRegisterState extends State<DataRegister> {
     super.dispose();
   }
 
-  void _volverAlHome() {
-    Navigator.popUntil(context, (route) => route.isFirst);
+  void _volverAScanner() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ScanVin(vieneDeValidar: false)));
   }
 
   // -------------------- MÉTODO DE ERROR --------------------
@@ -97,6 +92,7 @@ class _DataRegisterState extends State<DataRegister> {
     }
 
     final respuestaJson = await AuthService.registrarVehiculo(vin, iccid);
+    debugPrint(respuestaJson.toString());
 
     setState(() {
       _isLoading = false;
@@ -108,35 +104,20 @@ class _DataRegisterState extends State<DataRegister> {
       return;
     }
 
-    // Extraer solo el mensaje del JSON
-    String mensaje = "";
-    try {
-      final Map<String, dynamic> data = respuestaJson is String
-          ? jsonDecode(respuestaJson)
-          : respuestaJson;
-      mensaje = data["error"] ?? "El vehículo se registro correctamente";
-    } catch (e) {
-      mensaje = "Error al procesar la respuesta";
-    }
+    final Map<String, dynamic> data = respuestaJson;
 
-    // Determinar color según el mensaje
-    final esError = mensaje.toLowerCase().contains("error") ||
-        mensaje.toLowerCase().contains("no esta registrado") ||
-        mensaje.toLowerCase().contains("ya se encuentra registrado") ||
-        mensaje.toLowerCase().contains("asociado");
+final bool esError = data["error"] == true;
+final String mensaje =
+    data["mensaje"] ?? "El vehículo se registró correctamente";
+
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(mensaje),
         backgroundColor: esError ? Colors.red : Colors.green,
-        duration: const Duration(seconds: 4),
+        duration: const Duration(seconds: 5), // ← 5 segundos
       ),
     );
-  }
-
-  // -------------------- COLOR DE TEXTFIELD --------------------
-  Color _getColor(TextEditingController controller) {
-    return controller.text.isEmpty ? grisInactivo : azulActivo;
   }
 
   // -------------------- BUILD --------------------
@@ -144,7 +125,7 @@ class _DataRegisterState extends State<DataRegister> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: azulActivo,
+        backgroundColor: Colors.blue[800],
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -169,17 +150,18 @@ class _DataRegisterState extends State<DataRegister> {
           child: Container(
             margin: const EdgeInsets.only(bottom: 20),
             child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 600),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24.0),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 50,
+                ),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 600),
+
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SizedBox(height: 10),
                       Text(
-                        'Registro',
+                        'Vinculación',
                         style: TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
@@ -188,107 +170,116 @@ class _DataRegisterState extends State<DataRegister> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 30),
+                      const Text(
+                        'VIN',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
                       TextField(
                         controller: _vinController,
                         readOnly: true,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: _getColor(_vinController),
-                        ),
+                        style: TextStyle(fontSize: 16),
                         decoration: InputDecoration(
-                          labelText: 'Resultado VIN',
-                          labelStyle: TextStyle(
-                            color: _getColor(_vinController),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                          border: const OutlineInputBorder(),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                          prefixIcon: Icon(Icons.qr_code_scanner,
-                              color: _getColor(_vinController)),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 20,
+                          ),
+                          prefixIcon: Icon(Icons.qr_code_scanner),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: _getColor(_vinController)),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: _getColor(_vinController)),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 30),
+                      const Text(
+                        'SIM',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
                       TextField(
                         controller: _simController,
                         readOnly: true,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: _getColor(_simController),
-                        ),
+                        style: TextStyle(fontSize: 16),
                         decoration: InputDecoration(
-                          labelText: 'Resultado SIM',
-                          labelStyle: TextStyle(
-                            color: _getColor(_simController),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                          border: const OutlineInputBorder(),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                          prefixIcon: Icon(Icons.sim_card, color: _getColor(_simController)),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 20,
+                          ),
+                          prefixIcon: Icon(Icons.sim_card),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: _getColor(_simController)),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: _getColor(_simController)),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 25),
+                      const SizedBox(height: 30),
+
                       Center(
                         child: SizedBox(
                           width: 200,
                           height: 48,
                           child: _showBackButton
                               ? ElevatedButton(
-                                  onPressed: _volverAlHome,
+                                  onPressed: _volverAScanner,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: azulActivo,
+                                    backgroundColor: Colors.blue[800],
                                     foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 50,
+                                    ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
+                                      borderRadius: BorderRadius.circular(15),
                                     ),
                                     elevation: 5,
-                                    shadowColor: azulActivo.withOpacity(0.5),
                                   ),
                                   child: const Text(
-                                    'Volver',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    'Nueva',
+                                    style: TextStyle(fontSize: 20),
                                   ),
                                 )
                               : ElevatedButton(
                                   onPressed: _isLoading ? null : _registrar,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: azulActivo,
+                                    backgroundColor: Colors.blue[800],
                                     foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 50,
+                                    ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
+                                      borderRadius: BorderRadius.circular(15),
                                     ),
                                     elevation: 5,
-                                    shadowColor: azulActivo.withOpacity(0.5),
                                   ),
                                   child: _isLoading
-                                      ? const CircularProgressIndicator(color: Colors.white)
+                                      ? const CircularProgressIndicator(
+                                          color: Colors.white,
+                                        )
                                       : const Text(
-                                          'Registrar',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                          'Vincular',
+                                          style: TextStyle(fontSize: 20),
                                         ),
                                 ),
                         ),
                       ),
-                      const SizedBox(height: 30),
                     ],
                   ),
                 ),

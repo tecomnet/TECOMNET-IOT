@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scannet_tecomnet/screens/scan_barcode.dart';
 import 'package:scannet_tecomnet/screens/scan_ocr.dart';
-import 'package:scannet_tecomnet/screens/scan_vin.dart'; // Importa ScanVin
 import '../widgets/menu_lateral.dart';
 
 class ScanSim extends StatefulWidget {
@@ -47,30 +46,23 @@ class _ScanSimState extends State<ScanSim> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             // Regresar a ScanVinScreen
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ScanVin(),
-              ),
-            );
+            Navigator.pop(context);
           },
         ),
       ),
       endDrawer: const MenuLateral(),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
                 'Selecciona tipo de escaneo:',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               RadioListTile<String>(
-                title: const Text('Barcode'),
+                title: const Text('Barcode', style: TextStyle(fontSize: 20)),
                 value: 'Barcode',
                 groupValue: _selectedOption,
                 onChanged: (value) {
@@ -80,7 +72,7 @@ class _ScanSimState extends State<ScanSim> {
                 },
               ),
               RadioListTile<String>(
-                title: const Text('OCR'),
+                title: const Text('OCR', style: TextStyle(fontSize: 20)),
                 value: 'OCR',
                 groupValue: _selectedOption,
                 onChanged: (value) {
@@ -96,13 +88,12 @@ class _ScanSimState extends State<ScanSim> {
                   backgroundColor: Colors.blue[800],
                   foregroundColor: Colors.white,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(15),
                   ),
-                  textStyle: const TextStyle(fontSize: 20),
                 ),
-                child: const Text('Siguiente'),
+                child: const Text('Siguiente', style: TextStyle(fontSize: 20)),
               ),
             ],
           ),

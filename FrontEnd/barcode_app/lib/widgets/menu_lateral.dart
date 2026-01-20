@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:scannet_tecomnet/screens/home.dart';
+import 'package:scannet_tecomnet/screens/scan_vin.dart';
 
 class MenuLateral extends StatelessWidget {
   const MenuLateral({super.key});
@@ -10,9 +12,7 @@ class MenuLateral extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue[800],
-            ),
+            decoration: BoxDecoration(color: Colors.blue[800]),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
@@ -28,23 +28,33 @@ class MenuLateral extends StatelessWidget {
                 SizedBox(height: 8),
                 Text(
                   'Opciones de navegación',
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home, color: Colors.blue[800]),
-            title: const Text('Inicio'),
+            leading: Icon(
+              Icons.qr_code_scanner_outlined,
+              color: Colors.blue[800],
+            ),
+            title: const Text('Instalar'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamedAndRemoveUntil(
+              Navigator.push(
                 context,
-                '/start',
-                (route) => false,
+                MaterialPageRoute(builder: (context) => ScanVin(vieneDeValidar: false)),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.check, color: Colors.blue[800]),
+            title: const Text('Validar'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ScanVin(vieneDeValidar: true)),
               );
             },
           ),
@@ -54,10 +64,34 @@ class MenuLateral extends StatelessWidget {
             title: const Text('Cerrar sesión'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/login',
-                (route) => false,
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Cerrar sesión'),
+                    content: const Text('¿Desea salir de la aplicación?'),
+                    actions: [
+                      TextButton(
+                        child: const Text('No'),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Cierra el diálogo
+                        },
+                      ),
+                      TextButton(
+                        child: const Text('Sí'),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Cierra el diálogo
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/login',
+                            (route) => false,
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
               );
             },
           ),
