@@ -12,22 +12,30 @@
     <div class="container containerGral">
         <div class="container-xxl">
             <div class="row pt-3">
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <strong class="text-P">Género</strong>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <asp:DropDownList ID="ddlSex" runat="server" CssClass="form-control">
                         <asp:ListItem Text="Femenino" Value="F" Selected="True" />
                         <asp:ListItem Text="Masculino" Value="M" />
                     </asp:DropDownList>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <strong class="text-P">RFC</strong>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <telerik:RadTextBox ID="rtbRFC" runat="server" Width="100%"></telerik:RadTextBox>
                     <asp:RequiredFieldValidator runat="server" ControlToValidate="rtbRFC" ValidationGroup="Guardar"
                         ErrorMessage="El RFC obligatorio." Display="None" />
+                </div>
+                <div class="col-md-1">
+                    <strong class="text-P">CURP</strong>
+                </div>
+                <div class="col-md-3">
+                    <telerik:RadTextBox ID="rtbCURP" runat="server" Width="100%"></telerik:RadTextBox>
+                    <asp:RequiredFieldValidator runat="server" ControlToValidate="rtbCURP" ValidationGroup="Guardar"
+                        ErrorMessage="El CURP es obligatorio." Display="None" />
                 </div>
             </div>
             <div class="row pt-1">

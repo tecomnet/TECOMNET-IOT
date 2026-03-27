@@ -70,6 +70,7 @@ Public Class RegisterSale
         ucCustomer.Email = String.Empty
         ucCustomer.PhoneNumber = String.Empty
         ucCustomer.RFC = String.Empty
+        ucCustomer.CURP = String.Empty
         ucCustomer.Sex = "F"
         ucCustomer.Country = "Mexico"
         ucCustomer.State = "Ciudad de México"
@@ -217,6 +218,7 @@ Public Class RegisterSale
         objCustomer.Email = ucCustomer.Email
         objCustomer.PhoneNumber = ucCustomer.PhoneNumber
         objCustomer.RFC = ucCustomer.RFC
+        objCustomer.CURP = ucCustomer.CURP
         objCustomer.Sex = ucCustomer.Sex
         objCustomer.Country = ucCustomer.Country
         objCustomer.State = ucCustomer.State

@@ -1,4 +1,5 @@
-﻿Imports ModelsTECOMNET.TECOMNET
+﻿Imports ModelsTECOMNET
+Imports ModelsTECOMNET.TECOMNET
 
 Public Class ControllerInstallationEvidence
     Public Function GetInstallationEvidence(ByVal VIN As String) As InstallationEvidence

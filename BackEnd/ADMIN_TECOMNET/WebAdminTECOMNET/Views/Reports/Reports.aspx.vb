@@ -7,6 +7,12 @@ Public Class Reports
         If Not Page.IsPostBack Then
             rdpStart.SelectedDate = New Date(Now.Year, Now.Month, 1)
             rdpEnd.SelectedDate = Now
+
+            rdpStartInstallation.SelectedDate = New Date(Now.Year, 1, 1)
+            rdpEndInstallation.SelectedDate = Now
+
+            rgInstallation.DataSource = String.Empty
+            rgResult.DataSource = String.Empty
         End If
     End Sub
 
@@ -71,9 +77,21 @@ Public Class Reports
                       " INNER JOIN Company AS Com ON P.CompanyID= Com.CompanyID "
                 sql += String.Format("WHERE Com.CompanyID=3 AND CAST(PurchaseDate AS DATE) BETWEEN '{0:yyyy/MM/dd}' AND '{1:yyyy/MM/dd}'", rdpStart.SelectedDate, rdpEnd.SelectedDate)
         End Select
-                rgResult.DataSource = controller.TransactionsQuerys(sql)
+        rgResult.DataSource = controller.TransactionsQuerys(sql)
     End Sub
+    Private Sub rgInstallation_NeedDataSource(sender As Object, e As GridNeedDataSourceEventArgs) Handles rgInstallation.NeedDataSource
+        Dim controller As New Controller
+        Dim sql As String = String.Empty
 
+        Select Case rtsReports.SelectedTab.Value
+            Case "5"
+                sql = "select c.VIN,ICCID, s.installationDate AS FechaInstalacion,s.[Status] AS Estado,PreviousVersion AS VersionAnterior,CurrentVersion AS VersionActual, " &
+                      " PreviousSIM AS SIM_Anterior,Connectivity AS Conectividad from Car as c left join SIM as s on c.CarID = s.CarID left join InstallationEvidence as ie  " &
+                      " on c.VIN = ie.VIN "
+                sql += String.Format(" WHERE CAST(s.installationDate AS DATE) BETWEEN '{0:yyyy/MM/dd}' AND '{1:yyyy/MM/dd}'", rdpStartInstallation.SelectedDate, rdpEndInstallation.SelectedDate)
+        End Select
+        rgInstallation.DataSource = controller.TransactionsQuerys(sql)
+    End Sub
     Private Sub rgResult_ItemCommand(sender As Object, e As GridCommandEventArgs) Handles rgResult.ItemCommand
         If e.CommandName = Telerik.Web.UI.RadGrid.ExportToExcelCommandName Then
             rgResult.ExportSettings.Excel.Format = GridExcelExportFormat.Biff
@@ -84,6 +102,15 @@ Public Class Reports
     End Sub
 
     Private Sub btnFind_Click(sender As Object, e As EventArgs) Handles btnFind.Click
-        rgResult.Rebind()
+        Select Case rtsReports.SelectedTab.Value
+            Case "1", "2", "3", "4"
+                rgResult.Visible = True
+                rgInstallation.Visible = False
+                rgResult.Rebind()
+            Case "5"
+                rgInstallation.Visible = True
+                rgResult.Visible = False
+                rgInstallation.Rebind()
+        End Select
     End Sub
 End Class

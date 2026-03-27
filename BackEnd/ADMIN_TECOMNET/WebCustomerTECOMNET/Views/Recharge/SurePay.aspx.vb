@@ -89,9 +89,10 @@ Public Class SurePay
         objPaymentRequest.reason = ""
         objPaymentRequest.CreationDate = Now
 
-        objPaymentRequest.OrderID = objControllerPaymentRequest.AddPaymentRequest(objPaymentRequest)
 
-        If objPaymentRequest.OrderID > 0 Then
+        objPaymentRequest.RequestID = objControllerPaymentRequest.AddPaymentRequest(objPaymentRequest)
+
+        If objPaymentRequest.RequestID > 0 Then
             Me.objPaymentRequested = objPaymentRequest
             objToken = objConection.Authorization()
             If objToken.ErrorID = LinkXErrors.Susssuccessful Then
@@ -120,17 +121,23 @@ Public Class SurePay
                 objPayment.redirectUrl = "https://tecomnet.net/TECOMNET/WebClient/Views/General/Home.aspx"
                 objPayment.order_id = objPaymentRequest.OrderID
                 objPayment.imageUrl = "https://www.tecomnet.mx/wp-content/uploads/2024/11/888-removebg-preview.png"
-                objPayment.origin = "plugin"
+                'objPayment.origin = "plugin"
+                objPayment.origin = "ecommerce"
                 Dim user As New PaymentRequest.UserDetail
                 user.firstName = Customer.Name
                 user.lastName = Customer.PaternalSurname
                 user.phone = Customer.PhoneNumber
                 user.email = Customer.Email
-                user.country = "MX"
-                user.state = "Jal"
-                user.locality = "Guadalajara"
-                user.address = "Av 123"
-                user.zipCode = "4510"
+                'user.country = "MX"
+                'user.state = "Jal"
+                'user.locality = "Guadalajara"
+                'user.address = "Av 123"
+                'user.zipCode = "4510"
+                user.country = ""
+                user.state = ""
+                user.locality = ""
+                user.address = ""
+                user.zipCode = ""
                 objPayment.userData = user
 
                 Dim objRequest As New LinkXResult

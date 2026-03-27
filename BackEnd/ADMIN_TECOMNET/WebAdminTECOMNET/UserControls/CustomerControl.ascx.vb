@@ -76,7 +76,14 @@ Public Class CustomerControl
             rtbRFC.Text = value
         End Set
     End Property
-
+    Public Property CURP As String
+        Get
+            Return rtbCURP.Text
+        End Get
+        Set(value As String)
+            rtbCURP.Text = value
+        End Set
+    End Property
 
 
     Public Property Sex As String

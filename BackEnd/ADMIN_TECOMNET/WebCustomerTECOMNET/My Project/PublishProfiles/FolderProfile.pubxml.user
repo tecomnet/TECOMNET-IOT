@@ -4,19 +4,19 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project>
   <PropertyGroup>
-    <History>True|2025-09-25T03:01:21.9732770Z||;True|2025-09-24T20:35:54.9470693-06:00||;True|2025-09-24T20:08:48.5477748-06:00||;True|2025-04-21T20:27:46.9109036-06:00||;True|2025-02-25T19:17:37.8756912-06:00||;True|2025-02-23T21:58:57.8372349-06:00||;True|2025-02-11T15:54:48.4583163-06:00||;True|2025-02-11T14:51:16.2721824-06:00||;True|2025-02-11T14:19:28.9134427-06:00||;True|2025-02-04T10:09:59.8725329-06:00||;True|2025-01-02T06:56:09.2809066-06:00||;True|2024-12-15T20:29:23.4523474-06:00||;True|2024-12-15T20:21:42.8095316-06:00||;True|2024-12-15T20:18:05.4248866-06:00||;True|2024-12-15T20:07:44.2422149-06:00||;True|2024-12-15T19:58:41.7200882-06:00||;True|2024-12-11T12:37:40.0803741-06:00||;True|2024-12-11T12:25:43.7956647-06:00||;True|2024-12-10T22:23:37.4529203-06:00||;True|2024-12-10T18:53:46.8966574-06:00||;</History>
+    <History>True|2026-03-23T19:09:44.9898808Z||;True|2026-03-20T15:26:24.9970302-06:00||;True|2026-03-02T15:10:31.3768324-06:00||;True|2026-02-16T16:57:37.9914237-06:00||;True|2025-09-24T21:01:21.9732770-06:00||;True|2025-09-24T20:35:54.9470693-06:00||;True|2025-09-24T20:08:48.5477748-06:00||;True|2025-04-21T20:27:46.9109036-06:00||;True|2025-02-25T19:17:37.8756912-06:00||;True|2025-02-23T21:58:57.8372349-06:00||;True|2025-02-11T15:54:48.4583163-06:00||;True|2025-02-11T14:51:16.2721824-06:00||;True|2025-02-11T14:19:28.9134427-06:00||;True|2025-02-04T10:09:59.8725329-06:00||;True|2025-01-02T06:56:09.2809066-06:00||;True|2024-12-15T20:29:23.4523474-06:00||;True|2024-12-15T20:21:42.8095316-06:00||;True|2024-12-15T20:18:05.4248866-06:00||;True|2024-12-15T20:07:44.2422149-06:00||;True|2024-12-15T19:58:41.7200882-06:00||;True|2024-12-11T12:37:40.0803741-06:00||;True|2024-12-11T12:25:43.7956647-06:00||;True|2024-12-10T22:23:37.4529203-06:00||;True|2024-12-10T18:53:46.8966574-06:00||;</History>
     <LastFailureDetails />
-    <_PublishTargetUrl>C:\Users\WINSEF\source\repos\ADMIN_TECOMNET\WebCustomerTECOMNET\bin\app.publish\</_PublishTargetUrl>
+    <_PublishTargetUrl>C:\Users\WINSEF\source\repos\TECOMNET-IOT\BackEnd\ADMIN_TECOMNET\WebCustomerTECOMNET\bin\app.publish\</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="bin/DatabaseConnectionTECOMNET.dll">
-      <publishTime>02/23/2025 21:54:45</publishTime>
+      <publishTime>03/02/2026 14:45:27</publishTime>
     </File>
     <File Include="bin/DatabaseConnectionTECOMNET.dll.config">
-      <publishTime>02/06/2025 11:52:33</publishTime>
+      <publishTime>09/24/2025 19:44:19</publishTime>
     </File>
     <File Include="bin/DatabaseConnectionTECOMNET.pdb">
-      <publishTime>02/23/2025 21:54:45</publishTime>
+      <publishTime>03/02/2026 14:45:27</publishTime>
     </File>
     <File Include="bin/Microsoft.Bcl.AsyncInterfaces.dll">
       <publishTime>12/10/2024 15:05:40</publishTime>
@@ -25,10 +25,10 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>09/05/2018 17:10:50</publishTime>
     </File>
     <File Include="bin/ModelsTECOMNET.dll">
-      <publishTime>02/23/2025 21:54:44</publishTime>
+      <publishTime>03/02/2026 14:45:27</publishTime>
     </File>
     <File Include="bin/ModelsTECOMNET.pdb">
-      <publishTime>02/23/2025 21:54:44</publishTime>
+      <publishTime>03/02/2026 14:45:27</publishTime>
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
       <publishTime>03/08/2023 07:09:56</publishTime>
@@ -217,13 +217,13 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>08/05/2024 14:24:14</publishTime>
     </File>
     <File Include="bin/WebCustomerTECOMNET.dll">
-      <publishTime>02/24/2025 09:22:38</publishTime>
+      <publishTime>03/02/2026 15:10:28</publishTime>
     </File>
     <File Include="bin/WebCustomerTECOMNET.pdb">
-      <publishTime>02/24/2025 09:22:38</publishTime>
+      <publishTime>03/02/2026 15:10:28</publishTime>
     </File>
     <File Include="bin/WebCustomerTECOMNET.xml">
-      <publishTime>02/24/2025 09:22:38</publishTime>
+      <publishTime>03/02/2026 15:10:28</publishTime>
     </File>
     <File Include="Css/bootstrap-grid.css">
       <publishTime>07/26/2023 01:58:43</publishTime>
@@ -322,7 +322,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>07/26/2023 01:58:43</publishTime>
     </File>
     <File Include="Default.Master">
-      <publishTime>02/24/2025 09:21:46</publishTime>
+      <publishTime>08/13/2025 20:47:33</publishTime>
     </File>
     <File Include="EmailTemplates/Recharge.html">
       <publishTime>02/06/2025 12:33:45</publishTime>
@@ -330,8 +330,14 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
     <File Include="Global.asax">
       <publishTime>11/26/2024 14:18:56</publishTime>
     </File>
+    <File Include="Resources/BYD-Logo.png">
+      <publishTime>04/18/2025 17:03:30</publishTime>
+    </File>
     <File Include="Resources/iconoMenu.png">
       <publishTime>12/31/2024 19:32:46</publishTime>
+    </File>
+    <File Include="Resources/Logo-Altan.jpeg">
+      <publishTime>04/18/2025 17:10:03</publishTime>
     </File>
     <File Include="Resources/Logo.ico">
       <publishTime>02/24/2025 09:20:23</publishTime>
@@ -382,19 +388,22 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>02/24/2025 09:21:47</publishTime>
     </File>
     <File Include="Views/Account/Profile.aspx">
-      <publishTime>02/23/2025 10:35:54</publishTime>
+      <publishTime>02/27/2026 13:27:52</publishTime>
     </File>
     <File Include="Views/Account/Registration.aspx">
       <publishTime>02/24/2025 09:21:47</publishTime>
     </File>
     <File Include="Views/General/Home.aspx">
-      <publishTime>02/04/2025 10:08:06</publishTime>
+      <publishTime>08/13/2025 20:50:05</publishTime>
     </File>
     <File Include="Views/Recharge/Recharge.aspx">
       <publishTime>02/04/2025 09:52:11</publishTime>
     </File>
+    <File Include="Views/Recharge/RechargeSure.aspx">
+      <publishTime>06/06/2025 13:47:30</publishTime>
+    </File>
     <File Include="Views/Recharge/SurePay.aspx">
-      <publishTime>02/12/2025 14:10:17</publishTime>
+      <publishTime>12/23/2025 12:30:04</publishTime>
     </File>
     <File Include="Views/Recharge/ValidatePayment.aspx">
       <publishTime>12/15/2024 15:34:26</publishTime>
@@ -406,7 +415,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>11/26/2024 16:17:52</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>02/11/2025 14:19:27</publishTime>
+      <publishTime>09/24/2025 20:08:40</publishTime>
     </File>
   </ItemGroup>
 </Project>

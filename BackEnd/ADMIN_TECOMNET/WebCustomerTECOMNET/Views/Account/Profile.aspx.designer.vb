@@ -41,6 +41,15 @@ Partial Public Class Profile
     Protected WithEvents rtbRFC As Global.Telerik.Web.UI.RadTextBox
 
     '''<summary>
+    '''Control rtbCURP.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents rtbCURP As Global.Telerik.Web.UI.RadTextBox
+
+    '''<summary>
     '''Control rtbPaternalSurname.
     '''</summary>
     '''<remarks>

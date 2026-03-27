@@ -26,6 +26,7 @@ Public Class Profile
             tbEmail.Text = Customer.Email
             tbPhoneNumber.Text = Customer.PhoneNumber
             rtbRFC.Text = Customer.RFC
+            rtbCURP.Text = Customer.CURP
             ddlSex.SelectedValue = Customer.Sex
             ddlCountry.SelectedValue = Customer.Country
             ddlState.SelectedValue = Customer.State
@@ -48,6 +49,7 @@ Public Class Profile
         objCustomer.Email = tbEmail.Text
         objCustomer.PhoneNumber = tbPhoneNumber.Text
         objCustomer.RFC = rtbRFC.Text
+        objCustomer.CURP = rtbCURP.Text
         objCustomer.Sex = ddlSex.SelectedValue
         objCustomer.Country = ddlCountry.SelectedValue
         objCustomer.State = ddlState.SelectedValue

@@ -29,7 +29,7 @@ Namespace Controllers.Users
 
                 objUser = objController.LoginUser(objLogin.UserName, Securyty.Cifrar(objLogin.Password))
 
-                If objUser.UserID > 0 And objUser.UserType = UserType.Installer Then
+                If objUser.UserID > 0 And (objUser.UserType = UserType.Installer Or objUser.UserType = UserType.Dealership) Then
                     objUser.Password = String.Empty
                     Return Request.CreateResponse(HttpStatusCode.OK, objUser)
                 Else

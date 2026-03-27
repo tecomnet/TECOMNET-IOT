@@ -1,4 +1,5 @@
-﻿Imports ModelsTECOMNET.TECOMNET
+﻿Imports ModelsTECOMNET
+Imports ModelsTECOMNET.TECOMNET
 
 Public Class ControllerCar
     Public Function GetCars() As List(Of CarDetail)

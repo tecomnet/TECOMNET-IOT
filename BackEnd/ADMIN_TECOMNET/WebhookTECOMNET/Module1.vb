@@ -29,11 +29,15 @@ Module Module1
         'listener.Prefixes.Add("http://localhost:80/TECOMNET/webhook/notificadorConsumo/")
         'listener.Prefixes.Add("http://localhost:80/TECOMNET/webhook/notificadorPrimerUso/")
         'listener.Prefixes.Add("http://localhost:80/TECOMNET/webhook/ValidatePay/")        
+        'listener.Prefixes.Add("http://localhost:80/TECOMNET/webhook/PagaTodo/Notificaciones/")
+
+
 
         'Produccion
         listener.Prefixes.Add("https://tecomnet.net/TECOMNET/webhook/notificadorConsumo/")
         listener.Prefixes.Add("https://tecomnet.net/TECOMNET/webhook/notificadorPrimerUso/")
         listener.Prefixes.Add("https://tecomnet.net/TECOMNET/webhook/ValidatePay/")
+        listener.Prefixes.Add("https://tecomnet.net/TECOMNET/webhook/PagaTodo/Notificaciones/")
 
         listener.Start()
 

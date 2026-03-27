@@ -1,4 +1,5 @@
 ﻿Imports System.Web.SessionState
+Imports Stripe
 
 Public Class Global_asax
     Inherits System.Web.HttpApplication
@@ -35,12 +36,10 @@ Public Class Global_asax
             Try
                 If HttpContext.Current.Request.Url.AbsolutePath <> FormsAuthentication.LoginUrl And HttpContext.Current.Session("Usuario") = Nothing Then
                     Select Case HttpContext.Current.Request.Url.AbsolutePath
-                        'Case "/WinsefQuick/Default"
-                        'Case "/WinsefQuick/Views/Account/ResetPassword"
-                        'Case "/WinsefQuick/Views/Account/ResetPasswordConfirmation"
                         Case "/TECOMNET/WebClient/Views/Account/Registration.aspx"
                         Case "/TECOMNET/WebCustomerTECOMNET/Views/Account/Registration.aspx"
                         Case "/sandbox/WebClient/Views/Account/Registration.aspx"
+                        Case "/sandbox/Cliente/Views/Account/Registration.aspx"
                         Case "/TECOMNET/WebCustomerTECOMNET/Views/Recharge/ValidatePaymentLinkX.aspx"
                         Case "/TECOMNET/WebCustomerTECOMNET/Views/Recharge/RechargeSure.aspx"
                         Case Else

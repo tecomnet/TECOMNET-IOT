@@ -12,6 +12,7 @@
         Installer = 2
         Seller = 3
         AdminBYD = 4
+        Dealership = 5
     End Enum
     Public Enum MethodPayment
         Card = 1

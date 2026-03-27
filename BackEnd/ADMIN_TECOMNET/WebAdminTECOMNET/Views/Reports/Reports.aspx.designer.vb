@@ -131,6 +131,33 @@ Partial Public Class Reports
     Protected WithEvents rdpEnd As Global.Telerik.Web.UI.RadDatePicker
 
     '''<summary>
+    '''Control rpvInstallation.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents rpvInstallation As Global.Telerik.Web.UI.RadPageView
+
+    '''<summary>
+    '''Control rdpStartInstallation.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents rdpStartInstallation As Global.Telerik.Web.UI.RadDatePicker
+
+    '''<summary>
+    '''Control rdpEndInstallation.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents rdpEndInstallation As Global.Telerik.Web.UI.RadDatePicker
+
+    '''<summary>
     '''Control btnFind.
     '''</summary>
     '''<remarks>
@@ -147,4 +174,22 @@ Partial Public Class Reports
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
     Protected WithEvents rgResult As Global.Telerik.Web.UI.RadGrid
+
+    '''<summary>
+    '''Control rgInstallation.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents rgInstallation As Global.Telerik.Web.UI.RadGrid
+
+    '''<summary>
+    '''Control RadWindowManager1.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents RadWindowManager1 As Global.Telerik.Web.UI.RadWindowManager
 End Class

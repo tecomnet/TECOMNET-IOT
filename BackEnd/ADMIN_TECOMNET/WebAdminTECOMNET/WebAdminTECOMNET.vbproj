@@ -686,6 +686,7 @@
     <Content Include="Views\Configuration\RegisterProduct.aspx" />
     <Content Include="Views\Configuration\RegisterSale.aspx" />
     <Content Include="Views\Reports\Reports.aspx" />
+    <Content Include="Views\Reports\ViewEvidence.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -828,6 +829,13 @@
     </Compile>
     <Compile Include="Views\Reports\Reports.aspx.vb">
       <DependentUpon>Reports.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Views\Reports\ViewEvidence.aspx.designer.vb">
+      <DependentUpon>ViewEvidence.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Reports\ViewEvidence.aspx.vb">
+      <DependentUpon>ViewEvidence.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
   </ItemGroup>

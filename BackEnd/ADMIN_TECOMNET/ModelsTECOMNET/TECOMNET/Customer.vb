@@ -11,6 +11,7 @@
         Public Property Password As String
         Public Property PhoneNumber As String
         Public Property RFC As String
+        Public Property CURP As String
         Public Property Sex As String
         Public Property Country As String
         Public Property State As String
@@ -29,6 +30,7 @@
             Me.Password = String.Empty
             Me.PhoneNumber = String.Empty
             Me.RFC = String.Empty
+            Me.CURP = String.Empty
             Me.Sex = String.Empty
             Me.Country = String.Empty
             Me.State = String.Empty

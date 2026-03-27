@@ -186,6 +186,7 @@ Public Class ConvertObject
             If dr.Table.Columns.Contains("Password") Then objCustomer.Password = dr("Password")
             If dr.Table.Columns.Contains("PhoneNumber") Then objCustomer.PhoneNumber = dr("PhoneNumber")
             If dr.Table.Columns.Contains("RFC") Then objCustomer.RFC = dr("RFC")
+            If dr.Table.Columns.Contains("CURP") Then objCustomer.CURP = dr("CURP")
             If dr.Table.Columns.Contains("CreationDate") Then objCustomer.CreationDate = dr("CreationDate")
             If dr.Table.Columns.Contains("RegistrationDate") Then objCustomer.RegistrationDate = IIf(IsDBNull(dr("RegistrationDate")), Nothing, dr("RegistrationDate"))
             If dr.Table.Columns.Contains("Sex") Then objCustomer.Sex = dr("Sex")
@@ -337,6 +338,15 @@ Public Class ConvertObject
         Catch ex As Exception
         End Try
         Return objInstallationEvidence
+    End Function
+    Public Shared Function SearchInstallationStatus(ByVal dr As DataRow) As SearchInstallationStatus
+        Dim objSearchInstallationStatus As New SearchInstallationStatus
+        Try
+            If dr.Table.Columns.Contains("VIN") Then objSearchInstallationStatus.VIN = IIf(IsDBNull(dr("VIN")), "", dr("VIN"))
+            If dr.Table.Columns.Contains("Usuario") Then objSearchInstallationStatus.Usuario = IIf(IsDBNull(dr("Usuario")), "", dr("Usuario"))
+        Catch ex As Exception
+        End Try
+        Return objSearchInstallationStatus
     End Function
 End Class
 Public Class Securyty

@@ -21,7 +21,7 @@ Public Class ControllerPaymentRequest
     '    End Try
     '    Return lstBYDModels
     'End Function
-    Public Function GetPaymentRequest(ByVal OrderID As Integer) As PaymentRequestTecomnet
+    Public Function GetPaymentRequest(ByVal OrderID As String) As PaymentRequestTecomnet
         Dim controller As New Controller
         Dim objPaymentRequest As New PaymentRequestTecomnet
         objPaymentRequest.OrderID = OrderID

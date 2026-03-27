@@ -20,4 +20,12 @@ Namespace TECOMNET
             Me.State = "Pendiente"
         End Sub
     End Class
+    Public Class SearchInstallationStatus
+        Public Property VIN As String
+        Public Property Usuario As String
+        Public Sub New()
+            Me.VIN = String.Empty
+            Me.Usuario = String.Empty
+        End Sub
+    End Class
 End Namespace

@@ -12,6 +12,7 @@ Imports System.Text.Json
 Imports System.Web.WebSockets
 Imports System.Drawing
 Imports ModelsTECOMNET
+Imports System.Collections.Specialized.BitVector32
 
 Namespace Controllers.BYD
     <Authorize>
@@ -1076,6 +1077,8 @@ Namespace Controllers.BYD
 
                         If objInstallationStatus.CurrentVersion <> "" And objInstallationStatus.PreviousVersion <> "" And objInstallationStatus.PreviousSIM <> "" And objInstallationStatus.Connectivity <> "" Then
                             objInstallationStatus.State = "Terminado"
+                        Else
+                            objInstallationStatus.State = "Pendiente"
                         End If
                         Return Request.CreateResponse(HttpStatusCode.OK, objInstallationStatus)
                     End If
@@ -1089,5 +1092,247 @@ Namespace Controllers.BYD
                 Return errorResponse
             End Try
         End Function
+        '6.4	ObtenerEstadoInstalacion VIN .- No documentado
+        <HttpGet>
+        <Route("api/BYD/ObtenerEvidencias/{fecha:datetime}")>
+        Public Function ObtenerEvidencias(fecha As Date) As HttpResponseMessage
+            Try
+                Dim objControllerLogMovimientosInstalacion As New ControllerLogMovimientosInstalacion
+                Dim lstSearchInstallationStatus As New List(Of SearchInstallationStatus)
+
+                lstSearchInstallationStatus = objControllerLogMovimientosInstalacion.GetInstallationEvidenceByDate(fecha)
+
+                If lstSearchInstallationStatus.Count = 0 Then
+                    Return Request.CreateResponse(HttpStatusCode.NoContent, New With {
+                        Key .mensaje = "No hay datos disponibles."
+                        })
+                Else
+                    Return Request.CreateResponse(HttpStatusCode.OK, lstSearchInstallationStatus)
+                End If
+
+            Catch ex As Exception
+                ' Manejo de errores: devuelve un mensaje JSON con el error
+                Dim errorResponse As HttpResponseMessage = Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                Key .error = "Ocurrió un error al generar la solicitud.",
+                Key .detalle = ex.Message
+            })
+                Return errorResponse
+            End Try
+        End Function
+        '6.5	Obtener Modelos de coches
+        <HttpGet>
+        <Route("api/BYD/Models")>
+        Public Function ObtenerModelos() As HttpResponseMessage
+            Try
+                Dim objControllerModelBYD As New ControllerModelBYD
+                Dim lstBYDModels As New List(Of BYDModels)
+
+                lstBYDModels = objControllerModelBYD.GetAvailableModelsBYD
+
+                If lstBYDModels.Count = 0 Then
+                    Return Request.CreateResponse(HttpStatusCode.NoContent, New With {
+                        Key .mensaje = "No hay datos disponibles."
+                        })
+                Else
+                    Return Request.CreateResponse(HttpStatusCode.OK, lstBYDModels)
+                End If
+
+            Catch ex As Exception
+                ' Manejo de errores: devuelve un mensaje JSON con el error
+                Dim errorResponse As HttpResponseMessage = Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                Key .error = "Ocurrió un error al generar la solicitud.",
+                Key .detalle = ex.Message
+            })
+                Return errorResponse
+            End Try
+        End Function
+        '6.6	Obtener Marcas de coches
+        <HttpGet>
+        <Route("api/BYD/Brands")>
+        Public Function ObtenerMarcas() As HttpResponseMessage
+            Try
+
+                Dim lstBYDBrands As New List(Of String)
+                lstBYDBrands.Add("ATTO")
+                lstBYDBrands.Add("DOLPHIN")
+                lstBYDBrands.Add("DOLPHIN MINI")
+                lstBYDBrands.Add("DOLPHIN PLUS")
+                lstBYDBrands.Add("HAN")
+                lstBYDBrands.Add("KING")
+                lstBYDBrands.Add("M9")
+                lstBYDBrands.Add("SEAL")
+                lstBYDBrands.Add("SEALION")
+                lstBYDBrands.Add("SHARK")
+                lstBYDBrands.Add("SONG PLUS")
+                lstBYDBrands.Add("SONG PRO")
+                lstBYDBrands.Add("TAN")
+                lstBYDBrands.Add("YUAN PLUS")
+                lstBYDBrands.Add("YUAN PRO")
+
+                If lstBYDBrands.Count = 0 Then
+                    Return Request.CreateResponse(HttpStatusCode.NoContent, New With {
+                        Key .mensaje = "No hay datos disponibles."
+                        })
+                Else
+                    Return Request.CreateResponse(HttpStatusCode.OK, lstBYDBrands)
+                End If
+
+            Catch ex As Exception
+                ' Manejo de errores: devuelve un mensaje JSON con el error
+                Dim errorResponse As HttpResponseMessage = Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                Key .error = "Ocurrió un error al generar la solicitud.",
+                Key .detalle = ex.Message
+            })
+                Return errorResponse
+            End Try
+        End Function
+        '6.7	Registra Venta
+        <HttpPost>
+        <Route("api/BYD/Sale")>
+        Public Function RegistrarVenta(objCustomer As Customer, objCar As Car, UserID As Integer) As HttpResponseMessage
+            Try
+                If objCustomer.CustomerName = String.Empty Or objCustomer.Email = String.Empty Or objCustomer.PhoneNumber = String.Empty Or objCustomer.CURP Then
+                    Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                        Key .error = "El nombre, email, teléefono y curp son obligatorios.",
+                        Key .detalle = ""
+                    })
+                ElseIf objCustomer.Sex <> "M" And objCustomer.Sex <> "F" Then
+                    Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                            Key .error = "El sexo debe ser M para hombres y F para mujeres.",
+                            Key .detalle = ""
+                        })
+                ElseIf objCar.ModelID = 0 Or objCar.YEAR < 2017 Or objCar.VIN = String.Empty Or objCar.brand = String.Empty Or objCar.Color = String.Empty Then
+                    Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                            Key .error = "Los datos del vehículo deben estar completos.",
+                            Key .detalle = ""
+                        })
+                Else
+                    Dim objControllerCar As New ControllerCar
+                    objCar = objControllerCar.GetCarByVIN(objCar.VIN)
+                    If objCar.CarID <= 0 Then
+                        Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                            Key .error = "El VIN no se encuentra registrado en el sistema.",
+                            Key .detalle = ""
+                        })
+                    Else
+                        objCustomer.CreationDate = Now
+                        objCustomer.RegistrationDate = Now
+                        objCustomer.LastDate = Nothing
+                        Dim objControllerCustomer As New ControllerCustomer
+                        objCustomer.CustomerID = objControllerCustomer.AddCustomer(objCustomer)
+                        If objCustomer.CustomerID > 0 Then
+                            objCar.CustomerID = objCustomer.CustomerID
+                            If objControllerCar.UpdateCar(objCar) > 0 Then
+                                Return Request.CreateResponse(HttpStatusCode.OK, objCar)
+                            Else
+                                Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                                Key .error = "Error al asociar el vehículo.",
+                                Key .detalle = ""
+                        })
+                            End If
+                        Else
+                            Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                            Key .error = "Error al agregar al cliente.",
+                            Key .detalle = ""
+                        })
+                        End If
+                    End If
+                End If
+            Catch ex As Exception
+                ' Manejo de errores: devuelve un mensaje JSON con el error
+                Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+                    Key .error = "Ocurrió un error al generar la solicitud.",
+                    Key .detalle = ex.Message
+                })
+            End Try
+        End Function
+        '6.7	Registra Venta
+        '<HttpGet>
+        '<Route("api/BYD/Sale")>
+        'Public Function RegistrarVenta(objCustomer As Customer, objCar As Car, ICCID As String, UserID As Integer) As HttpResponseMessage
+        '    Try
+        '        Dim objSIM As New SIM
+        '        Dim objControllerCar As New ControllerCar
+        '        Dim objControllerSIM As New ControllerSIM
+        '        objCar = objControllerCar.GetCarByVIN(objCar.VIN)
+        '        objSIM = objControllerSIM.GetSIMByICCID(ICCID)
+
+        '        If objCar.CarID > 0 Then
+        '            Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+        '                Key .error = "El VIN ya se encuentra registrado en el sistema.",
+        '                Key .detalle = ""
+        '            })
+        '        ElseIf objSIM.SIMID = 0 Then
+        '            Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+        '                    Key .error = "El ICCID no esta registrado en nuestro sistema.",
+        '                    Key .detalle = ""
+        '                })
+        '        ElseIf Not IsNothing(objSIM.CarID) Then
+        '            Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+        '                    Key .error = "El ICCID se encuntra asociado a otro vehículo.",
+        '                    Key .detalle = ""
+        '                })
+        '        Else
+
+        '            If objCar.ModelID = 0 Or objCar.YEAR = 0 Or objCar.VIN = String.Empty Then
+        '                Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+        '                    Key .error = "Los datos del vehículo deben estar completos.",
+        '                    Key .detalle = ""
+        '                })
+        '            Else
+        '                objCar.CarID = objControllerCar.AddCar(objCar)
+        '                If objCar.CarID = 0 Then
+        '                    Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+        '                        Key .error = "No se pudo registrar el vehículo.",
+        '                        Key .detalle = ""
+        '                    })
+        '                Else
+
+
+
+        '                    'Dim objControllerCustomer As New ControllerCustomer
+        '                    'objControllerCustomer.AddCustomer(objCustomer)
+        '                    'objControllerCar.AssociateCarToCustomer(objCar)
+        '                    'objSIM.CarID = objCar.CarID
+        '                    'objSIM.InstallationDate = Now
+        '                    'objSIM.ActivationDate = Now
+        '                    'objSIM.BillingStartDate = Now
+        '                    'objSIM.CustomerSaleDate = Now
+        '                    'objSIM.Active = True
+        '                    'objSIM.Status = "Active"
+
+
+        '                    If (objControllerSIM.AssociateSIMToCar(objSIM) > 0) Then
+        '                        Dim objControllerLogMovimientosInstalacion As New ControllerLogMovimientosInstalacion
+        '                        Dim objLogMovimientosInstalacion As New LogMovimientosInstalacion
+
+        '                        objLogMovimientosInstalacion.LogID = 0
+        '                        objLogMovimientosInstalacion.UsuarioID = UserID
+        '                        objLogMovimientosInstalacion.Fecha = Now
+        '                        objLogMovimientosInstalacion.ICCID = ICCID
+        '                        objLogMovimientosInstalacion.VIN = objCar.VIN
+        '                        objLogMovimientosInstalacion.Operacion = "Instalacion de SIM"
+        '                        objControllerLogMovimientosInstalacion.AddLog(objLogMovimientosInstalacion)
+
+        '                        Return Request.CreateResponse(HttpStatusCode.OK, New With {
+        '                        Key .Detalle = "El vehículo se registro correctamente"
+        '                        })
+        '                    Else
+        '                        Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+        '                            Key .error = "Error al Asociar el vehículo al SIM.",
+        '                            Key .detalle = "Vehiculo registrado correctamente, SIM existente sin asociar a un vehículo,error al asociar, reportar al area de sistemas."
+        '                            })
+        '                    End If
+        '                End If
+        '            End If
+        '        End If
+        '    Catch ex As Exception
+        '        ' Manejo de errores: devuelve un mensaje JSON con el error
+        '        Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
+        '            Key .error = "Ocurrió un error al generar la solicitud.",
+        '            Key .detalle = ex.Message
+        '        })
+        '    End Try
+        'End Function
     End Class
 End Namespace

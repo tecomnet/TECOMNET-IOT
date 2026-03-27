@@ -74,6 +74,7 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@Password", SqlDbType.NVarChar, objCustomer.Password))
         parametros.Add(ConnectionDB.ArmaParametro("@Phonenumber", SqlDbType.NVarChar, objCustomer.PhoneNumber))
         parametros.Add(ConnectionDB.ArmaParametro("@RFC", SqlDbType.NVarChar, objCustomer.RFC))
+        parametros.Add(ConnectionDB.ArmaParametro("@CURP", SqlDbType.NVarChar, objCustomer.CURP))
         parametros.Add(ConnectionDB.ArmaParametro("@CreationDate", SqlDbType.DateTime, objCustomer.CreationDate))
         parametros.Add(ConnectionDB.ArmaParametro("@RegistrationDate", SqlDbType.DateTime, IIf(IsNothing(objCustomer.RegistrationDate), DBNull.Value, objCustomer.RegistrationDate)))
         parametros.Add(ConnectionDB.ArmaParametro("@Sex", SqlDbType.NVarChar, objCustomer.Sex))
