@@ -22,15 +22,18 @@ Public Class ConectionAltanRedes
         Select Case Method
             Case AltanApisMethod.Resumen
                 EndPoint = String.Format("{0}/v1/subscribers/{1}/resume", url, MSISDN)
-
             Case AltanApisMethod.Suspend
                 EndPoint = String.Format("{0}/v1/subscribers/{1}/suspend", url, MSISDN)
+            Case AltanApisMethod.ChangeOffer
+                EndPoint = String.Format("{0}/v1/subscribers/{1}", url, MSISDN)
         End Select
+
+        System.Diagnostics.Debug.WriteLine("ENDPOINT: " & EndPoint)
 
         Dim result As New AltanResult
         result.ErrorID = AltanErrors.Unknown
         result.JSON = String.Empty
-
+        result.StatusCode = 0
         Try
             ' Crear el cliente HTTP
             Using client As New HttpClient()
@@ -59,33 +62,62 @@ Public Class ConectionAltanRedes
                 If jsonData <> String.Empty Then
                     content = New StringContent(jsonData, Encoding.UTF8, "application/json")
                 End If
-
+                Console.WriteLine("ENDPOINT: " & EndPoint)
+                Console.WriteLine("BODY: " & jsonData)
                 ' Enviar la solicitud POST de forma síncrona
-                Dim response As HttpResponseMessage = client.PostAsync(EndPoint, content).Result
+
+                Dim response As HttpResponseMessage
+
+                Select Case Method
+                    Case AltanApisMethod.Resumen
+                        response = client.PostAsync(EndPoint, content).Result
+                    Case AltanApisMethod.Suspend
+                        response = client.PostAsync(EndPoint, content).Result
+                    Case AltanApisMethod.ChangeOffer
+                        Dim request As New HttpRequestMessage(New HttpMethod("PATCH"), EndPoint)
+                        response = client.SendAsync(request).Result
+                End Select
 
                 ' Verificar si la respuesta fue exitosa
+                'If response.IsSuccessStatusCode Then
+                '    result.ErrorID = AltanErrors.Susssuccessful
+                '    result.JSON = response.Content.ReadAsStringAsync().Result
+                '    Return result ' Devuelve la respuesta en formato JSON o texto
+                'Else
+                '    If response.StatusCode = HttpStatusCode.BadRequest Then
+                '        result.ErrorID = AltanErrors.Mistake
+                '        result.JSON = response.Content.ReadAsStringAsync().Result
+                '        Return result
+                '        ' Return ""
+                '    ElseIf response.StatusCode = HttpStatusCode.Unauthorized Then
+                '        result.ErrorID = AltanErrors.Mistake
+                '        result.JSON = response.Content.ReadAsStringAsync().Result
+                '        Return result
+                '    ElseIf response.StatusCode = HttpStatusCode.InternalServerError Then
+                '        result.ErrorID = AltanErrors.Mistake
+                '        result.JSON = response.Content.ReadAsStringAsync().Result
+                '        Return result
+                '    End If
+                'End If
+
+                Dim responseBody As String = response.Content.ReadAsStringAsync().Result
+
                 If response.IsSuccessStatusCode Then
                     result.ErrorID = AltanErrors.Susssuccessful
-                    result.JSON = response.Content.ReadAsStringAsync().Result
-                    Return result ' Devuelve la respuesta en formato JSON o texto
+
                 Else
-                    If response.StatusCode = HttpStatusCode.BadRequest Then
-                        result.ErrorID = AltanErrors.Mistake
-                        result.JSON = response.Content.ReadAsStringAsync().Result
-                        Return result
-                        ' Return ""
-                    ElseIf response.StatusCode = HttpStatusCode.Unauthorized Then
-                        result.ErrorID = AltanErrors.Mistake
-                        result.JSON = response.Content.ReadAsStringAsync().Result
-                        Return result
-                    ElseIf response.StatusCode = HttpStatusCode.InternalServerError Then
-                        result.ErrorID = AltanErrors.Mistake
-                        result.JSON = response.Content.ReadAsStringAsync().Result
-                        Return result
-                    End If
+                    result.ErrorID = AltanErrors.Mistake
                 End If
+
+                result.StatusCode = response.StatusCode
+                result.JSON = responseBody
+                Return result
+
             End Using
         Catch ex As Exception
+            'Retorna los errores
+            result.ErrorID = AltanErrors.Mistake
+            result.JSON = ex.ToString()
             Return result
         End Try
         Return result

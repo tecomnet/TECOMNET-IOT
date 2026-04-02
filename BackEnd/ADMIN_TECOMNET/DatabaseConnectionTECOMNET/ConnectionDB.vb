@@ -36,7 +36,10 @@ Public Class ConnectionDB
             sqlcom.Parameters.Add(sqlpar)
         Next
         sqlcom.ExecuteNonQuery()
-        intresultado = If(IsDBNull(sqlpar.Value), 0, sqlpar.Value)
+        'intresultado = If(IsDBNull(sqlpar.Value), 0, sqlpar.Value)
+        Dim outputParam As SqlParameter = sqlcom.Parameters("@Result")
+        intresultado = If(IsDBNull(outputParam.Value), 0, outputParam.Value)
+
         Return intresultado
     End Function
 

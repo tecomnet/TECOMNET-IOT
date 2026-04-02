@@ -34,6 +34,7 @@
         Profile = 1
         Suspend = 2
         Resumen = 3
+        ChangeOffer = 4
     End Enum
     Public Enum TypeMessageMail
         Recharge = 1
