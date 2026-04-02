@@ -36,7 +36,11 @@ Public Class Functions
             Dim values As String() = lines(i).Split(delimiter)
 
             Dim objController As New ControllerSIM
-            If objController.BYDOfferChange(values(0), values(1)) = 0 Then
+            'If objController.BYDOfferChange(values(0), values(1)) = 0 Then
+            '   dt.Rows.Add(values(0), values(1))
+            'End If
+            Dim ok = objController.ProcesarCambioOferta(values(0), CInt(values(1)))
+            If ok Then
                 dt.Rows.Add(values(0), values(1))
             End If
         Next

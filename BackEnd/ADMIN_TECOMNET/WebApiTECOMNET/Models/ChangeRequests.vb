@@ -6,7 +6,7 @@ Namespace API.Tecomnet
         Public Property ICC As String
         <Required>
         Public Property ProductID As Integer
-        <Required>
+        '<Required>
         Public Property ReasonForChange As String
     End Class
     Public Class ChangeStatus

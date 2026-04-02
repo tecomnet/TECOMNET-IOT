@@ -1,4 +1,6 @@
-﻿Imports ModelsTECOMNET
+﻿Imports System.Data.SqlClient
+Imports System.Net
+Imports ModelsTECOMNET
 Imports ModelsTECOMNET.TECOMNET
 Public Class Controller
     Public Function TransactionsBYDModels(Of ReturnType)(opcion As Integer, ByVal objBYDModels As BYDModels) As ReturnType
@@ -241,6 +243,55 @@ Public Class Controller
         cnx = Nothing
         Return DirectCast(result, ReturnType)
     End Function
+
+    Public Function TransactionsProductSIMChangeLog(Of returnType)(Opcion As Integer, ByVal objProductSIMChangeLog As ProductSIMChangeLog) As returnType
+        Dim parametros As New Collection
+
+        'Opcion 1: Insertar Log
+        'Opcion 2: Consultar si ya existe un cambio != Error
+
+        parametros.Add(ConnectionDB.ArmaParametro("@opcion", SqlDbType.NVarChar, Opcion))
+        parametros.Add(ConnectionDB.ArmaParametro("@ICCID", SqlDbType.NVarChar, objProductSIMChangeLog.ICCID))
+        parametros.Add(ConnectionDB.ArmaParametro("@ProductID", SqlDbType.Int, objProductSIMChangeLog.ProductID))
+        'Se crea el parametro porque se cortaba el texto
+        Dim paramReason As New SqlParameter("@ReasonForChange", SqlDbType.NVarChar)
+        paramReason.Value = objProductSIMChangeLog.ReasonForChange
+        paramReason.Size = 100
+        parametros.Add(paramReason)
+
+        System.Diagnostics.Debug.WriteLine("LENGTH>>>>>>: " & objProductSIMChangeLog.ReasonForChange.Length)
+
+        parametros.Add(ConnectionDB.ArmaParametro("@Channel", SqlDbType.NVarChar, objProductSIMChangeLog.Channel))
+        parametros.Add(ConnectionDB.ArmaParametro("@Action", SqlDbType.NVarChar, objProductSIMChangeLog.Action))
+        parametros.Add(ConnectionDB.ArmaParametro("@PerformedBy", SqlDbType.NVarChar, objProductSIMChangeLog.PerformedBy))
+        parametros.Add(ConnectionDB.ArmaParametro("@Applied", SqlDbType.Bit, objProductSIMChangeLog.Applied))
+        parametros.Add(ConnectionDB.ArmaParametro("@RequestGUID", SqlDbType.NVarChar, objProductSIMChangeLog.RequestGUID))
+        parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        For Each p As SqlParameter In parametros
+            System.Diagnostics.Debug.WriteLine("PARAM: " & p.ParameterName & " SIZE=" & p.Size & " VALUE=" & p.Value)
+        Next
+
+        Dim cnx As New ConnectionDB
+        cnx.ActivarConexion()
+
+        Dim result As Object
+
+        If GetType(returnType) Is GetType(Integer) Then
+            result = cnx.ejecutasp_int("[sp_LogProductSIMChangeLog]", parametros)
+        ElseIf GetType(returnType) Is GetType(DataSet) Then
+            result = cnx.ejecutasp_consulta("[sp_LogProductSIMChangeLog]", parametros)
+        Else
+            Throw New NotSupportedException("No se puede convertir de '" & GetType(returnType).ToString & "'")
+        End If
+
+        cnx.DesactivarConexion()
+        cnx = Nothing
+
+        Return DirectCast(result, returnType)
+
+    End Function
+
     Public Function TransactionsUser(Of ReturnType)(opcion As Integer, ByVal objUser As User) As ReturnType
         Dim parametros As New Collection
 
