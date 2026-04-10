@@ -130,6 +130,18 @@ Public Class RechargeSure
                 End If
             End If
         End If
+
+        'AlexSD 09042026 - Inicia Correccion para eliminar la cookie de ID al cerrar sesión, se agrega validación para evitar que se pueda acceder a la página sin iniciar sesión
+        'Evitar cache (para botón atrás)
+        Response.Cache.SetCacheability(HttpCacheability.NoCache)
+        Response.Cache.SetNoStore()
+        Response.Cache.SetExpires(DateTime.Now.AddSeconds(-1))
+
+        'Validar sesión
+        If Session("Usuario") Is Nothing Then
+            FormsAuthentication.RedirectToLoginPage()
+            Return
+        End If
     End Sub
     Private Sub btnValidaPhoneNumber_Click(sender As Object, e As EventArgs) Handles btnValidaPhoneNumber.Click
         If GetProductos() Then
