@@ -1,8 +1,33 @@
 ﻿Imports System.Data.SqlClient
 Imports System.Net
+Imports System.Net.Http
+Imports System.Web
 Imports ModelsTECOMNET
 Imports ModelsTECOMNET.TECOMNET
 Public Class Controller
+    '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    Public Sub InsertarSysLog(SP As String, Opcion As String, Usuario As String, Modulo As String, Detalle As String)
+        Dim parametros As New Collection
+        parametros.Add(ConnectionDB.ArmaParametro("@SP", SqlDbType.NVarChar, SP))
+        parametros.Add(ConnectionDB.ArmaParametro("@Opcion", SqlDbType.NVarChar, Opcion))
+        parametros.Add(ConnectionDB.ArmaParametro("@Usuario", SqlDbType.NVarChar, Usuario))
+        parametros.Add(ConnectionDB.ArmaParametro("@Modulo", SqlDbType.NVarChar, Modulo))
+        parametros.Add(ConnectionDB.ArmaParametro("@Detalles", SqlDbType.NVarChar, Detalle))
+        Dim conexion As New ConnectionDB
+
+        Try
+            conexion.ActivarConexion()
+            conexion.ejecutasp("[sp_Insert_SysLog]", parametros)
+        Catch ex As Exception
+
+        Finally
+            conexion.DesactivarConexion()
+            conexion = Nothing
+        End Try
+
+    End Sub
+    '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
     Public Function TransactionsBYDModels(Of ReturnType)(opcion As Integer, ByVal objBYDModels As BYDModels) As ReturnType
         Dim parametros As New Collection
 
@@ -12,6 +37,14 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@CreationDate", SqlDbType.DateTime, objBYDModels.CreationDate))
         parametros.Add(ConnectionDB.ArmaParametro("@LastDate", SqlDbType.DateTime, IIf(IsNothing(objBYDModels.LastDate), DBNull.Value, objBYDModels.LastDate)))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        Dim Detail As String = "ModelId: " + objBYDModels.ModelID.ToString() + " | Model: " + objBYDModels.Model + " | CreationDate: " + objBYDModels.CreationDate.ToString() + " | LastDate: " + IIf(IsNothing(objBYDModels.LastDate), "NULL", objBYDModels.LastDate.ToString())
+        InsertarSysLog("sp_BYDModels", opcion.ToString, usuario.UserID, "BYDModels", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
@@ -44,6 +77,23 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@CreationDate", SqlDbType.DateTime, objCar.CreationDate))
         parametros.Add(ConnectionDB.ArmaParametro("@LastDate", SqlDbType.DateTime, IIf(IsNothing(objCar.LastDate), DBNull.Value, objCar.LastDate)))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "CarID: " + objCar.CarID.ToString() +
+                                " | ModelID: " + objCar.ModelID.ToString() +
+                                " | VIN: " + objCar.VIN +
+                                " | Year: " + objCar.YEAR.ToString() +
+                                " | Brand: " + objCar.brand +
+                                " | CustomerID: " + objCar.CustomerID.ToString() +
+                                " | Color: " + objCar.Color +
+                                " | CreationDate: " + objCar.CreationDate.ToString() +
+                                " | LastDate: " + IIf(IsNothing(objCar.LastDate), "NULL", objCar.LastDate.ToString())
+
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        InsertarSysLog("sp_Car", opcion.ToString, usuario.UserID, "Car", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
@@ -87,6 +137,36 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@ZipCode", SqlDbType.NVarChar, objCustomer.ZipCode))
         parametros.Add(ConnectionDB.ArmaParametro("@LastDate", SqlDbType.DateTime, IIf(IsNothing(objCustomer.LastDate), DBNull.Value, objCustomer.LastDate)))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "CustomerID: " + objCustomer.CustomerID.ToString() +
+                                " | PaternalSurname: " + objCustomer.PaternalSurname +
+                                " | MaternalSurname: " + objCustomer.MaternalSurname +
+                                " | Name: " + objCustomer.Name +
+                                " | CustomerName: " + objCustomer.CustomerName +
+                                " | DateBirth: " + IIf(IsNothing(objCustomer.DateBirth), "NULL", objCustomer.DateBirth.ToString()) +
+                                " | Email: " + objCustomer.Email +
+                                " | Password: " + objCustomer.Password +
+                                " | PhoneNumber: " + objCustomer.PhoneNumber +
+                                " | RFC: " + objCustomer.RFC +
+                                " | CURP: " + objCustomer.CURP +
+                                " | CreationDate: " + objCustomer.CreationDate.ToString() +
+                                " | RegistrationDate: " + IIf(IsNothing(objCustomer.RegistrationDate), "NULL", objCustomer.RegistrationDate.ToString()) +
+                                " | Sex: " + objCustomer.Sex +
+                                " | Country: " + objCustomer.Country +
+                                " | State: " + objCustomer.State +
+                                " | Cologne: " + objCustomer.Cologne +
+                                " | Address: " + objCustomer.Address +
+                                " | ZipCode: " + objCustomer.ZipCode +
+                                " | LastDate: " + IIf(IsNothing(objCustomer.LastDate), "NULL", objCustomer.LastDate.ToString())
+
+        ' Obtener el usuario de la sesión
+        If (opcion <> 9) Then
+            Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+            InsertarSysLog("sp_Customer", opcion.ToString, usuario.UserID, "Customer", Detail)
+        End If
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
         Dim result As Object
@@ -121,6 +201,26 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@DepositID", SqlDbType.Int, IIf(IsNothing(objCustomerPayments.DepositID), DBNull.Value, objCustomerPayments.DepositID)))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
 
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "PaymentID: " + objCustomerPayments.PaymentID.ToString() +
+                                " | ProductID: " + objCustomerPayments.ProductID.ToString() +
+                                " | SIMID: " + objCustomerPayments.SIMID.ToString() +
+                                " | CarID: " + objCustomerPayments.CarID.ToString() +
+                                " | CustomerID: " + objCustomerPayments.CustomerID.ToString() +
+                                " | PurchaseDate: " + objCustomerPayments.PurchaseDate.ToString() +
+                                " | PaymentAmount: " + objCustomerPayments.PaymentAmount.ToString() +
+                                " | MethodPayment: " + objCustomerPayments.MethodPayment.ToString() +
+                                " | InvoiceRequired: " + objCustomerPayments.InvoiceRequired.ToString() +
+                                " | OrderID: " + IIf(IsNothing(objCustomerPayments.OrderID), "NULL", objCustomerPayments.OrderID.ToString()) +
+                                " | InvoiceID: " + IIf(IsNothing(objCustomerPayments.InvoiceID), "NULL", objCustomerPayments.InvoiceID.ToString()) +
+                                " | DepositID: " + IIf(IsNothing(objCustomerPayments.DepositID), "NULL", objCustomerPayments.DepositID.ToString())
+
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        InsertarSysLog("sp_CustomerPayments", opcion.ToString, usuario.UserID, "CustomerPayments", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
         Dim result As Object
@@ -147,6 +247,18 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@SIMID", SqlDbType.Int, objMovementHistory.SIMID))
         parametros.Add(ConnectionDB.ArmaParametro("@Description", SqlDbType.NVarChar, objMovementHistory.Description))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "MovementID: " + objMovementHistory.MovementID.ToString() +
+                                " | MovementDate: " + objMovementHistory.MovementDate.ToString() +
+                                " | MovementType: " + objMovementHistory.MovementType.ToString() +
+                                " | SIMID: " + objMovementHistory.SIMID.ToString() +
+                                " | Description: " + objMovementHistory.Description.ToString()
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        InsertarSysLog("sp_MovementHistory", opcion.ToString, usuario.UserID, "MovementHistory", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
@@ -177,6 +289,21 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@CreationDate", SqlDbType.DateTime, objProduct.CreationDate))
         parametros.Add(ConnectionDB.ArmaParametro("@LastDate", SqlDbType.DateTime, IIf(IsNothing(objProduct.LastDate), DBNull.Value, objProduct.LastDate)))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "ProductID: " + objProduct.ProductID.ToString() +
+                                " | ProductName: " + objProduct.ProductName.ToString() +
+                                " | Price: " + objProduct.Price.ToString() +
+                                " | MB: " + objProduct.MB.ToString() +
+                                " | OfferIdAltan: " + objProduct.OfferIdAltan.ToString() +
+                                " | CompanyID: " + objProduct.CompanyID.ToString() +
+                                " | CreationDate: " + objProduct.CreationDate.ToString() +
+                                " | LastDate: " + IIf(IsNothing(objProduct.LastDate), "NULL", objProduct.LastDate.ToString())
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        InsertarSysLog("sp_Product", opcion.ToString, usuario.UserID, "Product", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
@@ -227,6 +354,39 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@LastDate", SqlDbType.DateTime, IIf(IsNothing(objSIM.LastDate), DBNull.Value, objSIM.LastDate)))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
 
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "SIMID: " + objSIM.SIMID.ToString() +
+                                " | BE_ID: " + objSIM.BE_ID.ToString() +
+                                " | IMSI: " + objSIM.IMSI.ToString() +
+                                " | IMSI_rb1: " + objSIM.IMSI_rb1.ToString() +
+                                " | IMSI_rb2: " + objSIM.IMSI_rb2.ToString() +
+                                " | ICCID: " + objSIM.ICCID.ToString() +
+                                " | MSISDN: " + objSIM.MSISDN.ToString() +
+                                " | PIN: " + objSIM.PIN.ToString() +
+                                " | PUK: " + objSIM.PUK.ToString() +
+                                " | serie: " + objSIM.Serie.ToString() +
+                                " | producto: " + objSIM.Producto.ToString() +
+                                " | CarID: " + objSIM.CarID.ToString() +
+                                " | ExpirationDate: " + objSIM.ExpirationDate.ToString() +
+                                " | AssignedMB: " + objSIM.AssignedMB.ToString() +
+                                " | UsedMB: " + objSIM.UsedMB.ToString() +
+                                " | AvailableMB: " + objSIM.AvailableMB.ToString() +
+                                " | AdditionalMB: " + objSIM.AdditionalMB.ToString() +
+                                " | Active: " + objSIM.Active.ToString() +
+                                " | CreationDate: " + objSIM.CreationDate.ToString() +
+                                " | InstallationDate: " + objSIM.InstallationDate.ToString() +
+                                " | ActivationDate: " + objSIM.ActivationDate.ToString() +
+                                " | ReactivationDate: " + objSIM.ReactivationDate.ToString() +
+                                " | SuspensionDate: " + objSIM.SuspensionDate.ToString() +
+                                " | BillingStartDate: " + objSIM.BillingStartDate.ToString() +
+                                " | CustomerSaleDate: " + objSIM.CustomerSaleDate.ToString() +
+                                " | Status: " + IIf(IsNothing(objSIM.Status), DBNull.Value, objSIM.Status)
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        InsertarSysLog("sp_Product", opcion.ToString, usuario.UserID, "Product", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
         Dim result As Object
@@ -267,6 +427,21 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@Applied", SqlDbType.Bit, objProductSIMChangeLog.Applied))
         parametros.Add(ConnectionDB.ArmaParametro("@RequestGUID", SqlDbType.NVarChar, objProductSIMChangeLog.RequestGUID))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "ICCID: " + objProductSIMChangeLog.ICCID.ToString() +
+                                " | ProductID: " + objProductSIMChangeLog.ProductID.ToString() +
+                                " | ReasonForChange: " + objProductSIMChangeLog.ReasonForChange.ToString() +
+                                " | Channel: " + objProductSIMChangeLog.Channel.ToString() +
+                                " | Action: " + objProductSIMChangeLog.Action.ToString() +
+                                " | PerformedBy: " + objProductSIMChangeLog.PerformedBy.ToString() +
+                                " | Applied: " + objProductSIMChangeLog.Applied.ToString() +
+                                " | RequestGUID: " + objProductSIMChangeLog.RequestGUID.ToString()
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        InsertarSysLog("sp_LogProductSIMChangeLog", Opcion.ToString, usuario.UserID, "Solicitud Cambio Producto", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         For Each p As SqlParameter In parametros
             System.Diagnostics.Debug.WriteLine("PARAM: " & p.ParameterName & " SIZE=" & p.Size & " VALUE=" & p.Value)
@@ -340,6 +515,26 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@CreationDate", SqlDbType.DateTime, objPaymentRequest.CreationDate))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
 
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "RequestID: " + objPaymentRequest.RequestID.ToString() +
+                                " | OrderID: " + objPaymentRequest.OrderID.ToString() +
+                                " | SIMID: " + objPaymentRequest.SIMID.ToString() +
+                                " | ProductID: " + objPaymentRequest.ProductID.ToString() +
+                                " | CarID: " + objPaymentRequest.CarID.ToString() +
+                                " | CustomerID: " + objPaymentRequest.CustomerID.ToString() +
+                                " | estatus_pago: " + objPaymentRequest.estatus_pago.ToString() +
+                                " | id_transaction: " + objPaymentRequest.id_transaction.ToString() +
+                                " | auth_number: " + objPaymentRequest.auth_number.ToString() +
+                                " | authCode: " + objPaymentRequest.authCode.ToString() +
+                                " | reason: " + objPaymentRequest.reason.ToString() +
+                                " | CreationDate: " + objPaymentRequest.CreationDate.ToString()
+
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        InsertarSysLog("sp_PaymentRequestTecomnet", opcion.ToString, usuario.UserID, "Solicitud de Pago", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
         Dim result As Object
@@ -378,6 +573,21 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@LastEffectOffering", SqlDbType.NVarChar, objCDR.LastEffectOffering))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
 
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "CreateDate: " + objCDR.CreateDate.ToString() +
+                                " | Service: " + objCDR.Service.ToString() +
+                                " | Total: " + objCDR.Total.ToString() +
+                                " | IMEI: " + objCDR.IMEI.ToString() +
+                                " | IMSI: " + objCDR.IMSI.ToString() +
+                                " | MainOfferingID: " + objCDR.MainOfferingID.ToString() +
+                                " | LastEffectOffering: " + objCDR.LastEffectOffering.ToString()
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        InsertarSysLog("sp_CDR", opcion.ToString, usuario.UserID, "CDR", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<   
+
+
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
         Dim result As Object
@@ -404,6 +614,17 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@CreationDate", SqlDbType.DateTime, objCompany.CreationDate))
         parametros.Add(ConnectionDB.ArmaParametro("@LastDate", SqlDbType.DateTime, IIf(IsNothing(objCompany.LastDate), DBNull.Value, objCompany.LastDate)))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "CompanyID: " + objCompany.CompanyID.ToString() +
+                                " | Company: " + objCompany.Company.ToString() +
+                                " | CreationDate: " + objCompany.CreationDate.ToString() +
+                                " | LastDate: " + IIf(IsNothing(objCompany.LastDate), "NULL", objCompany.LastDate.ToString())
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        InsertarSysLog("sp_Company", opcion.ToString, usuario.UserID, "Company", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
@@ -432,6 +653,18 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@PreviousSIM", SqlDbType.NVarChar, objInstallationEvidence.PreviousSIM))
         parametros.Add(ConnectionDB.ArmaParametro("@Connectivity", SqlDbType.NVarChar, objInstallationEvidence.Connectivity))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "VIN: " + objInstallationEvidence.VIN.ToString() +
+                                " | PreviousVersion: " + objInstallationEvidence.PreviousVersion.ToString() +
+                                " | CurrentVersion: " + objInstallationEvidence.CurrentVersion.ToString() +
+                                " | PreviousSIM: " + objInstallationEvidence.PreviousSIM.ToString() +
+                                " | Connectivity: " + objInstallationEvidence.Connectivity.ToString()
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        InsertarSysLog("sp_InstallationEvidence", opcion.ToString, usuario.UserID, "InstallationEvidence", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
@@ -469,6 +702,26 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@Comments", SqlDbType.NVarChar, objTicket.Comments))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
 
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "TicketID: " + objTicket.TicketID.ToString() +
+                                " | UserID: " + objTicket.UserID.ToString() +
+                                " | GUID: " + objTicket.GUID.ToString() +
+                                " | RegistrationDate: " + objTicket.RegistrationDate.ToString() +
+                                " | StartDate: " + IIf(IsNothing(objTicket.StartDate), "NULL", objTicket.StartDate.ToString()) +
+                                " | EndDate: " + IIf(IsNothing(objTicket.EndDate), "NULL", objTicket.EndDate.ToString()) +
+                                " | Type: " + objTicket.Type.ToString() +
+                                " | Stage: " + objTicket.Stage.ToString() +
+                                " | Status: " + objTicket.Status.ToString() +
+                                " | Subject: " + objTicket.Subject.ToString() +
+                                " | Reference: " + objTicket.Reference.ToString() +
+                                " | Description: " + objTicket.Description.ToString() +
+                                " | Comments: " + objTicket.Comments.ToString()
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        InsertarSysLog("sp_Ticket", opcion.ToString, usuario.UserID, "Ticket", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
         Dim result As Object
@@ -497,6 +750,19 @@ Public Class Controller
         parametros.Add(ConnectionDB.ArmaParametro("@ICCID", SqlDbType.NVarChar, objLogMovimientosInstalacion.ICCID))
         parametros.Add(ConnectionDB.ArmaParametro("@Fecha", SqlDbType.DateTime, objLogMovimientosInstalacion.Fecha))
         parametros.Add(ConnectionDB.ArmaParametro("@Result", SqlDbType.Int, 0, ParameterDirection.Output))
+
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        Dim Detail As String = "LogID: " + objLogMovimientosInstalacion.LogID.ToString() +
+                                " | UsuarioID: " + objLogMovimientosInstalacion.UsuarioID.ToString() +
+                                " | Operacion: " + objLogMovimientosInstalacion.Operacion.ToString() +
+                                " | VIN: " + objLogMovimientosInstalacion.VIN.ToString() +
+                                " | ICCID: " + objLogMovimientosInstalacion.ICCID.ToString() +
+                                " | Fecha: " + objLogMovimientosInstalacion.Fecha.ToString()
+        ' Obtener el usuario de la sesión
+        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+
+        InsertarSysLog("sp_LogMovimientosInstalacion", opcion.ToString, usuario.UserID, "Movimientos Instalacion", Detail)
+        '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         Dim cnx As New ConnectionDB
         cnx.ActivarConexion()
