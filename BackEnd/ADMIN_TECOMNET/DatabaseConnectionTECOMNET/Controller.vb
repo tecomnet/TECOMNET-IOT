@@ -300,9 +300,9 @@ Public Class Controller
                                 " | CreationDate: " + objProduct.CreationDate.ToString() +
                                 " | LastDate: " + IIf(IsNothing(objProduct.LastDate), "NULL", objProduct.LastDate.ToString())
         ' Obtener el usuario de la sesión
-        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+        'Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
 
-        InsertarSysLog("sp_Product", opcion.ToString, usuario.UserID, "Product", Detail)
+        'InsertarSysLog("sp_Product", opcion.ToString, usuario.UserID, "Product", Detail)
         '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         Dim cnx As New ConnectionDB
@@ -383,8 +383,7 @@ Public Class Controller
                                 " | Status: " + IIf(IsNothing(objSIM.Status), DBNull.Value, objSIM.Status)
         ' Obtener el usuario de la sesión
         Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
-
-        InsertarSysLog("sp_Product", opcion.ToString, usuario.UserID, "Product", Detail)
+        InsertarSysLog("sp_Product", opcion.ToString, "BYD.TECOMNET.USER_API", "Product", Detail)
         '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         Dim cnx As New ConnectionDB
@@ -438,9 +437,10 @@ Public Class Controller
                                 " | Applied: " + objProductSIMChangeLog.Applied.ToString() +
                                 " | RequestGUID: " + objProductSIMChangeLog.RequestGUID.ToString()
         ' Obtener el usuario de la sesión
-        Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
+        'Dim usuario As User = DirectCast(HttpContext.Current.Session("Usuario"), User)
 
-        InsertarSysLog("sp_LogProductSIMChangeLog", Opcion.ToString, usuario.UserID, "Solicitud Cambio Producto", Detail)
+
+        InsertarSysLog("sp_LogProductSIMChangeLog", Opcion.ToString, "BYD.TECOMNET.USER_API", "Solicitud Cambio Producto", Detail)
         '>>>>>>>>>>>>>>>>>>>>>>>>> AlexSD Genera Log <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         For Each p As SqlParameter In parametros
