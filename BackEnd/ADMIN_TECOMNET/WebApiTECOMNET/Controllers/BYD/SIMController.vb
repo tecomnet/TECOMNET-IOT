@@ -1,19 +1,20 @@
-﻿Imports System.Net
+﻿Imports System.Collections.Specialized.BitVector32
+Imports System.Drawing
+Imports System.IO
+Imports System.Net
 Imports System.Net.Http
+Imports System.Net.Http.Headers
+Imports System.Text.Json
+Imports System.Threading.Tasks
+Imports System.Web.Helpers
 Imports System.Web.Http
+Imports System.Web.WebSockets
 Imports DatabaseConnectionTECOMNET
+Imports ModelsTECOMNET
+Imports ModelsTECOMNET.Enums.TECOMNET
 Imports ModelsTECOMNET.TECOMNET
 Imports ModelsTECOMNET.TECOMNET.AltanRedes
-Imports ModelsTECOMNET.Enums.TECOMNET
 Imports WebApiTECOMNET.API.Tecomnet
-Imports System.IO
-Imports System.Threading.Tasks
-Imports System.Text.Json
-Imports System.Web.WebSockets
-Imports System.Drawing
-Imports ModelsTECOMNET
-Imports System.Collections.Specialized.BitVector32
-Imports System.Web.Helpers
 
 Namespace Controllers.BYD
     <Authorize>
@@ -491,7 +492,6 @@ Namespace Controllers.BYD
         'End Function
 
         '5.9.1	Solicitud_Cambio_Oferta alex
-
         <AllowAnonymous>
         <HttpPost>
         <Route("api/BYD/CambioOferta")>
@@ -620,6 +620,8 @@ Namespace Controllers.BYD
                 Key .detalle = ""
             })
         End Function
+
+
 
         '5.10	Batch_Cambio_Oferta
         <HttpPost>

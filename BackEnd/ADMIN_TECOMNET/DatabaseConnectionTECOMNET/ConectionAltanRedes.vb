@@ -58,15 +58,20 @@ Public Class ConectionAltanRedes
 
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " & token)
 
-                ' Convertir los datos a JSON
-                If jsonData <> String.Empty Then
-                    content = New StringContent(jsonData, Encoding.UTF8, "application/json")
+                If String.IsNullOrWhiteSpace(jsonData) Then
+                    Throw New Exception("JSON vacío, no se puede enviar request a Altán")
                 End If
+
+                ' Convertir los datos a JSON
+                content = New StringContent(jsonData, Encoding.UTF8, "application/json")
+
                 Console.WriteLine("ENDPOINT: " & EndPoint)
                 Console.WriteLine("BODY: " & jsonData)
+                Console.WriteLine("TOKEN>>>>>>>>>>>>>>>>>>>>>>>>>>: " & token)
                 ' Enviar la solicitud POST de forma síncrona
 
                 Dim response As HttpResponseMessage
+
 
                 Select Case Method
                     Case AltanApisMethod.Resumen
@@ -75,6 +80,7 @@ Public Class ConectionAltanRedes
                         response = client.PostAsync(EndPoint, content).Result
                     Case AltanApisMethod.ChangeOffer
                         Dim request As New HttpRequestMessage(New HttpMethod("PATCH"), EndPoint)
+                        request.Content = content
                         response = client.SendAsync(request).Result
                 End Select
 
@@ -101,6 +107,9 @@ Public Class ConectionAltanRedes
                 'End If
 
                 Dim responseBody As String = response.Content.ReadAsStringAsync().Result
+
+                Console.WriteLine("STATUS: " & response.StatusCode)
+                Console.WriteLine("BODY: " & responseBody)
 
                 If response.IsSuccessStatusCode Then
                     result.ErrorID = AltanErrors.Susssuccessful
