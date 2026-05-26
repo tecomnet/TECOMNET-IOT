@@ -82,10 +82,7 @@ class _LoginState extends State<Login> {
 
     try {
       // Paso 1: validar usuario real (installer@tecomnet.net)
-      final int? userId = await AuthService.validarUsuarioReal(
-        usuario,
-        contrasena,
-      );
+      final int? userId = await AuthService.login(usuario, contrasena);
 
       if (userId == null) {
         _mostrarError('Usuario o contraseña incorrectos');
@@ -138,189 +135,200 @@ class _LoginState extends State<Login> {
       appBar: AppBar(
         backgroundColor: azulActivo,
         automaticallyImplyLeading: false,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Center(
+              child: Text(
+                'v14(1.0.0)', // aquí la versión estática
+                style: const TextStyle(fontSize: 14, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
       ),
       backgroundColor: const Color(0xFFFDF2F8),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Image.asset(
-                  'assets/icons/logo.png',
-                  height: 120,
-                  fit: BoxFit.contain,
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Inicio de Sesión',
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 32),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Image.asset(
+                'assets/icons/logo.png',
+                height: 120,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Inicio de Sesión',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 32),
 
-                Autocomplete<String>(
-                  optionsBuilder: (textEditingValue) {
-                    if (textEditingValue.text.isEmpty) {
-                      return _usuariosGuardados;
-                    }
-                    return _usuariosGuardados.where((option) {
-                      return option.toLowerCase().contains(
-                        textEditingValue.text.toLowerCase(),
-                      );
-                    });
-                  },
-                  onSelected: (selection) {
-                    usuarioController.text = selection;
-                  },
-                  fieldViewBuilder:
-                      (
-                        context,
-                        fieldController,
-                        fieldFocusNode,
-                        onFieldSubmitted,
-                      ) {
-                        fieldController.text = usuarioController.text;
-                        return TextField(
-                          controller: usuarioController,
-                          focusNode: fieldFocusNode,
-                          style: TextStyle(
+              Autocomplete<String>(
+                optionsBuilder: (textEditingValue) {
+                  if (textEditingValue.text.isEmpty) {
+                    return _usuariosGuardados;
+                  }
+                  return _usuariosGuardados.where((option) {
+                    return option.toLowerCase().contains(
+                      textEditingValue.text.toLowerCase(),
+                    );
+                  });
+                },
+                onSelected: (selection) {
+                  usuarioController.text = selection;
+                },
+                fieldViewBuilder:
+                    (
+                      context,
+                      fieldController,
+                      fieldFocusNode,
+                      onFieldSubmitted,
+                    ) {
+                      fieldController.text = usuarioController.text;
+                      return TextField(
+                        controller: usuarioController,
+                        focusNode: fieldFocusNode,
+                        style: TextStyle(
+                          color: usuarioController.text.isNotEmpty
+                              ? azulActivo
+                              : Colors.black,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'Usuario',
+                          labelStyle: TextStyle(
                             color: usuarioController.text.isNotEmpty
                                 ? azulActivo
-                                : Colors.black,
+                                : Colors.grey,
                           ),
-                          decoration: InputDecoration(
-                            labelText: 'Usuario',
-                            labelStyle: TextStyle(
-                              color: usuarioController.text.isNotEmpty
-                                  ? azulActivo
-                                  : Colors.grey,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: azulActivo),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            prefixIcon: Icon(
-                              Icons.person,
-                              color: usuarioController.text.isNotEmpty
-                                  ? azulActivo
-                                  : Colors.grey,
-                            ),
-                            floatingLabelStyle: TextStyle(color: azulActivo),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                          onChanged: (value) => setState(() {}),
-                        );
-                      },
-                  optionsViewBuilder: (context, onSelected, options) {
-                    final itemHeight = 48.0;
-                    final maxHeight = 200.0;
-                    final height = options.length * itemHeight > maxHeight
-                        ? maxHeight
-                        : options.length * itemHeight;
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: azulActivo),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.person,
+                            color: usuarioController.text.isNotEmpty
+                                ? azulActivo
+                                : Colors.grey,
+                          ),
+                          floatingLabelStyle: TextStyle(color: azulActivo),
+                        ),
+                        onChanged: (value) => setState(() {}),
+                      );
+                    },
+                optionsViewBuilder: (context, onSelected, options) {
+                  final itemHeight = 48.0;
+                  final maxHeight = 200.0;
+                  final height = options.length * itemHeight > maxHeight
+                      ? maxHeight
+                      : options.length * itemHeight;
 
-                    return Align(
-                      alignment: Alignment.topLeft,
-                      child: Material(
-                        elevation: 4.0,
-                        child: Container(
-                          constraints: BoxConstraints(maxHeight: height),
-                          width: MediaQuery.of(context).size.width - 48,
-                          child: ListView.builder(
-                            padding: EdgeInsets.zero,
-                            shrinkWrap: true,
-                            itemCount: options.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              final String option = options.elementAt(index);
-                              return ListTile(
-                                title: Text(option),
-                                onTap: () {
-                                  onSelected(option);
-                                },
-                              );
-                            },
-                          ),
+                  return Align(
+                    alignment: Alignment.topLeft,
+                    child: Material(
+                      elevation: 4.0,
+                      child: Container(
+                        constraints: BoxConstraints(maxHeight: height),
+                        width: MediaQuery.of(context).size.width - 48,
+                        child: ListView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          itemCount: options.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final String option = options.elementAt(index);
+                            return ListTile(
+                              title: Text(option),
+                              onTap: () {
+                                onSelected(option);
+                              },
+                            );
+                          },
                         ),
                       ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 15),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 15),
 
-                TextField(
-                  controller: contrasenaController,
-                  obscureText: !_mostrarContrasena,
-                  style: TextStyle(
+              TextField(
+                controller: contrasenaController,
+                obscureText: !_mostrarContrasena,
+                style: TextStyle(
+                  color: contrasenaController.text.isNotEmpty
+                      ? azulActivo
+                      : Colors.black,
+                ),
+                decoration: InputDecoration(
+                  labelText: 'Contraseña',
+                  labelStyle: TextStyle(
                     color: contrasenaController.text.isNotEmpty
                         ? azulActivo
-                        : Colors.black,
+                        : Colors.grey,
                   ),
-                  decoration: InputDecoration(
-                    labelText: 'Contraseña',
-                    labelStyle: TextStyle(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  prefixIcon: Icon(
+                    Icons.lock,
+                    color: contrasenaController.text.isNotEmpty
+                        ? azulActivo
+                        : Colors.grey,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide(color: azulActivo),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _mostrarContrasena
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                       color: contrasenaController.text.isNotEmpty
                           ? azulActivo
                           : Colors.grey,
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
+                    onPressed: () => setState(
+                      () => _mostrarContrasena = !_mostrarContrasena,
                     ),
-                    prefixIcon: Icon(
-                      Icons.lock,
-                      color: contrasenaController.text.isNotEmpty
-                          ? azulActivo
-                          : Colors.grey,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide(color: azulActivo),
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _mostrarContrasena
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: contrasenaController.text.isNotEmpty
-                            ? azulActivo
-                            : Colors.grey,
-                      ),
-                      onPressed: () => setState(
-                        () => _mostrarContrasena = !_mostrarContrasena,
-                      ),
-                    ),
-                    floatingLabelStyle: TextStyle(color: azulActivo),
                   ),
+                  floatingLabelStyle: TextStyle(color: azulActivo),
                 ),
-                const SizedBox(height: 30),
+              ),
+              const SizedBox(height: 30),
 
-                ElevatedButton(
-                  onPressed: _cargando ? null : _iniciarSesion,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: azulActivo,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 50,
-                      vertical: 10,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
+              ElevatedButton(
+                onPressed: _cargando ? null : _iniciarSesion,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: azulActivo,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 50,
+                    vertical: 10,
                   ),
-                  child: _cargando
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(color: Colors.white),
-                        )
-                      : const Text(
-                          'Iniciar sesión',
-                          style: TextStyle(fontSize: 20),
-                        ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                 ),
-              ],
-            ),
+                child: _cargando
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(color: Colors.white),
+                      )
+                    : const Text(
+                        'Iniciar sesión',
+                        style: TextStyle(fontSize: 20),
+                      ),
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 }

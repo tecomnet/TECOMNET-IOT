@@ -8,8 +8,13 @@ import 'package:scannet_tecomnet/services/api_services.dart';
 
 class MostrarDatosVehiculo extends StatefulWidget {
   final Map<String, dynamic>? vehiculoData;
+  final bool? vieneRegistrosIncompletos;
 
-  const MostrarDatosVehiculo({super.key, this.vehiculoData});
+  const MostrarDatosVehiculo({
+    super.key,
+    this.vehiculoData,
+    this.vieneRegistrosIncompletos,
+  });
 
   @override
   State<MostrarDatosVehiculo> createState() => _MostrarDatosVehiculoState();
@@ -25,91 +30,88 @@ class _MostrarDatosVehiculoState extends State<MostrarDatosVehiculo> {
   Map<String, dynamic>? _vehiculoData;
 
   Future<void> _takePhoto(String fieldKey) async {
-  try {
-    final XFile? photo = await _picker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.rear,
-      imageQuality: 60,
-      maxWidth: 1024,
-      maxHeight: 1024,
-    );
+    try {
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.rear,
+        imageQuality: 40,
+        maxWidth: 900,
+        maxHeight: 900,
+      );
 
-    if (photo == null) return;
+      if (photo == null) return;
 
-    final bytes = await File(photo.path).readAsBytes();
-    final base64Image = base64Encode(bytes);
+      final bytes = await File(photo.path).readAsBytes();
+      final base64Image = base64Encode(bytes);
 
-    setState(() {
-      _cargando = true;
-      _fotosBase64[fieldKey] = base64Image;
-    });
-
-    // Subir evidencia y obtener JSON actualizado
-    final response = await _enviarEvidenciaUnica();
-
-    if (response != null) {
       setState(() {
-        _vehiculoData = response;          // 🔹 actualizar todos los campos
-        _fotosBase64[fieldKey] = base64Image; // 🔹 marcar foto subida
+        _cargando = true;
+        _fotosBase64[fieldKey] = base64Image;
+      });
+
+      // Subir evidencia y obtener JSON actualizado
+      final response = await _enviarEvidenciaUnica();
+
+      if (response != null) {
+        setState(() {
+          _vehiculoData = response; // 🔹 actualizar todos los campos
+          _fotosBase64[fieldKey] = base64Image; // 🔹 marcar foto subida
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al tomar/enviar foto'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _cargando = false;
       });
     }
-
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Error al tomar/enviar foto'),
-        backgroundColor: Colors.red,
-      ),
-    );
-  } finally {
-    setState(() {
-      _cargando = false;
-    });
   }
-}
-
 
   Future<Map<String, dynamic>?> _enviarEvidenciaUnica() async {
-  if (errorMensaje != null) return null;
+    if (errorMensaje != null) return null;
 
-  final data = widget.vehiculoData;
-  if (data == null) return null;
+    final data = widget.vehiculoData;
+    if (data == null) return null;
 
-  final vin = (data['VIN'] ?? '').toString();
-  if (vin.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("VIN faltante, no se puede enviar evidencia"),
-        backgroundColor: Colors.red,
-      ),
+    final vin = (data['VIN'] ?? '').toString();
+    if (vin.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("VIN faltante, no se puede enviar evidencia"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return null;
+    }
+
+    final response = await AuthService.agregarEvidencias(
+      vin: vin,
+      iccid: (data['ICCID'] ?? '').toString(),
+      versionAnterior: _fotosBase64['Version Anterior'] ?? '',
+      versionActual: _fotosBase64['Version Actual'] ?? '',
+      simAnterior: _fotosBase64['SIM Anterior'] ?? '',
+      conectividad: _fotosBase64['Conectividad'] ?? '',
+      estatusSim: (data['SIMStatus'] ?? '').toString(),
+      estado: (data['State'] ?? '').toString(),
     );
-    return null;
+
+    if (response['error'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(response['mensaje'] ?? 'Error al subir evidencia'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return null;
+    }
+
+    return response; // ✅ devuelve el JSON actualizado
   }
-
-  final response = await AuthService.agregarEvidencias(
-    vin: vin,
-    iccid: (data['ICCID'] ?? '').toString(),
-    versionAnterior: _fotosBase64['Version Anterior'] ?? '',
-    versionActual: _fotosBase64['Version Actual'] ?? '',
-    simAnterior: _fotosBase64['SIM Anterior'] ?? '',
-    conectividad: _fotosBase64['Conectividad'] ?? '',
-    estatusSim: (data['SIMStatus'] ?? '').toString(),
-    estado: (data['State'] ?? '').toString(),
-  );
-
-  if (response['error'] == true) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(response['mensaje'] ?? 'Error al subir evidencia'),
-        backgroundColor: Colors.red,
-      ),
-    );
-    return null;
-  }
-
-  return response; // ✅ devuelve el JSON actualizado
-}
-
 
   @override
   void initState() {
@@ -244,10 +246,7 @@ class _MostrarDatosVehiculoState extends State<MostrarDatosVehiculo> {
                     ),
 
                     const SizedBox(height: 30),
-                    buildField(
-                      'Estatus SIM',
-                      _vehiculoData?['SIMStatus'],
-                    ),
+                    buildField('Estatus SIM', _vehiculoData?['SIMStatus']),
                     buildField('Estado', _vehiculoData?['State']),
                   ],
 
@@ -256,14 +255,21 @@ class _MostrarDatosVehiculoState extends State<MostrarDatosVehiculo> {
                     onPressed: _cargando
                         ? null
                         : () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ScanVin(vieneDeValidar: true),
-                              ),
-                            );
+                            if (widget.vieneRegistrosIncompletos == true) {
+                              // 🔙 Regresar a RegistrosIncompletos
+                              Navigator.pop(context);
+                            } else {
+                              // 🔍 Ir a flujo normal
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ScanVin(vieneDeValidar: true),
+                                ),
+                              );
+                            }
                           },
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[800],
                       foregroundColor: Colors.white,
