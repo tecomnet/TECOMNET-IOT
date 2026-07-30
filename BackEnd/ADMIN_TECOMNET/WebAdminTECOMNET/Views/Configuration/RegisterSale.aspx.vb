@@ -103,6 +103,7 @@ Public Class RegisterSale
     End Sub
     Private Sub btnGuardar_Click(sender As Object, e As EventArgs) Handles btnGuardar.Click
         Dim objController As New ControllerCar
+        Dim objControllerSIM As New ControllerSIM
         Dim objCar As New Car
 
         If Val(rcbVIN.SelectedValue) = 0 Or Val(rcbCustomerName.SelectedValue) = 0 Then
@@ -115,8 +116,12 @@ Public Class RegisterSale
                 If objController.AssociateCarToCustomer(objCar) > 0 Then
                     clearControls()
                     ShowControls(False)
+                    If objControllerSIM.RegisterSale(objCar.CarID) Then
+                        DisplayMesage("El registro se actualizó correctamente", True)
+                    Else
+                        DisplayMesage("Error al actualizar el registro", False)
+                    End If
                     rgDashboard.Rebind()
-                    DisplayMesage("El registro se actualizó correctamente", True)
                 Else
                     DisplayMesage("Error al actualizar el registro", False)
                 End If

@@ -1,7 +1,4 @@
-﻿Imports System.Text.Json
-Imports ModelsTECOMNET
-Imports ModelsTECOMNET.Enums.TECOMNET
-Imports ModelsTECOMNET.TECOMNET
+﻿Imports ModelsTECOMNET.TECOMNET
 
 Public Class ControllerSIM
     Public Function GetSIMs() As List(Of SIMDetail)
@@ -159,68 +156,17 @@ Public Class ControllerSIM
         End Try
         Return exito
     End Function
-
-    Public Function ProcesarCambioOferta(iccid As String, productId As Integer) As Boolean
-        Dim Success As Boolean = False
-        Dim resultLog As Boolean = True
-        Dim nuevoGuid As Guid = Guid.NewGuid()
-
+    Public Function RegisterSale(ByVal carID As Integer) As Integer
+        Dim exito As Integer
         Dim controller As New Controller
-        Dim resultAltan As New AltanResult
-        resultAltan.ErrorID = AltanErrors.Mistake
-
-        Dim altan As New ConectionAltanRedes()
-        Dim ObjControllerSIM As New ControllerSIM
-
-        ' VALIDAR SI YA EXISTE
-        Dim objBuscaLog As New ProductSIMChangeLog With {
-            .ICCID = iccid
-        }
-
-        Dim result = controller.TransactionsProductSIMChangeLog(Of Integer)(2, objBuscaLog)
-
-        If result > 0 Then
-            resultLog = False
-        End If
-
-        ' LLAMADA A ALTAN
-        If resultLog Then
-            Dim json = JsonSerializer.Serialize(New With {
-            .primaryOffering = New With {
-                .offeringId = "1003901000"
-            }
-        })
-
-            Dim objSIM = ObjControllerSIM.GetSIMByICCID(iccid)
-
-            resultAltan = altan.PostAPIService(
-                objSIM.MSISDN,
-                json,
-                AltanApisMethod.ChangeOffer
-            )
-        End If
-
-        ' ACTUALIZAR SISTEMA LOCAL
-        If resultAltan.ErrorID = AltanErrors.Susssuccessful Then
-            If ObjControllerSIM.BYDOfferChange(iccid, productId) > 0 Then
-                Success = True
-            End If
-        End If
-
-        ' INSERTAR LOG
-        Dim objLog As New ProductSIMChangeLog With {
-            .ICCID = iccid,
-            .ProductID = productId,
-            .ReasonForChange = "Cambio por CSV",
-            .Channel = "CSV",
-            .Action = If(Success, "Cambio OK", "Error Cambio"),
-            .PerformedBy = "Sistema",
-            .Applied = Success,
-            .RequestGUID = nuevoGuid.ToString()
-        }
-
-        controller.TransactionsProductSIMChangeLog(Of Integer)(1, objLog)
-
-        Return Success
+        Dim objSIM As New SIM
+        objSIM.ICCID = 0
+        objSIM.CarID = carID
+        Try
+            exito = controller.TransactionsSIM(Of Integer)(11, objSIM)
+        Catch ex As Exception
+            Return exito
+        End Try
+        Return exito
     End Function
 End Class

@@ -27,8 +27,23 @@
     </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <telerik:RadScriptManager ID="RadScriptManager" runat="server" />
-    <telerik:RadAjaxLoadingPanel ID="RadAjaxLoadingPanel" runat="server"></telerik:RadAjaxLoadingPanel>
+    <telerik:RadScriptManager ID="RadScriptManager" runat="server" />    
+    <telerik:RadAjaxLoadingPanel ID="RadAjaxLoadingPanel1" runat="server"></telerik:RadAjaxLoadingPanel>
+    <telerik:RadAjaxManager ID="RadAjaxManager1" runat="server">
+        <AjaxSettings>
+            <telerik:AjaxSetting AjaxControlID="btnFind">
+                <UpdatedControls>
+                    <telerik:AjaxUpdatedControl ControlID="rgResult" LoadingPanelID="RadAjaxLoadingPanel1" />
+                    <telerik:AjaxUpdatedControl ControlID="rgInstallation" LoadingPanelID="RadAjaxLoadingPanel1" />
+                </UpdatedControls>
+            </telerik:AjaxSetting>
+            <telerik:AjaxSetting AjaxControlID="rgResult">
+                <UpdatedControls>
+                    <telerik:AjaxUpdatedControl ControlID="rgResult" LoadingPanelID="RadAjaxLoadingPanel1" />                    
+                </UpdatedControls>
+            </telerik:AjaxSetting>
+        </AjaxSettings>
+    </telerik:RadAjaxManager>
     <div class="container-fluid text-center pt-2 containerTitleAux" width="100%">
         <label class="h3 text-white">Reportes</label>
     </div>
@@ -84,8 +99,8 @@
     </div>
 
     <telerik:RadGrid ID="rgResult" runat="server" Width="100%" Height="500px" AllowPaging="true"
-        PageSize="50" AutoGenerateColumns="true" Visible="false">
-        <MasterTableView CommandItemDisplay="Top" NoMasterRecordsText="No hay registros que mostrar">
+        PageSize="50" AutoGenerateColumns="true">
+        <MasterTableView CommandItemDisplay="Top" NoMasterRecordsText="No hay registros que mostrar" AllowFilteringByColumn="true">
             <CommandItemSettings ShowExportToExcelButton="true" ShowExportToPdfButton="false" ShowAddNewRecordButton="false" ShowRefreshButton="false" />
         </MasterTableView>
         <ClientSettings>
@@ -93,7 +108,7 @@
         </ClientSettings>
     </telerik:RadGrid>
     <telerik:RadGrid ID="rgInstallation" runat="server" Width="100%" Height="500px" AllowPaging="true"
-        PageSize="50" AutoGenerateColumns="false" Visible="false">
+        PageSize="50" AutoGenerateColumns="false">
         <MasterTableView CommandItemDisplay="Top" NoMasterRecordsText="No hay registros que mostrar">
             <CommandItemSettings ShowExportToExcelButton="true" ShowExportToPdfButton="false" ShowAddNewRecordButton="false" ShowRefreshButton="false" />
             <Columns>
@@ -135,13 +150,13 @@
             <Scrolling AllowScroll="true" />
         </ClientSettings>
     </telerik:RadGrid>
-    <telerik:RadWindowManager ID="RadWindowManager1" runat="server" Behaviors="Close" ShowContentDuringLoad="false" VisibleStatusbar="false"
+    <telerik:RadWindowManager ID="RadWindowManager1" runat="server" ClientIDMode="Static" Behaviors="Close" ShowContentDuringLoad="false" VisibleStatusbar="false"
         ReloadOnShow="true" EnableShadow="true">
     </telerik:RadWindowManager>
     <script type="text/javascript">
         function openImageModal(tipo, VIN) {
             VIN
-            var manager = $find("<%= RadWindowManager1.ClientID %>");
+            var manager = $find("RadWindowManager1");
             var wnd = manager.open("ViewEvidence.aspx?tipo=" + tipo + "&VIN=" + VIN, "ImageWindow");
             wnd.setSize(500, 500);
             wnd.center();

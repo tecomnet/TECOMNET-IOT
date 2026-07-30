@@ -5,7 +5,6 @@ Namespace TECOMNET.AltanRedes
         <JsonPropertyName("responseSubscriber")>
         Public Property ResponseSubscriber As Subscriber
     End Class
-
     Public Class Subscriber
         <JsonPropertyName("information")>
         Public Property Information As Information
@@ -16,7 +15,6 @@ Namespace TECOMNET.AltanRedes
         <JsonPropertyName("freeUnits")>
         Public Property FreeUnits As List(Of FreeUnit)
     End Class
-
     Public Class Information
         <JsonPropertyName("idSubscriber")>
         Public Property IdSubscriber As String

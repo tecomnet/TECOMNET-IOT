@@ -13,7 +13,6 @@ Imports System.Web.WebSockets
 Imports System.Drawing
 Imports ModelsTECOMNET
 Imports System.Collections.Specialized.BitVector32
-Imports System.Web.Helpers
 
 Namespace Controllers.BYD
     <Authorize>
@@ -456,163 +455,30 @@ Namespace Controllers.BYD
             End Try
         End Function
         '5.9	Solicitud_Cambio_Oferta
-        '<HttpPost>
-        '<Route("api/BYD/CambioOferta")>
-        'Public Function CambioOferta(OfferChange As OfferChange) As HttpResponseMessage
-        '    Try
-        '        If ModelState.IsValid Then
-        '            Dim objController As New ControllerSIM
-        '            If objController.BYDOfferChange(OfferChange.ICC, OfferChange.ProductID) > 0 Then
-        '                Dim nuevoGuid As Guid = Guid.NewGuid()
-        '                Dim objChangeRequestResponse As New ChangeRequestResponse
-        '                objChangeRequestResponse.Status = "Aproved"
-        '                objChangeRequestResponse.GUID = nuevoGuid.ToString()
-        '                Return Request.CreateResponse(HttpStatusCode.OK, objChangeRequestResponse)
-        '            End If
-        '        Else
-        '            Return Request.CreateResponse(HttpStatusCode.BadRequest, New With {
-        '                Key .mensaje = "Objeto recibido no válido."
-        '                })
-        '        End If
-        '    Catch ex As Exception
-
-        '        ' Manejo de errores: devuelve un mensaje JSON con el error
-
-        '        Dim errorResponse As HttpResponseMessage = Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
-        '        Key .error = "Ocurrió un error al generar la solicitud.",
-        '        Key .detalle = ex.Message
-        '    })
-        '        Return errorResponse
-        '    End Try
-        '    Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
-        '        Key .error = "Ocurrió un error al generar la solicitud.",
-        '        Key .detalle = ""
-        '    })
-        'End Function
-
-        '5.9.1	Solicitud_Cambio_Oferta alex
-
-        <AllowAnonymous>
         <HttpPost>
         <Route("api/BYD/CambioOferta")>
-        Public Function CambioOferta(<FromBody> OfferChange As OfferChange) As HttpResponseMessage
-            Dim Success As Boolean = False
-            Dim resultLog As Boolean = True
-            Dim nuevoGuid As Guid = Guid.NewGuid()
+        Public Function CambioOferta(OfferChange As OfferChange) As HttpResponseMessage
             Try
-                If Not ModelState.IsValid Then
-                    Return Request.CreateResponse(HttpStatusCode.BadRequest, ModelState)
-                End If
-
                 If ModelState.IsValid Then
-                    Dim resutado
-                    Dim controller As New Controller
-                    Dim resultAltan As New AltanResult
-                    resultAltan.ErrorID = AltanErrors.Mistake
-
-                    Dim altan As New ConectionAltanRedes()
-                    Dim ObjControllerSIM As New ControllerSIM
-                    Dim objBuscaLog As New ProductSIMChangeLog
-
-                    '>>>>>>>>> INICIA - Valida si ya existe un cambio de oferta <<<<<<<<<
-                    objBuscaLog.ICCID = OfferChange.ICC
-                    objBuscaLog.ProductID = 0
-                    objBuscaLog.ReasonForChange = ""
-                    objBuscaLog.Channel = ""
-                    objBuscaLog.Action = ""
-                    objBuscaLog.PerformedBy = ""
-                    objBuscaLog.Applied = False
-                    objBuscaLog.RequestGUID = ""
-                    'objBuscaLog.ProductID = OfferChange.ProductID
-
-                    'Si ya encuentra un registro en el log > 0 cambia Success a False para no mandar ninguna solicitud
-                    Dim result = controller.TransactionsProductSIMChangeLog(Of Integer)(2, objBuscaLog)
-
-                    If result > 0 Then
-                        resultLog = False
-                    End If
-                    '>>>>>>>>> TERMINA - Valida si ya existe un cambio de oferta <<<<<<<<<
-
-                    '>>>>>>>>> Comienza el cambio de oferta con Altan <<<<<<<<<<
-                    'resultLog Debe ser TRUE para que mande la solicitud con Altan
-
-                    If resultLog Then
-
-                        Dim json = JsonSerializer.Serialize(New With {
-                            .primaryOffering = New With {
-                                .offeringId = "1003901000",
-                                .address = String.Empty,
-                                .scheduleDate = String.Empty,
-                                .startEffectiveDate = String.Empty,
-                                .expireEffectiveDate = String.Empty,
-                                .allowChangeOfferInSuspendBarring = String.Empty
-                            }
-                        })
-
-                        Dim objSIM = ObjControllerSIM.GetSIMByICCID(OfferChange.ICC)
-
-                        resultAltan = altan.PostAPIService(
-                            objSIM.MSISDN, json,
-                            AltanApisMethod.ChangeOffer
-                        )
-
-                        If resultAltan.ErrorID <> AltanErrors.Susssuccessful Then
-                            resutado = Request.CreateResponse(HttpStatusCode.BadRequest, New With {
-                                Key .mensaje = "Error en Altán",
-                                Key .detalle = resultAltan.JSON,
-                                Key .status = resultAltan.StatusCode
-                            })
-                        End If
-                    End If
-                    '>>>>>>>>> Termina el cambio de oferta con Altan <<<<<<<<<<
-
                     Dim objController As New ControllerSIM
-                    'Si Altan responde exitosamente, se procede a cambiar la oferta en el sistema local
-                    If resultAltan.ErrorID = AltanErrors.Susssuccessful Then
-                        If objController.BYDOfferChange(OfferChange.ICC, OfferChange.ProductID) > 0 Then
-                            Success = True
-                        End If
-                    End If
-
-                    '>>>>>>> Comienza a insertar en el log <<<<<<<<
-                    Dim objLog As New ProductSIMChangeLog
-                    objLog.ICCID = OfferChange.ICC
-                    objLog.ProductID = OfferChange.ProductID
-                    objLog.ReasonForChange = "Cambio de oferta solicitado desde API Codigo Altan:" + resultAltan.StatusCode.ToString()
-                    objLog.Channel = "API"
-                    objLog.Action = If(Success, "Cambio OK", "Error Cambio")
-                    objLog.PerformedBy = "Sistema"
-                    objLog.Applied = Success
-                    objLog.RequestGUID = nuevoGuid.ToString()
-                    controller.TransactionsProductSIMChangeLog(Of Integer)(1, objLog)
-                    '>>>>>>> Termina de insertar en el log <<<<<<<<
-
-                    If resutado IsNot Nothing Then
-                        Return resutado
-                    End If
-
-                    If (Success) Then
+                    If objController.BYDOfferChange(OfferChange.ICC, OfferChange.ProductID) > 0 Then
+                        Dim nuevoGuid As Guid = Guid.NewGuid()
                         Dim objChangeRequestResponse As New ChangeRequestResponse
                         objChangeRequestResponse.Status = "Aproved"
                         objChangeRequestResponse.GUID = nuevoGuid.ToString()
                         Return Request.CreateResponse(HttpStatusCode.OK, objChangeRequestResponse)
-                    Else
-                        Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
-                            Key .mensaje = "No se pudo aplicar el cambio"
-                        })
                     End If
                 Else
                     Return Request.CreateResponse(HttpStatusCode.BadRequest, New With {
                         Key .mensaje = "Objeto recibido no válido."
                         })
                 End If
-
             Catch ex As Exception
                 ' Manejo de errores: devuelve un mensaje JSON con el error
                 Dim errorResponse As HttpResponseMessage = Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
-                    Key .error = "Ocurrió un error al generar la solicitud.",
-                    Key .detalle = ex.Message
-                })
+                Key .error = "Ocurrió un error al generar la solicitud.",
+                Key .detalle = ex.Message
+            })
                 Return errorResponse
             End Try
             Return Request.CreateResponse(HttpStatusCode.InternalServerError, New With {
@@ -620,7 +486,6 @@ Namespace Controllers.BYD
                 Key .detalle = ""
             })
         End Function
-
         '5.10	Batch_Cambio_Oferta
         <HttpPost>
         <Route("api/BYD/BatchCambioOferta")>
@@ -712,7 +577,6 @@ Namespace Controllers.BYD
                 Return request.CreateResponse(HttpStatusCode.InternalServerError, New With {.message = "Error al procesar el archivo", .error = ex.Message})
             End Try
         End Function
-
         '5.11	Solicitud_Cambio_De_Estatus
         <HttpPost>
         <Route("api/BYD/SolicitudCambioEstatus")>
@@ -1382,7 +1246,6 @@ Namespace Controllers.BYD
                 })
             End Try
         End Function
-
         '6.7	Registra Venta
         '<HttpGet>
         '<Route("api/BYD/Sale")>

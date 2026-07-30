@@ -23,13 +23,22 @@ Partial Public Class Reports
     Protected WithEvents RadScriptManager As Global.Telerik.Web.UI.RadScriptManager
 
     '''<summary>
-    '''Control RadAjaxLoadingPanel.
+    '''Control RadAjaxLoadingPanel1.
     '''</summary>
     '''<remarks>
     '''Campo generado automáticamente.
     '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
     '''</remarks>
-    Protected WithEvents RadAjaxLoadingPanel As Global.Telerik.Web.UI.RadAjaxLoadingPanel
+    Protected WithEvents RadAjaxLoadingPanel1 As Global.Telerik.Web.UI.RadAjaxLoadingPanel
+
+    '''<summary>
+    '''Control RadAjaxManager1.
+    '''</summary>
+    '''<remarks>
+    '''Campo generado automáticamente.
+    '''Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+    '''</remarks>
+    Protected WithEvents RadAjaxManager1 As Global.Telerik.Web.UI.RadAjaxManager
 
     '''<summary>
     '''Control rtsReports.
