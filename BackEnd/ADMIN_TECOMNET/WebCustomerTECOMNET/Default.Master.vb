@@ -31,9 +31,24 @@ Public Class _Default
     Protected Sub lbCerrarSesion_Click(sender As Object, e As EventArgs)
         Try
             Session("Usuario") = Nothing
-            Dim nameCookie As HttpCookie = Request.Cookies("ID")
-            nameCookie.Expires = DateTime.Now.AddDays(-1)
-            Response.Cookies.Add(nameCookie)
+
+            'AlexSD 09042026 - Inicia Correccion para eliminar la cookie de ID al cerrar sesión
+            Session.Clear()
+            Session.Abandon()
+            If Request.Cookies("ID") IsNot Nothing Then
+                Dim nameCookie As New HttpCookie("ID")
+                nameCookie.Expires = DateTime.Now.AddDays(-1)
+                Response.Cookies.Add(nameCookie)
+            End If
+
+            'Se comenta el siguiente bloque de código porque se elimina la cookie de ID al cerrar sesión,
+            'por lo que no es necesario buscarla para eliminarla
+            'Dim nameCookie As HttpCookie = Request.Cookies("ID")
+            'nameCookie.Expires = DateTime.Now.AddDays(-1)
+            'Response.Cookies.Add(nameCookie)
+            FormsAuthentication.SignOut()
+            'AlexSD 09042026 - Termina Correccion para eliminar la cookie de ID al cerrar sesión
+
             FormsAuthentication.RedirectToLoginPage()
         Catch ex As Exception
             FormsAuthentication.RedirectToLoginPage()

@@ -1,4 +1,5 @@
-﻿Imports ModelsTECOMNET.TECOMNET
+﻿Imports System.Web
+Imports ModelsTECOMNET.TECOMNET
 
 Public Class ControllerUser
     Public Function GetUsers() As List(Of User)
@@ -74,16 +75,31 @@ Public Class ControllerUser
         Dim objUser As New User
         objUser.Email = email
         objUser.Password = password
+
         Try
-            Dim dt As New DataSet
+            Dim dt As DataSet
             dt = controller.TransactionsUser(Of DataSet)(6, objUser)
 
-            For Each dr As DataRow In dt.Tables(0).Rows
-                objUser = ConvertObject.Users(dr)
-            Next
+            If dt.Tables.Count > 0 AndAlso dt.Tables(0).Rows.Count > 0 Then
+                objUser = ConvertObject.Users(dt.Tables(0).Rows(0))
+
+                ' 🔐 guardar sesión AQUÍ
+                HttpContext.Current.Session("Usuario") = objUser
+
+                ' 📝 log AQUÍ
+                Try
+                    controller.InsertarSysLog("sp_User", "6", objUser.UserID, "Login",
+                    "Login correcto: " & objUser.UserName)
+                Catch
+                End Try
+            Else
+                Throw New Exception("Usuario o contraseña incorrectos")
+            End If
+
         Catch ex As Exception
-            Return objUser
+            Return Nothing
         End Try
+
         Return objUser
     End Function
 End Class

@@ -13,6 +13,7 @@ Namespace TECOMNET
         Public Property CreationDate As DateTime
         Public Property LastDate As DateTime?
         Public Sub New()
+            Me.UserID = 0
             Me.UserName = String.Empty
             Me.Name = String.Empty
             Me.Email = String.Empty
