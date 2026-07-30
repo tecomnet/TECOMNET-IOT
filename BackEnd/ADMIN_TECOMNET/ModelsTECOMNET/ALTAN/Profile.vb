@@ -4,6 +4,7 @@ Namespace TECOMNET.AltanRedes
     Public Class ResponseSubscriber
         <JsonPropertyName("responseSubscriber")>
         Public Property ResponseSubscriber As Subscriber
+
     End Class
 
     Public Class Subscriber

@@ -13,6 +13,8 @@ Public Class Reports
 
             rgInstallation.DataSource = String.Empty
             rgResult.DataSource = String.Empty
+            rgResult.Style.Add("display", "none")
+            rgInstallation.Style.Add("display", "none")
         End If
     End Sub
 
@@ -56,7 +58,7 @@ Public Class Reports
             Case "3"
                 Select Case rrblSIMS.SelectedValue
                     Case "1"
-                        sql = "SELECT ICCID,MSISDN,VIN,Producto,FORMAT(ExpirationDate, 'dd/MM/yyyy') AS Expira,AssignedMB AS MegasAasignados,UsedMB AS ConsumoEnMB, " &
+                        sql = "SELECT ICCID,MSISDN,VIN,Producto,FORMAT(ExpirationDate, 'dd/MM/yyyy') AS Expira,AssignedMB AS MegasAsignados,UsedMB AS ConsumoEnMB, " &
                               " Case WHEN AvailableMB = 1 THEN 'ILIMITADO' ELSE CAST(AvailableMB AS NVARCHAR(10)) END AS MegasDisponibles, " &
                               " Case WHEN AdditionalMB = 1 THEN 'ILIMITADO' ELSE CAST(AdditionalMB AS NVARCHAR(10)) END AS MegasAdicionales,Active AS Activo from SIM LEFT JOIN Car AS c ON SIM.CARID = c.CarID " &
                               " INNER JOIN [Product] AS p ON SIM.ProductID=p.ProductID INNER JOIN Company AS Com ON p.CompanyID=Com.CompanyID "
@@ -92,6 +94,28 @@ Public Class Reports
         End Select
         rgInstallation.DataSource = controller.TransactionsQuerys(sql)
     End Sub
+    Private Sub rgResult_ColumnCreated(sender As Object, e As GridColumnCreatedEventArgs) Handles rgResult.ColumnCreated
+        Select Case rtsReports.SelectedTab.Value
+            Case "3"
+                If TypeOf e.Column Is GridBoundColumn Then
+                    Dim boundColumn As GridBoundColumn = CType(e.Column, GridBoundColumn)
+                    Dim nombre As String = If(String.IsNullOrEmpty(boundColumn.DataField), boundColumn.UniqueName, boundColumn.DataField)
+                    Select Case nombre
+                        Case "ICCID", "MSISDN", "VIN", "Producto"
+                            boundColumn.AllowFiltering = True
+                            boundColumn.ShowFilterIcon = False
+                            boundColumn.FilterDelay = 1000
+                            boundColumn.CurrentFilterFunction = GridKnownFunction.Contains
+                            boundColumn.FilterControlWidth = Unit.Percentage(100)
+                        Case "Activo"
+                            boundColumn.AllowFiltering = False
+                        Case Else
+                            boundColumn.AllowFiltering = False
+                    End Select
+                End If
+        End Select
+    End Sub
+
     Private Sub rgResult_ItemCommand(sender As Object, e As GridCommandEventArgs) Handles rgResult.ItemCommand
         If e.CommandName = Telerik.Web.UI.RadGrid.ExportToExcelCommandName Then
             rgResult.ExportSettings.Excel.Format = GridExcelExportFormat.Biff
@@ -104,12 +128,12 @@ Public Class Reports
     Private Sub btnFind_Click(sender As Object, e As EventArgs) Handles btnFind.Click
         Select Case rtsReports.SelectedTab.Value
             Case "1", "2", "3", "4"
-                rgResult.Visible = True
-                rgInstallation.Visible = False
+                rgResult.Style.Remove("display")
+                rgInstallation.Style.Add("display", "none")
                 rgResult.Rebind()
             Case "5"
-                rgInstallation.Visible = True
-                rgResult.Visible = False
+                rgInstallation.Style.Remove("display")
+                rgResult.Style.Add("display", "none")
                 rgInstallation.Rebind()
         End Select
     End Sub
