@@ -1,6 +1,7 @@
-import 'dart:convert'; // IMPORTANTE para jsonDecode
+// IMPORTANTE para jsonDecode
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:scannet_tecomnet/screens/scan_vin.dart';
 import '../widgets/menu_lateral.dart';
 import '../services/api_services.dart'; // Aquí debe estar la clase AuthService
 
@@ -24,9 +25,6 @@ class _DataRegisterState extends State<DataRegister> {
   late final TextEditingController _vinController;
   late final TextEditingController _simController;
 
-  final Color azulActivo = Colors.blue[800]!;
-  final Color grisInactivo = Colors.grey;
-
   bool _isLoading = false;
   bool _showBackButton = false;
 
@@ -35,9 +33,6 @@ class _DataRegisterState extends State<DataRegister> {
     super.initState();
     _vinController = TextEditingController(text: widget.vinText);
     _simController = TextEditingController(text: widget.simText);
-
-    _vinController.addListener(() => setState(() {}));
-    _simController.addListener(() => setState(() {}));
   }
 
   @override
@@ -52,12 +47,13 @@ class _DataRegisterState extends State<DataRegister> {
     super.dispose();
   }
 
-  void _volverAlHome() {
-    Navigator.popUntil(context, (route) => route.isFirst);
+  void _volverAScanner() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ScanVin(vieneDeValidar: false)));
   }
 
   // -------------------- MÉTODO DE ERROR --------------------
   void _mostrarError(String mensaje) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(mensaje),
@@ -87,6 +83,7 @@ class _DataRegisterState extends State<DataRegister> {
     // Obtener token si no existe
     if (AuthService.token == null) {
       bool tokenObtenido = await AuthService.obtenerToken();
+      if (!mounted) return;
       if (!tokenObtenido) {
         setState(() {
           _isLoading = false;
@@ -97,64 +94,83 @@ class _DataRegisterState extends State<DataRegister> {
     }
 
     final respuestaJson = await AuthService.registrarVehiculo(vin, iccid);
+    if (!mounted) return;
 
     setState(() {
       _isLoading = false;
       _showBackButton = true;
     });
 
-    if (respuestaJson == null) {
-      _mostrarError("Error en la conexión. Intenta más tarde.");
-      return;
-    }
-
-    // Extraer solo el mensaje del JSON
-    String mensaje = "";
-    try {
-      final Map<String, dynamic> data = respuestaJson is String
-          ? jsonDecode(respuestaJson)
-          : respuestaJson;
-      mensaje = data["error"] ?? "El vehículo se registro correctamente";
-    } catch (e) {
-      mensaje = "Error al procesar la respuesta";
-    }
-
-    // Determinar color según el mensaje
-    final esError = mensaje.toLowerCase().contains("error") ||
-        mensaje.toLowerCase().contains("no esta registrado") ||
-        mensaje.toLowerCase().contains("ya se encuentra registrado") ||
-        mensaje.toLowerCase().contains("asociado");
+    final bool esError = respuestaJson["error"] == true;
+    final String mensaje =
+        respuestaJson["mensaje"] ?? "El vehículo se registró correctamente";
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(mensaje),
         backgroundColor: esError ? Colors.red : Colors.green,
-        duration: const Duration(seconds: 4),
+        duration: const Duration(seconds: 5), // ← 5 segundos
       ),
     );
   }
 
-  // -------------------- COLOR DE TEXTFIELD --------------------
-  Color _getColor(TextEditingController controller) {
-    return controller.text.isEmpty ? grisInactivo : azulActivo;
+  // -------------------- BUILD --------------------
+  Widget _campoSoloLectura({
+    required String label,
+    required IconData icono,
+    required TextEditingController controller,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.blue[800],
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          readOnly: true,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          decoration: InputDecoration(
+            prefixIcon: Icon(icono, color: Colors.blue[800]),
+            filled: true,
+            fillColor: Colors.grey[100],
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 18,
+              horizontal: 16,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(color: Colors.blue.shade300),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
-  // -------------------- BUILD --------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: azulActivo,
+        title: const Text('Vinculación'),
+        backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0,
-        actions: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white),
-              onPressed: () => Scaffold.of(context).openEndDrawer(),
-            ),
-          ),
-        ],
       ),
       endDrawer: const MenuLateral(),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -167,129 +183,126 @@ class _DataRegisterState extends State<DataRegister> {
           onTap: () =>
               SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky),
           child: Container(
-            margin: const EdgeInsets.only(bottom: 20),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 600),
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.blue[900]!,
+                  Colors.blue[700]!,
+                  Colors.blue[400]!,
+                ],
+              ),
+            ),
+            child: SafeArea(
+              child: Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 10),
-                      Text(
-                        'Registro',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 30),
-                      TextField(
-                        controller: _vinController,
-                        readOnly: true,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: _getColor(_vinController),
-                        ),
-                        decoration: InputDecoration(
-                          labelText: 'Resultado VIN',
-                          labelStyle: TextStyle(
-                            color: _getColor(_vinController),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 24,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(22),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            shape: BoxShape.circle,
                           ),
-                          border: const OutlineInputBorder(),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                          prefixIcon: Icon(Icons.qr_code_scanner,
-                              color: _getColor(_vinController)),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: _getColor(_vinController)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: _getColor(_vinController)),
+                          child: const Icon(
+                            Icons.link,
+                            size: 56,
+                            color: Colors.white,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 15),
-                      TextField(
-                        controller: _simController,
-                        readOnly: true,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: _getColor(_simController),
-                        ),
-                        decoration: InputDecoration(
-                          labelText: 'Resultado SIM',
-                          labelStyle: TextStyle(
-                            color: _getColor(_simController),
-                          ),
-                          border: const OutlineInputBorder(),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                          prefixIcon: Icon(Icons.sim_card, color: _getColor(_simController)),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: _getColor(_simController)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: _getColor(_simController)),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Vincular VIN y SIM',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 25),
-                      Center(
-                        child: SizedBox(
-                          width: 200,
-                          height: 48,
-                          child: _showBackButton
-                              ? ElevatedButton(
-                                  onPressed: _volverAlHome,
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Verifica los datos antes de vincular',
+                          style: TextStyle(fontSize: 16, color: Colors.white70),
+                        ),
+                        const SizedBox(height: 28),
+
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.2),
+                                blurRadius: 20,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _campoSoloLectura(
+                                label: 'VIN',
+                                icono: Icons.qr_code_scanner,
+                                controller: _vinController,
+                              ),
+                              const SizedBox(height: 20),
+                              _campoSoloLectura(
+                                label: 'SIM',
+                                icono: Icons.sim_card,
+                                controller: _simController,
+                              ),
+                              const SizedBox(height: 28),
+                              SizedBox(
+                                height: 52,
+                                child: ElevatedButton(
+                                  onPressed: _showBackButton
+                                      ? _volverAScanner
+                                      : (_isLoading ? null : _registrar),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: azulActivo,
+                                    backgroundColor: Colors.blue[800],
                                     foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    disabledBackgroundColor: Colors.blue[300],
+                                    elevation: 4,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
+                                      borderRadius: BorderRadius.circular(14),
                                     ),
-                                    elevation: 5,
-                                    shadowColor: azulActivo.withOpacity(0.5),
-                                  ),
-                                  child: const Text(
-                                    'Volver',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                )
-                              : ElevatedButton(
-                                  onPressed: _isLoading ? null : _registrar,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: azulActivo,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    elevation: 5,
-                                    shadowColor: azulActivo.withOpacity(0.5),
                                   ),
                                   child: _isLoading
-                                      ? const CircularProgressIndicator(color: Colors.white)
-                                      : const Text(
-                                          'Registrar',
-                                          style: TextStyle(
+                                      ? const SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 3,
+                                          ),
+                                        )
+                                      : Text(
+                                          _showBackButton ? 'Nueva' : 'Vincular',
+                                          style: const TextStyle(
                                             fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                            fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                 ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 30),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/data_register.dart';
+import 'dialogo_escaneo.dart';
 
 class MessageValidateBarcode extends StatefulWidget {
   final String barcodeText;
@@ -7,14 +8,14 @@ class MessageValidateBarcode extends StatefulWidget {
   final VoidCallback? onAdd;
 
   const MessageValidateBarcode({
-    Key? key,
+    super.key,
     required this.barcodeText,
     required this.onTryAgain,
     this.onAdd,
-  }) : super(key: key);
+  });
 
   @override
-  _MessageValidateBarcodeState createState() => _MessageValidateBarcodeState();
+  State<MessageValidateBarcode> createState() => _MessageValidateBarcodeState();
 }
 
 class _MessageValidateBarcodeState extends State<MessageValidateBarcode> {
@@ -35,35 +36,14 @@ class _MessageValidateBarcodeState extends State<MessageValidateBarcode> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        'Texto',
-        style: TextStyle(color: Colors.blue[800]),
-      ),
-      content: _isEditing
-          ? TextField(
-              controller: _controller,
-              maxLines: null,
-              decoration: const InputDecoration(border: OutlineInputBorder()),
-              onChanged: (value) {},
-            )
-          : Text(
-              _controller.text
-            ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _isEditing = !_isEditing;
-            });
-          },
-          child: Text(
-            _isEditing ? 'Guardar' : 'Editar',
-            style: TextStyle(color: Colors.blue[800]),
-          ),
-        ),
-        TextButton(
-          onPressed: widget.onAdd ??
+    return DialogoEscaneo(
+      icono: Icons.barcode_reader,
+      titulo: 'Código detectado',
+      contenido: TextoEscaneado(controller: _controller, editando: _isEditing),
+      acciones: [
+        DialogoEscaneo.primario(
+          'Agregar',
+          widget.onAdd ??
               () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -77,21 +57,16 @@ class _MessageValidateBarcodeState extends State<MessageValidateBarcode> {
                   ),
                 );
               },
-          child: Text(
-            'Agregar',
-            style: TextStyle(color: Colors.blue[800]),
-          ),
         ),
-        TextButton(
-          onPressed: () {
-            widget.onTryAgain();
-            Navigator.pop(context);
-          },
-          child: Text(
-            'Intentar de nuevo',
-            style: TextStyle(color: Colors.blue[800]),
-          ),
-        ),
+        DialogoEscaneo.secundario(_isEditing ? 'Guardar' : 'Editar', () {
+          setState(() {
+            _isEditing = !_isEditing;
+          });
+        }),
+        DialogoEscaneo.texto('Intentar de nuevo', () {
+          widget.onTryAgain();
+          Navigator.pop(context);
+        }),
       ],
     );
   }
