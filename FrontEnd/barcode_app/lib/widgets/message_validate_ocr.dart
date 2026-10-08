@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dialogo_escaneo.dart';
 
 class MessageValidateOCR extends StatefulWidget {
   final String extractedText;
@@ -25,51 +26,31 @@ class _MessageValidateOCRState extends State<MessageValidateOCR> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Texto detectado', style: TextStyle(color: Colors.blue[800])),
-      content: _isEditing
-          ? TextField(
-              controller: _controller,
-              maxLines: null,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-              ),
-            )
-          : Text(_controller.text),
-      actions: [
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _controller.text =
-                  _controller.text.trim().toUpperCase();
-              _isEditing = !_isEditing;
-            });
+    return DialogoEscaneo(
+      icono: Icons.text_fields,
+      titulo: 'Texto detectado',
+      contenido: TextoEscaneado(controller: _controller, editando: _isEditing),
+      acciones: [
+        DialogoEscaneo.primario(
+          widget.vieneDeValidar ? 'Validar' : 'Agregar',
+          () {
+            Navigator.pop(context, _controller.text.trim().toUpperCase());
           },
-          child: Text(
-            _isEditing ? 'Guardar' : 'Editar',
-            style: TextStyle(color: Colors.blue[800]),
-          ),
         ),
-        TextButton(
-          onPressed: () {
-            Navigator.pop(
-              context,
-              _controller.text.trim().toUpperCase(),
-            );
-          },
-          child: Text(
-            widget.vieneDeValidar ? 'Validar' : 'Agregar',
-            style: TextStyle(color: Colors.blue[800]),
-          ),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(
-            'Intentar de nuevo',
-            style: TextStyle(color: Colors.blue[800]),
-          ),
-        ),
+        DialogoEscaneo.secundario(_isEditing ? 'Guardar' : 'Editar', () {
+          setState(() {
+            _controller.text = _controller.text.trim().toUpperCase();
+            _isEditing = !_isEditing;
+          });
+        }),
+        DialogoEscaneo.texto('Intentar de nuevo', () => Navigator.pop(context)),
       ],
     );
   }

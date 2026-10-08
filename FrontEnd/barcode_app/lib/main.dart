@@ -5,6 +5,8 @@ import './screens/data_register.dart';
 import 'screens/scan_vin.dart';
 import './screens/login.dart';
 import './screens/home.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 
 void main() => runApp(const MyApp());
 
@@ -16,6 +18,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Scannet Tecomnet',
       debugShowCheckedModeBanner: false,
+      locale: const Locale('es', 'MX'),
+      supportedLocales: const [
+        Locale('es', 'MX'),
+        Locale('en', 'US'),
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: const Login(),
       routes: {
         '/login': (context) => const Login(),

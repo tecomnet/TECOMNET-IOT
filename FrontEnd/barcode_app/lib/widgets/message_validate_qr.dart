@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dialogo_escaneo.dart';
 
 class MessageValidateQR extends StatefulWidget {
   final String title;
@@ -38,45 +39,24 @@ class _MessageValidateQRState extends State<MessageValidateQR> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(widget.title, style: TextStyle(color: Colors.blue[800])),
-      content: _isEditing
-          ? TextField(
-              controller: _controller,
-              maxLines: null,
-              decoration: const InputDecoration(border: OutlineInputBorder()),
-            )
-          : Text(_controller.text),
-      actions: [
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _isEditing = !_isEditing;
-            });
-          },
-          child: Text(
-            _isEditing ? 'Guardar' : 'Editar',
-            style: TextStyle(color: Colors.blue[800]),
-          ),
+    return DialogoEscaneo(
+      icono: Icons.qr_code_2,
+      titulo: widget.title,
+      contenido: TextoEscaneado(controller: _controller, editando: _isEditing),
+      acciones: [
+        DialogoEscaneo.primario(
+          widget.vieneDeValidar ? 'Validar' : 'Agregar',
+          widget.onAgregarPressed,
         ),
-          TextButton(
-          onPressed: widget.onAgregarPressed,
-          child: Text(
-            widget.vieneDeValidar ? 'Validar' : 'Agregar',
-            style: TextStyle(color: Colors.blue[800]),
-          ),
-        ),
-
-        TextButton(
-          onPressed: () {
-            widget.onTryAgain();
-            Navigator.pop(context);
-          },
-          child: Text(
-            "Intentar de nuevo",
-            style: TextStyle(color: Colors.blue[800]),
-          ),
-        ),
+        DialogoEscaneo.secundario(_isEditing ? 'Guardar' : 'Editar', () {
+          setState(() {
+            _isEditing = !_isEditing;
+          });
+        }),
+        DialogoEscaneo.texto('Intentar de nuevo', () {
+          widget.onTryAgain();
+          Navigator.pop(context);
+        }),
       ],
     );
   }

@@ -328,21 +328,104 @@ class _ScanOcrState extends State<ScanOcr> with WidgetsBindingObserver {
                 Positioned.fill(
                   child: CustomPaint(painter: ScanAreaOverlayPainter()),
                 ),
+                // Instrucción bajo el recuadro (misma geometría que el overlay)
+                Positioned.fill(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final rect = Rect.fromCenter(
+                        center: Offset(
+                          constraints.maxWidth / 2,
+                          constraints.maxHeight / 2 - 60,
+                        ),
+                        width: constraints.maxWidth * 0.8,
+                        height: constraints.maxHeight * 0.125,
+                      );
+                      final esSim = origen == 'sim';
+                      return Stack(
+                        children: [
+                          Positioned(
+                            top: rect.bottom + 20,
+                            left: 24,
+                            right: 24,
+                            child: Center(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 18,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.55),
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      esSim ? Icons.sim_card : Icons.pin,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Flexible(
+                                      child: Text(
+                                        esSim
+                                            ? 'Centra el número de la SIM en el recuadro'
+                                            : 'Centra el VIN en el recuadro',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
                 Positioned(
-                  top: 40,
-                  right: 20,
-                  child: GestureDetector(
-                    onTap: _toggleFlash,
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Icon(
-                        _isFlashOn ? Icons.flash_on : Icons.flash_off,
-                        color: Colors.white,
-                        size: 30,
+                  bottom: 100,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: _toggleFlash,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 22,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _isFlashOn
+                              ? Colors.amber
+                              : Colors.black.withValues(alpha: 0.55),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _isFlashOn ? Icons.flash_on : Icons.flash_off,
+                              color: _isFlashOn ? Colors.black87 : Colors.white,
+                              size: 26,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _isFlashOn ? 'Linterna encendida' : 'Linterna',
+                              style: TextStyle(
+                                color: _isFlashOn
+                                    ? Colors.black87
+                                    : Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -357,19 +440,38 @@ class _ScanOcrState extends State<ScanOcr> with WidgetsBindingObserver {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue[800],
                         foregroundColor: Colors.white,
+                        disabledBackgroundColor: Colors.blue[300],
+                        elevation: 6,
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 50,
+                          horizontal: 44,
                           vertical: 16,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(30),
                         ),
                       ),
                       child: _isProcessing
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
-                              'Escanear',
-                              style: TextStyle(fontSize: 20),
+                          ? const SizedBox(
+                              width: 26,
+                              height: 26,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 3,
+                              ),
+                            )
+                          : const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.camera_alt),
+                                SizedBox(width: 10),
+                                Text(
+                                  'Escanear',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                     ),
                   ),
@@ -404,8 +506,8 @@ class ScanAreaOverlayPainter extends CustomPainter {
     final paint = Paint()..color = Colors.black.withOpacity(0.5);
 
     final borderPaint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 2
+      ..color = Colors.white.withValues(alpha: 0.5)
+      ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
     final scanRect = Rect.fromCenter(
@@ -424,7 +526,27 @@ class ScanAreaOverlayPainter extends CustomPainter {
     );
 
     canvas.drawPath(overlayPath, paint);
+
+    // Borde tenue + esquinas marcadas
     canvas.drawRect(scanRect, borderPaint);
+
+    final cornerPaint = Paint()
+      ..color = Colors.lightBlueAccent
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round;
+    const l = 28.0;
+    final r = scanRect;
+
+    void esquina(Offset c, double dx, double dy) {
+      canvas.drawLine(c, Offset(c.dx + dx * l, c.dy), cornerPaint);
+      canvas.drawLine(c, Offset(c.dx, c.dy + dy * l), cornerPaint);
+    }
+
+    esquina(r.topLeft, 1, 1);
+    esquina(r.topRight, -1, 1);
+    esquina(r.bottomLeft, 1, -1);
+    esquina(r.bottomRight, -1, -1);
   }
 
   @override

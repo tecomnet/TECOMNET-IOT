@@ -231,7 +231,7 @@ class _ScanQRState extends State<ScanQR>
         ],
       ),
     ).then((_) {
-      setState(() => _dialogOpen = false);
+      if (mounted) setState(() => _dialogOpen = false);
     });
   }
 
@@ -247,6 +247,8 @@ class _ScanQRState extends State<ScanQR>
         final BarcodeCapture? result = await _controller?.analyzeImage(
           image.path,
         );
+
+        if (!mounted) return;
 
         if (result != null && result.barcodes.isNotEmpty) {
           final barcode = result.barcodes.first;
@@ -267,11 +269,13 @@ class _ScanQRState extends State<ScanQR>
       }
     } catch (e) {
       debugPrint('Error scanning image: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      }
     } finally {
-      setState(() => _isProcessingImage = false);
+      if (mounted) setState(() => _isProcessingImage = false);
     }
   }
 
@@ -299,7 +303,11 @@ class _ScanQRState extends State<ScanQR>
         vieneDeValidar: widget.vieneDeValidar,
         onAgregarPressed: () async {
           Navigator.pop(context);
-          final vehiculoData = await AuthService.obtenerEstadoInstalacion(result);
+          final vehiculoData = await AuthService.obtenerEstadoInstalacion(
+            result,
+          );
+
+          if (!mounted) return;
 
           if (widget.vieneDeValidar) {
             // 🔹 FLUJO VALIDAR
@@ -390,21 +398,49 @@ class _ScanQRState extends State<ScanQR>
             ),
           ),
 
-          Positioned(
-            top: scanRect.top,
-            left: scanRect.left,
-            child: Container(
-              width: scanRect.width,
-              height: scanRect.height,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.8),
-                  width: 2,
-                ),
+          // Esquinas del recuadro de escaneo
+          Positioned.fill(
+            child: CustomPaint(
+              painter: ScannerCornersPainter(
+                scanRect: scanRect,
+                borderRadius: 24,
+                color: Colors.lightBlueAccent,
               ),
             ),
           ),
+
+          // Instrucción bajo el recuadro
+          if (_cameraInitialized && !_shouldStopDetection)
+            Positioned(
+              top: scanRect.bottom + 20,
+              left: 24,
+              right: 24,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.55),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.qr_code_2, color: Colors.white, size: 20),
+                      SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          'Coloca el QR dentro del recuadro',
+                          style: TextStyle(color: Colors.white, fontSize: 15),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
 
           // Línea roja animada
           if (_cameraInitialized && !_shouldStopDetection)
@@ -421,14 +457,14 @@ class _ScanQRState extends State<ScanQR>
                       gradient: LinearGradient(
                         colors: [
                           Colors.transparent,
-                          Colors.red.shade700,
+                          Colors.lightBlueAccent,
                           Colors.transparent,
                         ],
                         stops: const [0.0, 0.5, 1.0],
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.redAccent.withOpacity(0.8),
+                          color: Colors.lightBlueAccent.withValues(alpha: 0.8),
                           blurRadius: 8,
                           spreadRadius: 2,
                         ),
@@ -441,20 +477,42 @@ class _ScanQRState extends State<ScanQR>
 
           if (_cameraInitialized && !_shouldStopDetection)
             Positioned(
-              top: 70,
-              right: 20,
-              child: GestureDetector(
-                onTap: _dialogOpen ? null : _toggleFlash,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Icon(
-                    _flashOn ? Icons.flash_on : Icons.flash_off,
-                    color: Colors.white,
-                    size: 30,
+              bottom: 40,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: GestureDetector(
+                  onTap: _dialogOpen ? null : _toggleFlash,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 22,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _flashOn
+                          ? Colors.amber
+                          : Colors.black.withValues(alpha: 0.55),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _flashOn ? Icons.flash_on : Icons.flash_off,
+                          color: _flashOn ? Colors.black87 : Colors.white,
+                          size: 26,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _flashOn ? 'Linterna encendida' : 'Linterna',
+                          style: TextStyle(
+                            color: _flashOn ? Colors.black87 : Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -531,4 +589,50 @@ class ScannerOverlayPainter extends CustomPainter {
   bool shouldRepaint(covariant ScannerOverlayPainter oldDelegate) =>
       oldDelegate.scanRect != scanRect ||
       oldDelegate.borderRadius != borderRadius;
+}
+
+// Dibuja solo las cuatro esquinas del recuadro de escaneo
+class ScannerCornersPainter extends CustomPainter {
+  final Rect scanRect;
+  final double borderRadius;
+  final Color color;
+
+  ScannerCornersPainter({
+    required this.scanRect,
+    required this.borderRadius,
+    required this.color,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round;
+
+    final r = borderRadius;
+    const l = 36.0; // largo de cada brazo
+    final rect = scanRect;
+
+    Path esquina(Offset corner, double dx, double dy) {
+      // dx, dy indican hacia dónde se extienden los brazos (±1)
+      return Path()
+        ..moveTo(corner.dx, corner.dy + dy * (r + l))
+        ..lineTo(corner.dx, corner.dy + dy * r)
+        ..quadraticBezierTo(corner.dx, corner.dy, corner.dx + dx * r, corner.dy)
+        ..lineTo(corner.dx + dx * (r + l), corner.dy);
+    }
+
+    canvas.drawPath(esquina(rect.topLeft, 1, 1), paint);
+    canvas.drawPath(esquina(rect.topRight, -1, 1), paint);
+    canvas.drawPath(esquina(rect.bottomLeft, 1, -1), paint);
+    canvas.drawPath(esquina(rect.bottomRight, -1, -1), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant ScannerCornersPainter oldDelegate) =>
+      oldDelegate.scanRect != scanRect ||
+      oldDelegate.borderRadius != borderRadius ||
+      oldDelegate.color != color;
 }
